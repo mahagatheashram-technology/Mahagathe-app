@@ -23,8 +23,6 @@ export const colors = {
   border: '#E9DFD3',
   /** Stronger outline: Pathway chips, timeline dots (Sangha, Paramparā). */
   borderStrong: '#D6C3AE',
-  /** Modal / bottom-sheet scrim (ink at 45%). */
-  scrim: 'rgba(42,31,26,0.45)',
   /** Hairline divider on the red feature block. */
   onFeatureDivider: 'rgba(255,255,255,0.25)',
   /** Ghost button border on the red feature block. */
