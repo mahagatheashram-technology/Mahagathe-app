@@ -7,6 +7,7 @@
     "@expo-google-fonts/noto-serif-devanagari": "^0.4.1",
     "@expo-google-fonts/poppins": "^0.4.1",
     "@expo/ui": "~58.0.27",
+    "convex": "^1.49.0",
     "expo": "~58.0.23",
     "expo-audio": "~58.0.11",
     "expo-constants": "~58.0.15",
@@ -34,9 +35,12 @@
     "react-native-worklets": "0.13.0"
   },
   "devDependencies": {
+    "@types/node": "^26.6.6",
     "@types/react": "~19.3.0",
+    "convex-test": "^0.0.67",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~58.0.4",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -46,7 +50,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test convex/tests/*.test.ts"
   },
   "private": true
 }
