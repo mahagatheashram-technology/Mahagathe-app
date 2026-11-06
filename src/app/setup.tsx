@@ -1,5 +1,91 @@
-import { Placeholder } from '@/components/ui';
+import { Redirect, useRouter } from 'expo-router';
+import { useState } from 'react';
 
-export default function Screen() {
-  return <Placeholder title="Profile setup" mock="SetupV3.dc.html" />;
+import { isMinor, useProfile, useRequestGuardianConsent, useSession, useUpdateProfile, type AgeBand } from '@/data';
+import { GuardianAsk, GuardianWaiting } from '@/features/onboarding/GuardianConsent';
+import { SetupForm } from '@/features/onboarding/SetupForm';
+
+type Step = 'form' | 'guardianAsk' | 'guardianWaiting';
+
+export default function SetupScreen() {
+  const router = useRouter();
+  const { status, continueAsGuest } = useSession();
+  const profile = useProfile();
+  const updateProfile = useUpdateProfile();
+  const requestConsent = useRequestGuardianConsent();
+
+  const [step, setStep] = useState<Step>(profile?.guardianConsent === 'pending' ? 'guardianWaiting' : 'form');
+  const [band, setBand] = useState<AgeBand | null>(null);
+  const [draftName, setDraftName] = useState('');
+  const [maskedPhone, setMaskedPhone] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  if (status === 'signedOut' || status === 'guest') return <Redirect href="/welcome" />;
+
+  const back = () => (router.canGoBack() ? router.back() : router.replace('/welcome'));
+
+  if (step === 'guardianWaiting') {
+    return (
+      <GuardianWaiting
+        maskedPhone={maskedPhone || 'the number you gave'}
+        onBack={() => setStep('form')}
+        onExplore={() => {
+          continueAsGuest();
+          router.replace('/(tabs)');
+        }}
+      />
+    );
+  }
+
+  if (step === 'guardianAsk' && band) {
+    return (
+      <GuardianAsk
+        sending={busy}
+        error={error}
+        onBack={() => {
+          setError(null);
+          setStep('form');
+        }}
+        onSend={async (guardianPhone) => {
+          setBusy(true);
+          setError(null);
+          try {
+            await requestConsent({ ageBand: band, guardianPhone });
+            setMaskedPhone(`+91 ••••• ••${guardianPhone.slice(-3)}`);
+            setStep('guardianWaiting');
+          } catch {
+            setError('We could not send the request. Please try again.');
+          } finally {
+            setBusy(false);
+          }
+        }}
+      />
+    );
+  }
+
+  return (
+    <SetupForm
+      initialName={draftName || profile?.displayName || ''}
+      initialBand={band ?? profile?.ageBand ?? null}
+      saving={busy}
+      onBack={back}
+      onSubmit={async (name, picked) => {
+        setBand(picked);
+        setDraftName(name);
+        // T-02: under 18 → stop and ask a guardian first. Nothing is saved at this point.
+        if (isMinor(picked)) {
+          setStep('guardianAsk');
+          return;
+        }
+        setBusy(true);
+        try {
+          await updateProfile({ displayName: name, ageBand: picked });
+          router.replace('/(tabs)');
+        } finally {
+          setBusy(false);
+        }
+      }}
+    />
+  );
 }
