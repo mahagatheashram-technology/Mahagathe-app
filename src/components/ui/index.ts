@@ -7,3 +7,4 @@ export * from './surfaces';
 export * from './TabBar';
 export * from './SeasonCover';
 export * from './BottomSheet';
+export * from './Event';

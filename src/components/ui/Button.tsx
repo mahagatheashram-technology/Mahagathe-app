@@ -94,7 +94,7 @@ const variantStyles: Record<ButtonVariant, { container: ViewStyle; text: string 
   },
   onFeature: { container: { backgroundColor: colors.white }, text: colors.actionRed },
   ghostOnFeature: {
-    container: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.7)' },
+    container: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: colors.onFeatureBorder },
     text: colors.white,
   },
   quiet: { container: { backgroundColor: colors.sand }, text: colors.ink },

@@ -158,3 +158,9 @@ export type WisdomSearchResult = {
   vakyams: Vakyam[];
   episodes: (EpisodeSummary & { seasonTitle: string; boriRange: string })[];
 };
+
+/** G-06: consent-first volunteer sign-up for a vibhaga. `consent` must be true. */
+export type VolunteerSignup = { vibhagaId: Id; name: string; phone: string; consent: boolean };
+
+/** Official contact shown in the About sheet. Placeholder until approved (D-21). */
+export type ContactInfo = { legalName: string; address: string; phone: string; email: string };
