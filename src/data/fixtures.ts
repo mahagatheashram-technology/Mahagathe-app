@@ -17,6 +17,7 @@ import type {
   ThemeSummary,
   Vakyam,
   Vibhaga,
+  ContactInfo,
 } from './types';
 
 const GURU = 'Ven. Mahāmuni Sritha Mahāgatha';
@@ -201,10 +202,19 @@ export const donationPurposes: DonationPurpose[] = [
   { id: 'most-needed', name: 'Where it is most needed', tagline: 'The Trust decides' },
   { id: 'bhandara', name: 'Bhaṇḍāra', tagline: 'Food for all' },
   { id: 'adhyaya', name: 'Adhyaya', tagline: 'Learning for children' },
+  { id: 'ayuri', name: 'Āyuri', tagline: 'Care for elders' },
+  { id: 'samriddhi', name: 'Samṛddhi', tagline: 'Skills and livelihood' },
 ];
 export const donationPresets = [101, 501, 1001, 2501];
 
 export const smallSteps: SmallStep[] = [{ text: 'sit quietly for two minutes before your first meal.' }];
+
+export const contact: ContactInfo = {
+  legalName: 'Mahagathe Foundation Public Charitable Trust',
+  address: '[Address, as approved]',
+  phone: '[Phone, as approved]',
+  email: '[Email, as approved]',
+};
 
 export const links = {
   youtube: 'https://www.youtube.com/',

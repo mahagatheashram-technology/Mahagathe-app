@@ -33,6 +33,7 @@ import type {
   Vakyam,
   VakyamTheme,
   WisdomSearchResult,
+  VolunteerSignup,
 } from './types';
 import { isMinor, THEME_LABELS } from './types';
 import { foldForSearch, matchesFolded } from './search';
@@ -379,6 +380,29 @@ export function useVibhagas() {
 
 export function usePathways() {
   return fx.pathways;
+}
+
+/** null = unknown id. */
+export function useVibhaga(id: string | undefined) {
+  return useMemo(() => fx.vibhagas.find((v) => v.id === id) ?? null, [id]);
+}
+
+/** null = unknown id. */
+export function usePathway(id: string | undefined) {
+  return useMemo(() => fx.pathways.find((p) => p.id === id) ?? null, [id]);
+}
+
+/** G-06: resolves when the sign-up is stored. Callers must have collected explicit consent. */
+export function useVolunteerSignup() {
+  return useCallback(async (input: VolunteerSignup) => {
+    if (!input.consent) throw new Error('Consent is required');
+    await delay(600);
+  }, []);
+}
+
+/** Official contact for the About sheet. */
+export function useContactInfo() {
+  return fx.contact;
 }
 
 export function useParampara() {

@@ -21,6 +21,8 @@ export const colors = {
   /** Light inset tile inside white cards (Mandala row, Paramparā icon tile). */
   tile: '#F8F4EE',
   border: '#E9DFD3',
+  /** Stronger outline: Pathway chips, timeline dots (Sangha, Paramparā). */
+  borderStrong: '#D6C3AE',
 
   ink: '#2A1F1A',
   muted: '#6E5F50',
