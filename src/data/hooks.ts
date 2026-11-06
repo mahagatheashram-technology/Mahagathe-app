@@ -108,6 +108,23 @@ export function useUpdateProfile() {
   );
 }
 
+/**
+ * P-04 / T-02: a user under 18 picked an age band. Ask a guardian to consent. Stores ONLY the
+ * age band and marks consent `pending`: no name or other data is saved until the guardian agrees.
+ * Mock: records the band and `pending`. Real: creates a Guardian record + sends the consent link.
+ */
+export function useRequestGuardianConsent() {
+  return useCallback(async (input: { ageBand: AgeBand; guardianPhone: string }) => {
+    await delay();
+    setState((s) => {
+      if (!s.profile) return {};
+      return {
+        profile: { ...s.profile, ageBand: input.ageBand, displayName: '', guardianConsent: 'pending' },
+      };
+    });
+  }, []);
+}
+
 export function useNotificationPrefs(): NotificationPrefs | undefined {
   return useMockState((s) => s.prefs);
 }

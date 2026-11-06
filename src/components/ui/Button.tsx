@@ -25,6 +25,10 @@ type Props = {
   disabled?: boolean;
   loading?: boolean;
   accessibilityLabel?: string;
+  /** Override the label size when a mock differs from the size scale (e.g. 15px on a 54px button). */
+  fontSize?: number;
+  /** Gap between icon and label (default 8). */
+  iconGap?: number;
   style?: ViewStyle;
 };
 
@@ -42,6 +46,8 @@ export function Button({
   disabled,
   loading,
   accessibilityLabel,
+  fontSize,
+  iconGap = 8,
   style,
 }: Props) {
   const v = variantStyles[variant];
@@ -64,12 +70,12 @@ export function Button({
       {loading ? (
         <ActivityIndicator color={v.text} />
       ) : (
-        <View style={styles.row}>
+        <View style={[styles.row, { gap: iconGap }]}>
           {icon}
           <AppText
             style={{
               fontFamily: variant === 'ghostOnFeature' ? fonts.sansMedium : fonts.sansSemibold,
-              fontSize: fontSizes[size],
+              fontSize: fontSize ?? fontSizes[size],
               color: v.text,
             }}>
             {label}
