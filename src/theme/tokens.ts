@@ -27,6 +27,15 @@ export const colors = {
   onFeatureDivider: 'rgba(255,255,255,0.25)',
   /** Ghost button border on the red feature block. */
   onFeatureBorder: 'rgba(255,255,255,0.7)',
+  /** Icon-button outline on the red feature block (Home bell). */
+  onFeatureOutline: 'rgba(255,255,255,0.35)',
+  /** Language pill outline on Welcome. */
+  onFeaturePillBorder: 'rgba(255,255,255,0.45)',
+  /** Loading skeleton blocks: on the red feature block / on cream. */
+  skeletonOnFeature: 'rgba(255,255,255,0.18)',
+  skeleton: 'rgba(76,21,21,0.08)',
+  /** Neutral drop shadow (Welcome emblem disc). */
+  shadowNeutral: '#000000',
 
   ink: '#2A1F1A',
   muted: '#6E5F50',
@@ -47,6 +56,8 @@ export const colors = {
   /** Gold hairline on covers: 70% on the lead cover, 45% on the small ones. */
   coverGoldLine: 'rgba(214, 158, 46, 0.7)',
   coverGoldLineSoft: 'rgba(214, 158, 46, 0.45)',
+  /** Gold hairline on the Home continue-reading cover (60%, per HomeV3). */
+  coverGoldLineMid: 'rgba(214, 158, 46, 0.6)',
   /** Dim scrim behind bottom sheets. */
   scrim: 'rgba(42, 31, 26, 0.45)',
 

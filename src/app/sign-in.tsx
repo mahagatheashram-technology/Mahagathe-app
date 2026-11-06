@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useProfile, useSession } from '@/data';
 import { OtpStep } from '@/features/onboarding/OtpStep';
@@ -13,6 +13,8 @@ export default function SignInScreen() {
   const [phone, setPhone] = useState('');
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [busy, setBusy] = useState(false);
+  // Synchronous guard: Return-key submits ignore the busy prop, and state updates are async.
+  const inFlight = useRef(false);
   const [error, setError] = useState<string | null>(null);
 
   // Once verified, go to Setup if the profile is incomplete (P-03), otherwise straight in.
@@ -38,6 +40,8 @@ export default function SignInScreen() {
           await sendOtp(`+91${phone}`);
         }}
         onVerify={async (code) => {
+          if (inFlight.current) return;
+          inFlight.current = true;
           setBusy(true);
           setError(null);
           try {
@@ -46,6 +50,7 @@ export default function SignInScreen() {
           } catch {
             setError('We could not check the code. Please try again.');
           } finally {
+            inFlight.current = false;
             setBusy(false);
           }
         }}
@@ -60,6 +65,8 @@ export default function SignInScreen() {
       error={error}
       onBack={back}
       onSend={async (p) => {
+        if (inFlight.current) return;
+        inFlight.current = true;
         setBusy(true);
         setError(null);
         try {
@@ -69,6 +76,7 @@ export default function SignInScreen() {
         } catch {
           setError('We could not send the code. Please try again.');
         } finally {
+          inFlight.current = false;
           setBusy(false);
         }
       }}

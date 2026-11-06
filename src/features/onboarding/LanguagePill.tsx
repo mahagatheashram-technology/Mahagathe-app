@@ -17,7 +17,7 @@ export function LanguagePill() {
         height: 40,
         paddingHorizontal: 16,
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.45)',
+        borderColor: colors.onFeaturePillBorder,
         borderRadius: 999,
         alignItems: 'center',
         justifyContent: 'center',

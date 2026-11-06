@@ -125,7 +125,7 @@ export function ReportSheet({ contentId, visible, onClose }: { contentId: string
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(42,31,26,0.45)' },
+  root: { flex: 1, justifyContent: 'flex-end', backgroundColor: colors.scrim },
   sheet: {
     backgroundColor: colors.cream,
     borderTopLeftRadius: radii.sheet,

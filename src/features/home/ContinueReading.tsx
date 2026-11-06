@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     bottom: 4,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: 'rgba(214,158,46,0.6)',
+    borderColor: colors.coverGoldLineMid,
   },
   coverDeva: { fontFamily: fonts.devaSemibold, fontSize: 26, lineHeight: 31, color: colors.coverText },
   coverParva: { fontFamily: fonts.sansSemibold, fontSize: 9, lineHeight: 14, letterSpacing: 1.44, color: colors.gold },
