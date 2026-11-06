@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
-import { Pressable, ScrollView, StyleSheet, View, type ViewStyle } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View, type ScrollViewProps, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText } from './AppText';
@@ -18,6 +18,7 @@ export function Screen({
   contentStyle,
   scroll = true,
   footer,
+  scrollProps,
 }: {
   children: ReactNode;
   edgeToEdgeTop?: boolean;
@@ -26,11 +27,14 @@ export function Screen({
   scroll?: boolean;
   /** Pinned bottom area (e.g. primary CTA on detail screens). */
   footer?: ReactNode;
+  /** Extra ScrollView props (e.g. keyboardShouldPersistTaps). */
+  scrollProps?: ScrollViewProps;
 }) {
   const insets = useSafeAreaInsets();
   const top = edgeToEdgeTop ? 0 : insets.top;
   const body = scroll ? (
     <ScrollView
+      {...scrollProps}
       style={{ flex: 1 }}
       contentContainerStyle={[{ paddingTop: top, flexGrow: 1 }, contentStyle]}
       showsVerticalScrollIndicator={false}>

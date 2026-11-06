@@ -31,6 +31,18 @@ export const colors = {
   maroon: '#4C1515',
   gold: '#D69E2E',
   coverText: '#FFF0E3',
+  /** Sub-label on season covers ("Ādi", "Coming"). */
+  coverSub: '#F1DDC8',
+  /** Upcoming-season cover backgrounds (Sabhā, Āraṇyaka, Virāṭa, Udyoga). */
+  coverPlum: '#44233B',
+  coverMoss: '#2F3A26',
+  coverBrown: '#5B3A1E',
+  coverRose: '#7E4555',
+  /** Gold hairline on covers: 70% on the lead cover, 45% on the small ones. */
+  coverGoldLine: 'rgba(214, 158, 46, 0.7)',
+  coverGoldLineSoft: 'rgba(214, 158, 46, 0.45)',
+  /** Dim scrim behind bottom sheets. */
+  scrim: 'rgba(42, 31, 26, 0.45)',
 
   /** Practice player (dark, calm). */
   playerTop: '#4A0B0B',

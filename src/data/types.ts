@@ -152,3 +152,9 @@ export type DonationPurpose = { id: Id; name: string; tagline: string };
 export type DonationResult = { id: Id; status: 'success' | 'failed' | 'pending'; amount: number; purposeName: string; receiptRef?: string };
 
 export type SmallStep = { text: string };
+
+/** W-14: result of searching published Wisdom content. */
+export type WisdomSearchResult = {
+  vakyams: Vakyam[];
+  episodes: (EpisodeSummary & { seasonTitle: string; boriRange: string })[];
+};

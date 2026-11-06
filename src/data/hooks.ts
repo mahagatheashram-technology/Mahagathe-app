@@ -32,8 +32,10 @@ import type {
   SessionStatus,
   Vakyam,
   VakyamTheme,
+  WisdomSearchResult,
 } from './types';
-import { isMinor } from './types';
+import { isMinor, THEME_LABELS } from './types';
+import { foldForSearch, matchesFolded } from './search';
 
 // ───────────────────────────── Session / auth (Clerk later) ─────────────────────────────
 
@@ -176,6 +178,39 @@ export function useReportContent() {
   }, []);
 }
 
+/**
+ * W-14: search published Vākyams and episodes. Accepts spelling/transliteration variants.
+ * Mock implementation filters fixtures on the client; the backend may use Convex search.
+ * Returns empty lists for an empty query.
+ */
+export function useWisdomSearch(query: string): WisdomSearchResult | undefined {
+  return useMemo(() => {
+    const q = query.trim();
+    if (!q) return { vakyams: [], episodes: [] };
+    return {
+      vakyams: fx.vakyams.filter((v) =>
+        matchesFolded(foldForSearch(`${v.text} ${v.meaning} ${THEME_LABELS[v.theme]} vakyam guru`), q),
+      ),
+      episodes: fx.episodes
+        .filter((e) =>
+          matchesFolded(
+            foldForSearch(`${e.title} ${e.seasonTitle} ${e.boriRange} ${e.paragraphs.join(' ')} episode mahabharata`),
+            q,
+          ),
+        )
+        .map(({ id, seasonId, number, title, readMinutes, seasonTitle, boriRange }) => ({
+          id,
+          seasonId,
+          number,
+          title,
+          readMinutes,
+          seasonTitle,
+          boriRange,
+        })),
+    };
+  }, [query]);
+}
+
 export function useSmallStep() {
   return fx.smallSteps[0];
 }
@@ -294,6 +329,11 @@ export function useContinueReading(): ReadingProgress | null | undefined {
       minutesLeft: Math.max(1, Math.round(e.readMinutes * (1 - progress))),
     };
   }, [lastId, positions]);
+}
+
+/** W-08: furthest saved read position for one episode, 0..1 (0 = never opened). */
+export function useReadingPosition(episodeId: string | undefined): number {
+  return useMockState((s) => (episodeId ? (s.readingPositions[episodeId] ?? 0) : 0));
 }
 
 /** W-08 */

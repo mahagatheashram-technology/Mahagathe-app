@@ -5,3 +5,4 @@ export * from './Placeholder';
 export * from './Screen';
 export * from './surfaces';
 export * from './TabBar';
+export * from './SeasonCover';
