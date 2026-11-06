@@ -35,12 +35,12 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
   const sizeKey = useTextSize();
   const size = TEXT_SIZES[sizeKey];
 
-  const [progress, setProgress] = useState(saved);
+  const [progress, setProgress] = useState(saved ?? 0);
   const [sheet, setSheet] = useState<null | 'size' | 'questions' | 'episodes'>(null);
 
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
-  const progressRef = useRef(saved);
-  const restoreTo = useRef(saved); // position to restore once, on first layout
+  const progressRef = useRef(saved ?? 0);
+  const restoreTo = useRef<number | undefined>(saved); // position to restore once, after layout AND data are ready
   const restored = useRef(false);
   const dims = useRef({ content: 0, viewport: 0 });
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -62,9 +62,9 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
 
   const tryRestore = useCallback(() => {
     const { content, viewport } = dims.current;
-    if (restored.current || content <= 0 || viewport <= 0) return;
-    restored.current = true;
     const p = restoreTo.current;
+    if (restored.current || p === undefined || content <= 0 || viewport <= 0) return;
+    restored.current = true;
     const range = content - viewport;
     if (p > 0.01 && p < FINISHED && range > 0) {
       scrollRef.current?.scrollTo({ y: p * range, animated: false });
@@ -73,6 +73,15 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
       setProgress(0);
     }
   }, []);
+
+  // The saved position may arrive after the first render (live backend): restore once it does.
+  useEffect(() => {
+    if (saved === undefined || restored.current) return;
+    restoreTo.current = saved;
+    progressRef.current = Math.max(progressRef.current, saved);
+    setProgress(saved);
+    tryRestore();
+  }, [saved, tryRestore]);
 
   const onScroll = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {

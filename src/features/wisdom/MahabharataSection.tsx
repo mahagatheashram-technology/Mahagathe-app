@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { AppText, Icon, SandBand, SeasonCover } from '@/components/ui';
-import { useContinueReading, useSeasons } from '@/data';
+import { useContinueReading, useSeasonEpisodes, useSeasons } from '@/data';
 import { colors, fonts } from '@/theme/tokens';
 
 /** Mahabharata block on the sand band: lead season card (resume or start) + "Next seasons" row. */
@@ -12,10 +12,12 @@ export function MahabharataSection() {
   const resume = useContinueReading();
   const lead = seasons?.find((s) => s.status === 'published');
   const coming = seasons?.filter((s) => s.status === 'coming') ?? [];
+  const leadEpisodes = useSeasonEpisodes(lead?.id ?? '');
+  const firstEpisodeId = leadEpisodes?.slice().sort((a, b) => a.number - b.number)[0]?.id ?? null;
 
   const resumeHere = resume && lead && resume.episode.seasonId === lead.id ? resume : null;
   const ctaLabel = resumeHere ? `Continue E${resumeHere.episode.number}` : 'Start E1';
-  const target = resumeHere ? resumeHere.episode.id : lead ? `${lead.id}-e1` : null;
+  const target = resumeHere ? resumeHere.episode.id : firstEpisodeId;
 
   return (
     <SandBand style={styles.band} accessibilityLabel="Mahabharata">

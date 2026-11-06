@@ -331,8 +331,11 @@ export function useContinueReading(): ReadingProgress | null | undefined {
   }, [lastId, positions]);
 }
 
-/** W-08: furthest saved read position for one episode, 0..1 (0 = never opened). */
-export function useReadingPosition(episodeId: string | undefined): number {
+/**
+ * W-08: furthest saved read position for one episode, 0..1 (0 = never opened).
+ * `undefined` while loading (live backend) — callers must wait for a number before restoring.
+ */
+export function useReadingPosition(episodeId: string | undefined): number | undefined {
   return useMockState((s) => (episodeId ? (s.readingPositions[episodeId] ?? 0) : 0));
 }
 
