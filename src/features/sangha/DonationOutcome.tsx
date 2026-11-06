@@ -31,7 +31,7 @@ export function DonationOutcome({
     failed: {
       icon: 'info' as IconName,
       title: 'Payment did not go through',
-      body: 'We could not complete this payment and nothing has been recorded. If your bank shows a deduction, please contact us before trying again.',
+      body: 'We could not confirm this payment. If your bank shows a deduction, please contact us before trying again.',
     },
   }[result.status];
 

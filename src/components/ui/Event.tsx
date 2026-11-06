@@ -61,6 +61,8 @@ function RegisterControl({ event, onToggle, busy, wide }: ToggleProps & { wide?:
     accessibilityRole: 'button' as const,
     disabled: busy || full,
     onPress: onToggle,
+    // Row button is drawn 40 high (mock); extend the touch area to 44+.
+    hitSlop: wide ? undefined : { top: 4, bottom: 4 },
     style: ({ pressed }: { pressed: boolean }) => [
       styles.btnBase,
       wide ? styles.btnWide : styles.btnRow,

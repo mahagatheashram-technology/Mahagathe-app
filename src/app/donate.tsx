@@ -1,5 +1,5 @@
 import { Redirect, useLocalSearchParams } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 
 import { AppText, Button, DetailHeader, Icon, Screen } from '@/components/ui';
@@ -20,11 +20,13 @@ export default function DonateScreen() {
   const createDonation = useCreateDonation();
 
   const [purposeId, setPurposeId] = useState(() =>
-    purposes.some((p) => p.id === purpose) ? (purpose as string) : (purposes.find((p) => p.id === 'bhandara') ?? purposes[0]).id,
+    purposes.some((p) => p.id === purpose) ? (purpose as string) : (purposes.find((p) => p.id === 'most-needed') ?? purposes[0]).id,
   );
   const [preset, setPreset] = useState<number | null>(presets.includes(DEFAULT_PRESET) ? DEFAULT_PRESET : presets[0]);
   const [custom, setCustom] = useState('');
   const [paying, setPaying] = useState(false);
+  // Synchronous guard: state updates are async, so two fast taps could both pass a state check.
+  const inFlight = useRef(false);
   const [outcome, setOutcome] = useState<Pick<DonationResult, 'status' | 'amount' | 'purposeName' | 'receiptRef'> | null>(null);
 
   const amount = custom !== '' ? Number(custom) : (preset ?? 0);
@@ -35,7 +37,8 @@ export default function DonateScreen() {
   if (status === 'guest' || status === 'signedOut') return <Redirect href="/welcome" />;
 
   const pay = async () => {
-    if (paying || amount < 1) return;
+    if (inFlight.current || amount < 1) return;
+    inFlight.current = true;
     setPaying(true);
     try {
       const r = await createDonation({ amount, purposeId });
@@ -43,6 +46,7 @@ export default function DonateScreen() {
     } catch {
       setOutcome({ status: 'failed', amount, purposeName });
     } finally {
+      inFlight.current = false;
       setPaying(false);
     }
   };

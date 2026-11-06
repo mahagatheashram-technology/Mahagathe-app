@@ -54,6 +54,7 @@ export function SevaSection() {
               accessibilityRole="link"
               accessibilityLabel={p.name}
               onPress={() => router.push({ pathname: '/pathway/[id]', params: { id: p.id } })}
+              hitSlop={{ top: 2, bottom: 2 }}
               style={{
                 height: 42, // mock chip is content-box: 40 + 1px border each side
                 paddingHorizontal: 14,

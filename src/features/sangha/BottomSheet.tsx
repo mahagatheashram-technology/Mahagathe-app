@@ -25,7 +25,7 @@ export function BottomSheet({
           accessibilityRole="button"
           accessibilityLabel="Close"
           onPress={onClose}
-          style={{ flex: 1, backgroundColor: 'rgba(42,31,26,0.45)' }}
+          style={{ flex: 1, backgroundColor: colors.scrim }}
         />
         <View
           accessibilityViewIsModal

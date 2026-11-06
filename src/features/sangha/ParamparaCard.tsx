@@ -35,7 +35,7 @@ export function ParamparaCard() {
             justifyContent: 'space-between',
             paddingTop: 14,
             borderTopWidth: 1,
-            borderTopColor: 'rgba(255,255,255,0.25)',
+            borderTopColor: colors.onFeatureDivider,
           }}>
           <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 13, lineHeight: 19.5, color: colors.white }}>See the lineage</AppText>
           <Icon name="chevronRight" size={16} color={colors.white} strokeWidth={2.2} />

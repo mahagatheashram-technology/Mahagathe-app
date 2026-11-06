@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
 
 import { AppText, Button, Icon } from '@/components/ui';
@@ -28,13 +28,15 @@ export function VolunteerSheet({
   const [phone, setPhone] = useState(profile?.phoneMasked ?? '');
   const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
+  const inFlight = useRef(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState(false);
 
   const canSubmit = name.trim().length > 0 && phone.trim().length > 0 && consent && !busy;
 
   const submit = async () => {
-    if (!canSubmit) return;
+    if (!canSubmit || inFlight.current) return;
+    inFlight.current = true;
     setBusy(true);
     setError(false);
     try {
@@ -43,6 +45,7 @@ export function VolunteerSheet({
     } catch {
       setError(true);
     } finally {
+      inFlight.current = false;
       setBusy(false);
     }
   };
@@ -56,7 +59,7 @@ export function VolunteerSheet({
               <Icon name="check" size={28} color={colors.actionRed} strokeWidth={2.2} />
             </View>
             <AppText accessibilityLiveRegion="polite" style={{ textAlign: 'center', fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 22.4 }}>
-              We have shared your name and number with the {vibhagaName} team. Someone will get in touch with you.
+              We have shared your name and number with the {vibhagaName} team. The team may contact you about seva opportunities.
             </AppText>
           </View>
           <Button label="Done" onPress={onClose} />
