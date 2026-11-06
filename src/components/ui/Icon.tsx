@@ -14,6 +14,7 @@ export type IconName =
   | 'profile'
   | 'bell'
   | 'play'
+  | 'pause'
   | 'chevronRight'
   | 'chevronDown'
   | 'back'
@@ -112,6 +113,8 @@ function render(name: IconName, p: Record<string, unknown>, color: string) {
       );
     case 'play':
       return <Path d="M8 5v14l11-7z" fill={color} />;
+    case 'pause':
+      return <Path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill={color} />;
     case 'chevronRight':
       return <Path {...p} d="m9 6 6 6-6 6" />;
     case 'chevronDown':

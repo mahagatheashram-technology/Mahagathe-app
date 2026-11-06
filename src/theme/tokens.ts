@@ -51,6 +51,18 @@ export const colors = {
   playerBody: '#FFE3D6',
 
   shadow: '#4C1515',
+
+  /** Switch track when off (Profile notifications). */
+  switchOff: '#D6C3AE',
+  /** Translucent white tile on the red feature block (Mandala stats). */
+  onFeatureTile: 'rgba(255, 255, 255, 0.12)',
+  /** Player surfaces: info card, scrubber track, the two rings around the drop. */
+  playerCard: 'rgba(255, 255, 255, 0.07)',
+  playerTrack: 'rgba(255, 255, 255, 0.18)',
+  playerRingOuter: 'rgba(255, 201, 176, 0.35)',
+  playerRingInner: 'rgba(255, 201, 176, 0.55)',
+  /** Dimmer behind bottom sheets. */
+  scrim: 'rgba(42, 31, 26, 0.45)',
 } as const;
 
 export const gradients = {
