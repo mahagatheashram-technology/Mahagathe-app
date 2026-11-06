@@ -1,5 +1,8 @@
-import { Placeholder } from '@/components/ui';
+import { useLocalSearchParams } from 'expo-router';
 
-export default function Screen() {
-  return <Placeholder title="Mahabharata episode" mock="EpisodeV3.dc.html" />;
+import { EpisodeReader } from '@/features/wisdom/EpisodeReader';
+
+export default function EpisodeScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  return <EpisodeReader key={id} episodeId={id ?? ''} />;
 }
