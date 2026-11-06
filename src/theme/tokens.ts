@@ -61,8 +61,6 @@ export const colors = {
   playerTrack: 'rgba(255, 255, 255, 0.18)',
   playerRingOuter: 'rgba(255, 201, 176, 0.35)',
   playerRingInner: 'rgba(255, 201, 176, 0.55)',
-  /** Dimmer behind bottom sheets. */
-  scrim: 'rgba(42, 31, 26, 0.45)',
 } as const;
 
 export const gradients = {
