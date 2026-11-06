@@ -1,5 +1,3 @@
-import { Placeholder } from '@/components/ui';
+import { SadhanaScreen } from '@/features/sadhana/SadhanaScreen';
 
-export default function Screen() {
-  return <Placeholder title="Sādhanā" mock="SadhanaV3.dc.html" />;
-}
+export default SadhanaScreen;

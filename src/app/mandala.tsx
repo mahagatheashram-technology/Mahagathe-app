@@ -1,5 +1,3 @@
-import { Placeholder } from '@/components/ui';
+import MandalaScreen from '@/features/sadhana/MandalaScreen';
 
-export default function Screen() {
-  return <Placeholder title="40-Day Mandala" mock="MandalaV3.dc.html" />;
-}
+export default MandalaScreen;

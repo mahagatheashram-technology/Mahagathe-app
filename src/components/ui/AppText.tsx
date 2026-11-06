@@ -1,4 +1,4 @@
-import { StyleSheet, Text, type TextProps, type TextStyle } from 'react-native';
+import { StyleSheet, Text, type StyleProp, type TextProps, type TextStyle } from 'react-native';
 
 import { colors, fonts } from '@/theme/tokens';
 
@@ -48,14 +48,14 @@ export const textVariants = StyleSheet.create({
 
 export type TextVariant = keyof typeof textVariants;
 
-type Props = TextProps & { variant?: TextVariant; color?: string; style?: TextStyle | TextStyle[] };
+type Props = TextProps & { variant?: TextVariant; color?: string; style?: StyleProp<TextStyle> };
 
 export function AppText({ variant = 'body', color, style, ...rest }: Props) {
   return (
     <Text
       maxFontSizeMultiplier={1.6}
       {...rest}
-      style={[textVariants[variant], color ? { color } : null, style as TextStyle]}
+      style={[textVariants[variant], color ? { color } : null, style]}
     />
   );
 }

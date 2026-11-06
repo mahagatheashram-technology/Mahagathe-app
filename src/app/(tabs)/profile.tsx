@@ -1,5 +1,3 @@
-import { Placeholder } from '@/components/ui';
+import ProfileScreen from '@/features/profile/ProfileScreen';
 
-export default function Screen() {
-  return <Placeholder title="Profile" mock="ProfileV3.dc.html" />;
-}
+export default ProfileScreen;
