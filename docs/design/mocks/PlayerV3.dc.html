@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Practice player v3</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&amp;family=Poppins:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: linear-gradient(180deg, #4A0B0B 0%, #220606 100%); color: #FFFFFF; font-family: Poppins, sans-serif; display: flex; flex-direction: column; padding: 52px 24px 40px; gap: 24px;">
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <a href="SadhanaV3.dc.html" aria-label="Close player" style="width: 44px; height: 44px; margin-left: -10px; display: flex; align-items: center; justify-content: center; color: #FFFFFF;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </a>
+    <span style="font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; color: #FFC9B0;">Mandala · Day 12</span>
+    <div style="width: 34px;"></div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 18px; text-align: center; padding-top: 4px;">
+    <div style="width: 112px; height: 112px; border-radius: 999px; border: 1px solid rgba(255, 201, 176, 0.35); display: flex; align-items: center; justify-content: center;">
+      <div style="width: 84px; height: 84px; border-radius: 999px; border: 1px solid rgba(255, 201, 176, 0.55); display: flex; align-items: center; justify-content: center;">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#FFC9B0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c2.5 3 4.5 5.3 4.5 8.5a4.5 4.5 0 0 1-9 0C7.5 8.3 9.5 6 12 3z"/></svg>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <h1 style="margin: 0; font-family: Lora, serif; font-weight: 600; font-size: 30px;">Introductory Samatha</h1>
+      <p style="margin: 0; font-size: 14px; font-weight: 500; color: #FFC9B0;">Guided audio · 7 min 12 s</p>
+    </div>
+  </div>
+
+  <section style="display: flex; flex-direction: column; gap: 14px; padding: 18px 20px; border-radius: 20px; background: rgba(255, 255, 255, 0.07);" aria-label="Before you begin">
+    <h2 style="margin: 0; font-size: 14px; font-weight: 600;">Before you begin</h2>
+    <div style="display: flex; gap: 12px; font-size: 14px; line-height: 1.5; color: #FFE3D6;"><span style="font-family: Lora, serif; font-weight: 600; color: #FFC9B0; width: 14px;">1</span>Sit upright, on a chair or on the floor.</div>
+    <div style="display: flex; gap: 12px; font-size: 14px; line-height: 1.5; color: #FFE3D6;"><span style="font-family: Lora, serif; font-weight: 600; color: #FFC9B0; width: 14px;">2</span>Silence your phone. The screen can stay off.</div>
+    <div style="display: flex; gap: 12px; font-size: 14px; line-height: 1.5; color: #FFE3D6;"><span style="font-family: Lora, serif; font-weight: 600; color: #FFC9B0; width: 14px;">3</span>Rest your eyes and follow the voice.</div>
+  </section>
+
+  <div style="flex-grow: 1;"></div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <div style="height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.18); position: relative;" role="slider" aria-label="Position" aria-valuemin="0" aria-valuemax="432" aria-valuenow="0" tabindex="0">
+      <div style="position: absolute; left: -6px; top: -6px; width: 16px; height: 16px; border-radius: 999px; background: #FFFFFF;"></div>
+    </div>
+    <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 500; color: #FFC9B0;"><span>0:00</span><span>7:12</span></div>
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: center; gap: 36px;">
+    <button type="button" aria-label="Back 15 seconds" style="width: 52px; height: 52px; border-radius: 999px; border: 0; background: transparent; color: #FFFFFF; display: flex; align-items: center; justify-content: center;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v4h4"/><text x="12" y="15" font-size="7" text-anchor="middle" fill="currentColor" stroke="none" font-family="Poppins">15</text></svg>
+    </button>
+    <button type="button" aria-label="Play" style="width: 84px; height: 84px; border-radius: 999px; border: 0; background: #FFFFFF; color: #C20000; display: flex; align-items: center; justify-content: center;">
+      <svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+    </button>
+    <button type="button" aria-label="Forward 15 seconds" style="width: 52px; height: 52px; border-radius: 999px; border: 0; background: transparent; color: #FFFFFF; display: flex; align-items: center; justify-content: center;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4v4h-4"/><text x="12" y="15" font-size="7" text-anchor="middle" fill="currentColor" stroke="none" font-family="Poppins">15</text></svg>
+    </button>
+  </div>
+  <p style="margin: 0; text-align: center; font-size: 13px; font-weight: 500; color: #FFC9B0;">Tap play when you are ready. Audio never starts on its own.</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

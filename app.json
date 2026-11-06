@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Mahagathe",
+    "slug": "mahagathe",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "mahagathe",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "bundleIdentifier": "org.mahagathe.app",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "org.mahagathe.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFBF5",
+        "foregroundImage": "./assets/brand/mahagathe-emblem.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#CC0000",
+          "image": "./assets/brand/mahagathe-emblem.png",
+          "imageWidth": 120
+        }
+      ],
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

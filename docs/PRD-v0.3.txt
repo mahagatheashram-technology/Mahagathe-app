@@ -1,0 +1,978 @@
+Mahagathe App PRD v0.3
+
+
+
+
+  Mahagathe App PRD v0.3
+    Nov 6, 2026      ·   ​@Mahagathe
+
+
+
+
+  Part A — Summary
+  The Mahagathe app gives one place for the teachings, practice and activities of the
+  Mahagathe Foundation Public Charitable Trust. The app is small at launch. It grows one
+  vibhaga at a time.
+
+  Why the app is different. Ven. Mahāmuni Sritha Mahāgatha is the Seventieth
+  Mahādhibhū of the Rudra Sampradāya of the Mahāpāshupata mata. The app shows this
+  living lineage first. Each teaching in the app has a verified source.
+
+  Who uses the app:
+
+        Sādhakas who practise Samatha and the 40-Day Mandala.
+        Students and young people in Yuva Chetana and Vidya classes.
+        Parents of Bala Chetana children.
+        Devotees in India and abroad who want daily guidance.
+        Volunteers and donors.
+
+  The daily reason to open the app: Samatha practice and the 40-Day Mandala. The daily
+  Guru Vākyam supports this habit.
+
+  What V1 contains:
+
+     1. A daily Guru Vākyam, as text.
+     2. One free introductory Samatha practice for all users.
+     3. Samatha and Dhyānbāri resources for enrolled sādhakas.
+     4. The 40-Day Mandala with a group count.
+     5. The Parampara page.
+     6. Mahabharata episodes as text, written by Mahagathe from the BORI critical edition.
+     7. An events calendar with registration.
+     8. A hub page for each vibhaga.
+     9. Donations by UPI.
+
+  What V1 does not contain: video in the app, a pañcāṅ ga, audio Guru Vākyams, rankings, a
+  parent view and games. Videos stay on YouTube. The app links to them.
+
+
+
+
+                                                                                       Page 1 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+  Build: React Native, with one codebase for Android and iOS.
+
+
+  Decisions
+  The table shows 12 decided, 8 proposed and 10 open decisions. "Proposed" means a
+  recommendation that needs sign-off. Change the status in the table when the team
+  decides.
+
+
+    ID          Decision                                            Status       v0.2 ref
+
+    D-01        Build with React Native: one codebase for Android   ​ Decided    DEC-01
+                and iOS
+
+    D-02        Guru Vākyams are text only in V1                    ​ Decided    MAH-14
+
+    D-03        The app does not show a pañcāṅ ga                   ​ Decided    —
+
+    D-          V1 has no video in the app. Videos stay on          ​ Decided    MAH-63
+    04          YouTube; the app links to them
+
+    D-05        Mahabharata uses the BORI critical edition only     ​ Decided    MAH-21
+
+    D-06        Ramayana uses the Vālmīki Rāmāyaṇa critical         ​ Decided    MAH-23
+                edition (Oriental Institute, Baroda)
+
+    D-07        Mahagathe writes its own Itihasa text with BORI     ​ Decided    MAH-21, 22
+                citations. The app does not copy the Debroy
+                translation
+
+    D-08        Samatha and the 40-Day Mandala are the main         ​ Decided    MAH-26–38
+                daily habit
+
+    D-09        Festivals are P1, not P0                            ​ Decided    MAH-13
+
+    D-10        Parampara is P0 and links from Home                 ​ Decided    MAH-44
+
+    D-11        A group count replaces the leaderboard              ​ Decided    DEC-12, MAH-
+                                                                                 39
+
+    D-12        The Bala Chetana parent view and the Yuva           ​ Decided    MAH-46
+                Chetana cohort space move to V2
+
+    D-13        Spelling: Guru Vākyam, Bala Chetana, Yuva           ​ Proposed   MAH-03
+                Chetana, Dhyānbāri, Dhyanodaya
+
+
+
+
+                                                                                              Page 2 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+    ID          Decision                                            Status       v0.2 ref
+
+    D-14        Five tabs: Home, Wisdom, Sādhanā, Sangha,           ​ Proposed   MAH-04
+                Profile
+
+    D-15        Sign-in by phone OTP. Guests can read public        ​ Proposed   DEC-02
+                Wisdom without an account
+
+    D-16        Collect an age band, not a date of birth. Get       ​ Proposed   DEC-03
+                guardian consent for users under 18 (DPDP Act
+                2023)
+
+    D-17        One hub template for all vibhagas. Each vibhaga     ​ Proposed   new
+                head edits their hub
+
+    D-18        Donations by UPI first. Accept foreign donations    ​ Proposed   DEC-17
+                only with FCRA registration
+
+    D-19        Define what a "Vedic lesson" is before writing a    ​ Proposed   MAH-17
+                source rule for it
+
+    D-20        Mahabharata seasons follow the 18 parvas.           ​ Proposed   DEC-15, 16
+                Episodes release over time, not all at launch
+
+    D-21        Content authority and editorial board               ​ Open       DEC-05
+
+    D-22        Launch languages (proposal: English, Telugu,        ​ Open       DEC-04
+                Hindi)
+
+    D-23        Mandala rules: what counts as a day, what           ​ Open       DEC-09, 10, 11
+                happens on a missed day, which time zone. The
+                teachers decide
+
+    D-24        Samatha and Dhyānbāri access level, and who         ​ Open       DEC-07, 08
+                grants enrollment
+
+    D-25        80G and FCRA status of the trust                    ​ Open       DEC-17
+
+    D-26        Beta at Abhyudaya, 20 Dec 2026: go or no-go         ​ Open       new
+
+    D-27        Saptagita: a separate app or a module in this app   ​ Open       new
+
+    D-28        Success targets for V1                              ​ Open       §1.2
+
+    D-29        Notification frequency limits and quiet hours       ​ Open       DEC-13
+
+
+
+
+                                                                                              Page 3 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+    ID          Decision                                            Status     v0.2 ref
+
+    D-30        V2 text: Shiva Purāṇa or the Pāśupata texts first   ​ Open     MAH-65
+
+
+
+
+  App map and daily flow
+
+
+
+
+  app map · 5 tabs and the daily loop
+
+  The Sādhanā tab holds the daily habit. Home points to it, Wisdom gives the reading, and
+  Sangha connects users to events and the vibhagas. The five tabs are proposed in D-14.
+
+
+
+  Release plan
+  The app releases in four steps. Each step adds a small set of features. Do not start a step
+  before the previous step is stable.
+
+     1. Beta at Abhyudaya, 20 Dec 2026. Make this release only if a developer is already
+        engaged (D-26). It contains the daily Guru Vākyam (text), one free Samatha practice,
+         the events calendar with registration, and UPI donations. Six weeks is a short time. A
+         web app can be the safe option for this date.
+     2. V1, about three months after the beta. It adds the Parampara page, Samatha and
+         Dhyānbāri for enrolled sādhakas, and the 40-Day Mandala with a group count. It also
+         adds Mahabharata season 1 (Ādi Parva), the vibhaga hubs, the launch languages, and
+         the Bala Chetana and Yuva Chetana program pages.
+
+
+
+
+                                                                                           Page 4 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+     3. V1.1. It adds Myths and Facts after the review board starts work. It also adds Dharma
+        Lessons linked to Vidya courses, the Ramayana, a seva-hour log and Mahagathe
+        Things checkout.
+     4. V2. It adds the Bala Chetana parent view and the Yuva Chetana cohort space. It also
+        adds video (only if necessary), bedtime stories, games for children, and the Shiva
+        Purāṇa or the Pāśupata texts. The team decides about Saptagita before V2 (D-27).
+
+
+  Next calls
+  Make these decisions in this order. Each decision unblocks the next.
+
+        Name the content authority and the editorial board (D-21). No content can go live
+        without them.
+        Approve the names, titles and spelling (D-13).
+        Choose the launch languages (D-22).
+        Ask the teachers for the Mandala rules (D-23) and the access rules (D-24).
+        Confirm the 80G and FCRA status (D-25).
+        Make the go or no-go call for the Abhyudaya beta (D-26). Make this call soon, because
+        only six weeks remain.
+        Set the success targets (D-28).
+        Name one owner for each vibhaga hub.
+        Order content for the first 90 days: about 90 Guru Vākyams, 1 free practice and 10
+        episodes.
+
+
+  Part B — Users and success targets
+  Part B gives the detailed requirements for the design, build and test teams. Part A has
+  priority if Part B disagrees with it.
+
+
+  Users
+
+    User                 Main job in the app      Main features                 Release
+
+    Enrolled             Practise every day and   Samatha, Dhyānbāri,           Beta, V1
+    sādhaka              complete a Mandala       Mandala, reminders
+
+
+
+
+                                                                                           Page 5 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+    User                 Main job in the app         Main features                     Release
+
+    New seeker           Try one practice and        Free Samatha practice, Guru       Beta
+                         read daily wisdom           Vākyam, Parampara
+
+    Yuva Chetana         Continue learning after     Mahabharata episodes,             V1
+    student              class                       Q&A, events
+
+    Bala Chetana         Find classes and register   Program page, events,             V1 (parent
+    parent               a child                     consent                           view: V2)
+
+    Devotee              Stay connected and give     Guru Vākyam, events,              Beta, V1
+    abroad (NRI)         dāna                        donations
+
+    Volunteer            Find seva and sign up       Vibhaga hubs, volunteer           V1
+                                                     form
+
+    Vibhaga head         Publish events and          CMS, review workflow              Beta, V1
+    or editor            content
+
+
+
+  Success targets (proposed, D-28)
+  The team sets the final numbers. The numbers below are examples to start the
+  discussion.
+
+
+    Measure              Definition                                  Example target, first 90 days of
+                                                                     V1
+
+    Installs             App installs on Android and iOS             5,000
+
+    30-day               Users who open the app on day 30            25%
+    retention
+
+    Practice             Users who complete one Samatha              40% of active users
+                         session
+
+    Mandala starts       40-Day Mandalas started                     500
+
+    Registrations        Event registrations through the app         1,000
+
+    Trust                Published items with an approved            100%
+                         source
+
+
+
+
+                                                                                                  Page 6 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+  Content and authenticity rules
+  These rules apply to all content in the app. The CMS must enforce them before an item
+  can be published.
+
+  C-1 Approval. The content authority (D-21) approves all teachings, practice instructions
+  and lineage information. An editor cannot approve their own work.
+
+  C-2 Sources. Each item records its source, its edition and its review date.
+
+        Mahabharata: the BORI critical edition only. Do not use other recensions or folk
+        additions.
+        Ramayana: the Vālmīki Rāmāyaṇa critical edition (Oriental Institute, Baroda).
+        "Vedic" content: the Saṃhitās, Āraṇyakas or Upaniṣads only, after the team defines
+        the lesson scope (D-19).
+
+  C-3 Own words. Mahagathe writes its own Itihasa text. The steps are:
+
+     1. A writer reads the BORI adhyāyas. The writer can use the Debroy translation to
+        understand the text, but does not copy from it.
+     2. The writer writes the episode in their own words.
+     3. The writer tags each section with its range, for example Ādi 1.1–15.
+     4. A second reviewer compares the episode with the critical edition.
+
+  Get legal advice before the app quotes ślokas or uses translated text.
+
+  C-4 Teaching and paraphrase. The app shows a verbatim teaching and a paraphrase
+  differently. It shows the Mahamuni's name only when the source is verified.
+
+  C-5 Names and spelling. Use IAST in Roman script. Use the approved spellings in D-13.
+  Write the Mahamuni's name and titles in the form that the content authority approves.
+
+  C-6 Format. V1 content is text and approved practice audio only. Videos stay on YouTube.
+  Do not machine-translate scripture and show it as a verified teaching.
+
+  C-7 No claims. Do not promise health, spiritual or material results from a practice, a
+  product or a donation.
+
+  C-8 Content plan. Each content type has a named owner and a monthly quantity. For
+  launch, the team needs about 90 Guru Vākyams, 1 free practice and 10 Mahabharata
+  episodes. The about 200 posts in the Wisdom section of the website are the first source
+  for Guru Vākyams.
+
+
+
+
+                                                                                           Page 7 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+  Functional requirements
+  P0 means the release cannot ship without the requirement. P1 means the requirement is
+  planned for that release. P2 means a later release. The "v0.2" column links each row to the
+  old register.
+
+
+  Home
+
+    ID          Requirement                                         Pri.   Release   v0.2
+
+    H-01        Show the daily Guru Vākyam (text) at the top of     P0     Beta      MAH-11
+                Home
+
+    H-02        Show a one-tap shortcut to today's Samatha          P0     Beta      MAH-11
+                practice
+
+    H-03        Show the active Mandala day and progress, only if   P0     V1        MAH-11
+                a Mandala is active
+
+    H-04        Show the next three events, each with a register    P0     Beta      new
+                button
+
+    H-05        Show a greeting for the local time of day. Use a    P1     V1        MAH-10
+                general greeting if the name is not known
+
+    H-06        Show a "Small Step" for the day. Never show a       P1     V1        MAH-12
+                religious or physical step as mandatory
+
+    H-07        Show a resume card for an unfinished episode        P1     V1        MAH-11
+
+    H-08        Show a festival card on approved dates. Do not      P1     V1        MAH-13
+                show it during practice audio
+
+    H-09        Link to the Parampara page                          P0     V1        MAH-44
+
+
+
+  Wisdom
+
+    ID           Requirement                                        Pri.   Release   v0.2
+
+    W-01         List published Guru Vākyams by theme (work,        P0     Beta      MAH-14, 15
+                 family, conduct, inner life)
+
+
+
+
+                                                                                              Page 8 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+    ID           Requirement                                           Pri.   Release   v0.2
+
+    W-02         Show each Vākyam with its title, text, simple         P0     Beta      MAH-16
+                 meaning and source
+
+    W-03         Show a paraphrase label when the text is not          P0     Beta      MAH-14
+                 verbatim
+
+    W-04         Let users share a Vākyam as a branded image card      P1     V1        MAH-14
+                 (WhatsApp, Instagram)
+
+    W-05         Let users report a wrong source or a wrong text       P0     Beta      MAH-16
+
+    W-06         Show Mahabharata seasons by parva, with               P0     V1        MAH-21
+                 published episode counts
+
+    W-07         Show each episode as text, with its BORI range and    P0     V1        MAH-22
+                 a reflection section
+
+    W-08         Save the reading position and resume from it          P0     V1        MAH-22
+
+    W-09         Show Q&A for each episode. Never shame a wrong        P1     V1        MAH-25
+                 answer
+
+    W-10         Add the Ramayana with the same structure as the       P1     V1.1      MAH-23, 24
+                 Mahabharata
+
+    W-11         Add Myths and Facts. Show the evidence status         P1     V1.1      MAH-19, 20
+                 and, separately, what the tradition teaches
+
+    W-12         Add Dharma Lessons linked to Vidya courses            P1     V1.1      MAH-17, 18
+
+    W-13         Link out to the YouTube channel and the Dharma        P1     V1        new
+                 Speaks podcast
+
+    W-14         Search published Wisdom content. Accept spelling      P1     V1        MAH-52
+                 and transliteration variants
+
+
+
+  Sādhanā
+
+    ID          Requirement                                           Pri.    Release   v0.2
+
+    S-01        Give all users one free introductory Samatha          P0      Beta      new
+                practice with guided audio
+
+
+
+
+                                                                                                 Page 9 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+    ID          Requirement                                           Pri.   Release   v0.2
+
+    S-02        List the four Samatha practices: Attahasa, Nischara   P0     V1        MAH-27
+                Dhyana, Samatha Kriya, Mahagathe Mantra
+
+    S-03        Show each practice's approved description and         P0     V1        MAH-27–31
+                preparation notes before it starts
+
+    S-04        Show restricted guides, audio and files only to       P0     V1        MAH-33–35
+                enrolled users. The server checks access
+
+    S-05        Show a "how to enrol" route to users who are not      P0     V1        MAH-27, 32
+                enrolled
+
+    S-06        Show the Dhyānbāri resources for enrolled users       P0     V1        MAH-32
+
+    S-07        Play audio with play, pause, seek and resume. Do      P0     Beta      MAH-34
+                not start audio automatically
+
+    S-08        Let a user start a 40-Day Mandala after they read     P0     V1        MAH-36
+                its rules
+
+    S-09        Record one completion for each day. The server        P0     V1        MAH-37
+                sets the date
+
+    S-10        Show a 40-cell grid, the days completed and the       P0     V1        MAH-38
+                current streak
+
+    S-11        Show a group count (for example, sittings             P0     V1        MAH-39
+                completed this Mandala). Show no ranking
+
+    S-12        Apply the Mandala rules that the teachers set (D-     P0     V1        DEC-09–11
+                23)
+
+    S-13        Send practice reminders at the time the user          P0     V1        MAH-41
+                selects
+
+
+
+  Sangha
+
+    ID           Requirement                                          Pri.   Release   v0.2
+
+    G-01         Show the Parampara page: the Mahamuni, the           P0     V1        MAH-44
+                 lineage and the dīkshā milestones
+
+
+
+
+                                                                                                Page 10 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+    ID           Requirement                                            Pri.   Release   v0.2
+
+    G-02         Show About Mahagathe and official contact              P1     Beta      MAH-43
+                 details, including WhatsApp
+
+    G-03         Show an events calendar. Each event has a date,        P0     Beta      MAH-45
+                 place or link, eligibility and a register button
+
+    G-04         Show a hub for each vibhaga with the same              P0     V1        new
+                 template: about, head, events, content, volunteer,
+                 donate
+
+    G-05         Show pathway pages for Bala Chetana, Yuva              P0     V1        MAH-46
+                 Chetana and Dhyanodaya
+
+    G-06         Let users apply to volunteer for a vibhaga. Ask for    P1     V1        MAH-47
+                 consent first
+
+    G-07         Take donations by UPI. Show the amount and             P0     Beta      MAH-48
+                 purpose before payment. Show the result after
+                 payment
+
+    G-08         Block foreign-currency donations unless the trust      P0     Beta      MAH-48
+                 has FCRA registration
+
+    G-09         Issue 80G receipts if the trust has 80G registration   P1     V1        MAH-48
+
+    G-10         Show Dharma Bandhu membership sign-up                  P1     V1        new
+
+    G-11         Sell the Pāśupata Shaivism book, Prārthanā             P2     V1.1      MAH-49
+                 Pustakam and Rudrākṣas. Make no outcome claims
+
+    G-12         Log seva hours for volunteers                          P2     V1.1      new
+
+    G-13         Give a parent view for Bala Chetana and a cohort       P2     V2        MAH-46
+                 space for Yuva Chetana
+
+
+
+  Profile and account
+
+    ID          Requirement                                             Pri.   Release   v0.2
+
+    P-01        Let guests read public Wisdom without an account        P0     Beta      DEC-02
+
+    P-02        Let users sign in with a phone OTP                      P0     Beta      MAH-07
+
+
+
+
+                                                                                                  Page 11 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+    ID          Requirement                                             Pri.   Release   v0.2
+
+    P-03        Collect a display name and an age band. Explain         P0     Beta      MAH-06
+                why before the user submits them
+
+    P-04        Get verifiable guardian consent before the app          P0     Beta      MAH-06
+                processes data of a user under 18
+
+    P-05        Let users choose interests and a role (sādhaka,         P1     V1        MAH-09
+                student, parent, volunteer, donor)
+
+    P-06        Let users turn each notification type on or off         P0     Beta      MAH-42
+
+    P-07        Let users choose the interface language                 P1     V1        MAH-53
+
+    P-08        Let users delete their account and get a copy of        P0     V1        MAH-08
+                their data
+
+
+
+  Admin and CMS
+
+    ID          Requirement                                             Pri.   Release   v0.2
+
+    A-01        Let editors create drafts. Each item has a type, a      P0     Beta      MAH-50
+                source and a status
+
+    A-02        Use the states draft, in review, approved,              P0     Beta      MAH-50
+                published, archived
+
+    A-03        Require approval by a reviewer who is not the           P0     Beta      MAH-50
+                author
+
+    A-04        Schedule publishing and unpublishing                    P0     Beta      MAH-50
+
+    A-05        Keep versions and let an admin go back to an            P0     V1        MAH-50
+                approved version
+
+    A-06        Keep a source register: book, edition, range, licence   P0     Beta      MAH-51
+                status
+
+    A-07        Let each vibhaga head edit their own hub and            P0     V1        new
+                events, with review
+
+    A-08        Let authorised staff grant and remove enrollment,       P0     V1        MAH-33
+                with an audit log
+
+
+
+
+                                                                                                  Page 12 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+  Technical and non-functional requirements
+
+  Stack
+        App: React Native, one codebase for Android and iOS (D-01). Use over-the-air updates
+        for small fixes, so that the team does not need a store release for each one.
+        Backend: a managed backend with low running cost. It handles accounts,
+        entitlements, Mandala records and payments. The server enforces all access rules.
+        Content: a headless CMS with the workflow in A-01 to A-08.
+        Payments: an Indian payment provider that supports UPI. The app never stores card
+        data.
+        Notifications: push notifications. WhatsApp reminders for events are a possible later
+        option.
+
+
+  Targets (proposed)
+
+    Area                 Target
+
+    Launch time          Warm launch to interactive ≤ 2 s (P95) on the
+                         reference devices
+
+    API reads            P95 ≤ 1 s under the agreed load
+
+    UI response          Local actions respond within 300 ms (P95)
+
+    Availability         Backend ≥ 99.9% each month, planned
+                         maintenance not counted
+
+    Stability            ≥ 99.5% crash-free sessions
+
+    Accessibility        WCAG 2.2 AA where applicable. Test with screen
+                         readers and large text
+
+    Security             TLS in transit. Encrypt sensitive data at rest. Least-
+                         privilege access. Audit logs
+
+    Privacy              Comply with the DPDP Act 2023. Collect minimum
+                         data. Get consent. Delete data on request. Protect
+                         children
+
+    Languages            Unicode for Devanagari and Telugu. All text in
+                         locale files. Stable content IDs across languages
+
+
+
+
+                                                                                       Page 13 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+    Area                 Target
+
+    Offline              Show cached content offline. Retry saves safely.
+                         Never write a record twice
+
+    Media                Seek, pause and resume. Handle interruptions.
+                         Never expose a restricted media URL
+
+
+
+  Standard checks for every screen
+  These 10 checks replace the cross-cutting IDs -11 to -20 of the v0.2 register. QA applies
+  them to each screen, API and data item.
+
+     1. Access: an unauthorised user cannot open gated actions or private data.
+     2. Loading: the screen shows a loading state during slow operations.
+     3. Empty: an empty screen explains why it is empty and gives a next step.
+     4. Failure: a failure shows a clear message and a safe retry, with no duplicate writes.
+     5. Accessibility: labels, focus order, contrast, text size and touch targets work.
+     6. Layout: no clipped text and no side scroll at supported sizes.
+     7. Privacy: the screen shows and logs only necessary data.
+     8. Analytics: events use approved names, need consent and contain no private data.
+     9. Lifecycle: draft, archived and withdrawn content never shows to the public.
+  10. Tests: positive, negative, boundary and recovery tests link to the requirement ID.
+
+  The full engineering lists from v0.2 (MAH-54 to MAH-62) stay valid as the build standard.
+  See the traceability table.
+
+
+  Data entities and permissions
+  The fields are examples. The build team sets the final schema.
+
+
+    Entity                Example fields                      Who can read    Who can write
+
+    User profile          user_id, display_name, age_band,    The user        The user; admin
+                          role, consent_version, timezone,                    for corrections
+                          language
+
+    Guardian              user_id, guardian_contact,          Admin           System on
+    consent               consent_time, consent_version                       consent
+
+
+
+                                                                                           Page 14 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+    Entity               Example fields                     Who can read        Who can write
+
+    Content item         content_id, type, title, body,     Public when         Editor; reviewer
+                         language, source_id,               published           approves
+                         rights_state, status,
+                         published_at
+
+    Source               source_id, book, edition, range,   Editors             Editors
+    record               licence_status, review_date
+
+    Guru Vākyam          text, verbatim_or_paraphrase,      Public              Editor; reviewer
+                         meaning, source_id, theme                              approves
+
+    Itihasa              series, season (parva), episode,   Public when         Editor; reviewer
+    episode              order, BORI range, status          published           approves
+
+    Practice             practice_id, access_rule, guide,   Public or           Content authority
+                         audio_id                           enrolled, by rule
+
+    Enrollment           user_id, program_id, status,       The user; admin     Authorised
+                         granted_by, expiry                                     teacher or admin
+
+    Mandala              mandala_id, user_id, start_date,   The user; teacher   System on a valid
+                         day completions, audit log         for own sādhakas    completion
+
+    Event                event_id, vibhaga, title, date,    Public              Vibhaga head;
+                         place or link, capacity, status                        reviewer
+                                                                                approves
+
+    Registration         event_id, user_id, status          The user; event     The user; system
+                                                            owner
+
+    Vibhaga hub          vibhaga_id, head, about, links     Public              Vibhaga head;
+                                                                                reviewer
+                                                                                approves
+
+    Donation             donation_id, amount, currency,     The donor;          Payment provider
+                         purpose, provider_ref,             finance admin       callback
+                         receipt_ref
+
+    Notification         template, audience, schedule,      Admin               Admin
+                         delivery log
+
+
+
+
+                                                                                             Page 15 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+  Acceptance scenarios
+  Each scenario uses the form Given / When / Then. A release passes only when all of its P0
+  scenarios pass.
+
+
+    ID                   Given                    When                       Then
+
+    T-01 Guest           A new user with no       The user opens the         Home and public
+                         account                  app                        Wisdom are available.
+                                                                             The app asks for sign-
+                                                                             in only for practice,
+                                                                             events and donations
+
+    T-02 Child           A user who selects       The user tries to finish   The app stops and
+                         an age band under 18     sign-up                    asks for guardian
+                                                                             consent. It stores no
+                                                                             other data before
+                                                                             consent
+
+    T-03 Free            Any user                 The user taps the          The free practice
+    practice                                      Samatha shortcut on        opens. Audio starts
+                                                  Home                       only when the user
+                                                                             taps play
+
+    T-04 Restricted      A user who is not        The user requests a        The server refuses. No
+    audio                enrolled                 restricted file by link    media URL is exposed
+                                                  or by API
+
+    T-05 Mandala         A user with today's      The user taps              There is one record.
+    double tap           practice complete        complete again, or the     The count goes up
+                                                  network retries            once
+
+    T-06 Midnight        A user near midnight     The user submits a         The server applies the
+                         or in a different time   completion                 D-23 rules and writes
+                         zone                                                an audit record
+
+    T-07 Group           100 users complete       Any user opens the         The group count
+    count                today's practice         Mandala screen             includes all 100. No
+                                                                             names or ranks show
+
+    T-08 Source          A Guru Vākyam            An editor tries to         The CMS blocks
+    check                without an approved      publish it                 publication
+                         source
+
+
+
+
+                                                                                               Page 16 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+    ID                          Given                   When                        Then
+
+    T-09 Own                    An editor who wrote     The editor tries to         The CMS refuses
+    approval                    an item                 approve it
+
+    T-10 Withdrawal             A published item that   The app refreshes           The item no longer
+                                an admin withdraws                                  shows to the public
+
+    T-11 Foreign                A trust without         A user selects a            The app does not
+    donation                    FCRA registration       foreign currency            accept the donation
+                                                                                    and explains why
+
+    T-12 Event                  A published event       A signed-in user taps       The app confirms. The
+    registration                with free places        register                    event owner sees the
+                                                                                    registration
+
+    T-13                        A user who turns off    The scheduler runs          The user gets no
+    Notifications               reminders                                           reminder. No duplicate
+                                                                                    sends occur
+
+    T-14 Large text             Large system text       The user goes through       All controls are
+                                and a screen reader     any P0 flow                 reachable and
+                                                                                    labelled. No text is
+                                                                                    clipped
+
+
+
+
+  Traceability to the v0.2 register
+  The v0.2 register (1,320 IDs in 66 modules) remains the detailed checklist. The table shows
+  how each module group changes in v0.3. Update the Excel register to match.
+
+
+    v0.2                 Area                           Change in v0.3                     New IDs
+    modules
+
+    MAH-01–              Foundation, brand,             Kept. Five tabs proposed.          D-13, D-14, C-5
+    04                   navigation                     Spelling standard added
+
+    MAH-05–              Onboarding, sign-in,           Kept. Guest access, phone          P-01 to P-08
+    09                   profile, interests             OTP, DPDP consent added
+
+    MAH-10–              Home                           Changed. Samatha shortcut          H-01 to H-09
+    13                                                  and events added. Festivals
+                                                        now P1. No pañcāṅ ga
+
+
+
+
+                                                                                                       Page 17 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+    v0.2                 Area                       Change in v0.3                 New IDs
+    modules
+
+    MAH-14–              Guru Vākyam                Kept. Text only. Spelling      W-01 to W-05
+    16                                              corrected from "Vakhyam"
+
+    MAH-17–              Dharma Lessons and         Moved to V1.1. Lesson scope    W-12, D-19
+    18                   Exercises                  defined first
+
+    MAH-19–              Myths and Facts            Moved to V1.1. Tradition's     W-11
+    20                                              teaching shown separately
+
+    MAH-21–              Mahabharata, Ramayana,     Kept. Own text with BORI       W-06 to W-10,
+    25                   Q&A                        citations. Ramayana in V1.1    C-3
+
+    MAH-26–              Yoga tab and Samatha       Kept. Free public practice     S-01 to S-07
+    31                   practices                  added. Tab renamed Sādhanā
+
+    MAH-32–              Dhyānbāri, entitlements,   Kept. Teachers grant access    S-04 to S-06, A-
+    35                   audio, files                                              08
+
+    MAH-36–              Mandala                    Kept. Rules set by the         S-08 to S-12
+    38                                              teachers
+
+    MAH-39               Leaderboard                Replaced by a group count      S-11
+
+    MAH-40–              Notifications              Kept                           S-13, P-06
+    42
+
+    MAH-43–              About, Parampara,          Changed. Parampara now P0.     G-01 to G-03
+    45                   Programs                   Events calendar added
+
+    MAH-46               Bala and Yuva Chetana      Program pages in V1. Parent    G-05, G-13
+                                                    view and cohort space in V2
+
+    MAH-47–              Volunteer, Donations,      Changed. UPI, FCRA rule,       G-06 to G-12
+    49                   Things                     80G added. Things in V1.1
+
+    MAH-50–              CMS, sources, search,      Kept. Vibhaga editor role      A-01 to A-08,
+    53                   languages                  added                          W-14, P-07
+
+    MAH-54–              Engineering                Kept as the build standard.    Technical
+    62                                              React Native named             section
+
+    MAH-63               Gurudev Shorts             Moved to V2 or later. Videos   D-04, W-13
+                                                    stay on YouTube
+
+
+
+
+                                                                                                Page 18 of 19
+Mahagathe App PRD v0.3
+
+
+
+
+    v0.2                 Area                        Change in v0.3            New IDs
+    modules
+
+    MAH-64–              Bedtime stories, Shiva      V2                        D-30
+    66                   Purāṇa, kids' games
+
+    —                    Vibhaga hubs, events,       New                       G-03, G-04, G-
+                         Dharma Bandhu                                         10
+
+    —                    Cross-cutting checks (-11   Kept as the 10 standard   Technical
+                         to -20)                     checks                    section
+
+
+
+
+  Sources
+        Mahagathe PRD v0.2 (5 Nov 2026) and the requirements register with 1,320 IDs
+        Mahagathe App PRD — Critical Review, with the team's comments
+        Mahagathe: Mahamuni
+        Mahagathe: Dhyanodaya
+        Mahagathe: Wisdom archive
+
+
+
+
+                                                                                           Page 19 of 19
+

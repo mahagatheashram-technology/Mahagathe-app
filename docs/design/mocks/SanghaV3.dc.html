@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sangha v3</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&amp;family=Poppins:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 1900px; box-sizing: border-box; background: #FFFBF5; color: #2A1F1A; font-family: Poppins, sans-serif; display: flex; flex-direction: column;">
+
+  <div style="padding: 56px 20px 24px; display: flex; flex-direction: column; gap: 18px;">
+    <h1 style="margin: 0; font-family: Lora, serif; font-weight: 600; font-size: 32px; color: #2A1F1A;">Sangha</h1>
+    <a href="ParamparaV3.dc.html" style="display: flex; flex-direction: column; gap: 16px; padding: 20px; border-radius: 24px; background: linear-gradient(180deg, #CC0000 0%, #9A0A0A 100%); color: #FFFFFF; text-decoration: none;">
+      <div style="display: flex; gap: 16px; align-items: center;">
+        <div style="width: 76px; height: 92px; border-radius: 16px; border: 2px solid #FFE0C2; box-sizing: border-box; background: #A30000; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 10px; line-height: 1.3; color: #FFE0C2; padding: 6px; flex-shrink: 0;">Approved photo of Gurudev</div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; color: #FFE0C2;">Paramparā</span>
+          <span style="font-family: Lora, serif; font-size: 20px; font-weight: 600; color: #FFFFFF; line-height: 1.25;">Ven. Mahāmuni Sritha Mahāgatha</span>
+          <span style="font-size: 12px; font-weight: 500; color: #FFE0C2;">70th Mahādhibhū · Rudra Sampradāya</span>
+        </div>
+      </div>
+      <span style="display: flex; align-items: center; justify-content: space-between; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.25); font-size: 13px; font-weight: 600;">See the lineage
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></span>
+    </a>
+  </div>
+
+  <section style="padding: 4px 20px 28px; display: flex; flex-direction: column; gap: 14px;" aria-label="Events">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h2 style="margin: 0; font-family: Lora, serif; font-size: 22px; font-weight: 600;">Events</h2>
+      <a href="#calendar" style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #C20000; text-decoration: none; min-height: 44px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Calendar</a>
+    </div>
+
+    <div style="display: flex; flex-direction: column; border-radius: 22px; background: #FFFFFF; border: 1px solid #E9DFD3; overflow: hidden;">
+      <div style="position: relative; height: 170px;">
+        <img src="../../../assets/photos/abhyudaya-elders.jpg" alt="Devotees offering gifts to elders at a past Mahagathe gathering" style="width: 100%; height: 170px; object-fit: cover; display: block;">
+        <div style="position: absolute; left: 14px; top: 14px; width: 56px; padding: 6px 0; border-radius: 12px; background: #FFFFFF; text-align: center;">
+          <div style="font-size: 11px; font-weight: 600; color: #C20000; letter-spacing: 0.08em;">DEC</div>
+          <div style="font-family: Lora, serif; font-size: 24px; font-weight: 600; line-height: 1.1;">20</div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px; padding: 16px;">
+        <div>
+          <div style="font-family: Lora, serif; font-size: 21px; font-weight: 600;">Abhyudaya 2026</div>
+          <div style="font-size: 13px; font-weight: 500; color: #6E5F50; margin-top: 2px;">Mahagate Ashram · All day · Open to all</div>
+          <div style="font-size: 13px; font-weight: 500; color: #6E5F50;">140 places left</div>
+        </div>
+        <button type="button" style="height: 50px; border-radius: 999px; border: 0; background: #C20000; color: #FFFFFF; font-size: 15px; font-weight: 600;">Register</button>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; border-radius: 18px; background: #FFFFFF; border: 1px solid #E9DFD3;">
+      <div style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-bottom: 1px solid #F0E8DE;">
+        <div style="width: 44px; text-align: center; flex-shrink: 0;"><div style="font-size: 11px; font-weight: 600; color: #C20000; letter-spacing: 0.08em;">NOV</div><div style="font-family: Lora, serif; font-size: 22px; font-weight: 600; line-height: 1.1;">09</div></div>
+        <div style="flex-grow: 1;"><div style="font-size: 14px; font-weight: 600;">Sunday group sitting</div><div style="font-size: 12px; font-weight: 500; color: #6E5F50;">Online · Enrolled sādhakas</div></div>
+        <button type="button" style="height: 40px; padding: 0 14px; border-radius: 999px; border: 1.5px solid #C20000; background: transparent; color: #C20000; font-size: 13px; font-weight: 600;">Register</button>
+      </div>
+      <div style="display: flex; align-items: center; gap: 14px; padding: 14px 16px;">
+        <div style="width: 44px; text-align: center; flex-shrink: 0;"><div style="font-size: 11px; font-weight: 600; color: #C20000; letter-spacing: 0.08em;">NOV</div><div style="font-family: Lora, serif; font-size: 22px; font-weight: 600; line-height: 1.1;">15</div></div>
+        <div style="flex-grow: 1;"><div style="font-size: 14px; font-weight: 600;">Yuva Chetana class</div><div style="font-size: 12px; font-weight: 500; color: #6E5F50;">Ashram · Ages 13–24</div></div>
+        <span style="display: inline-flex; align-items: center; gap: 4px; height: 40px; padding: 0 12px; border-radius: 999px; background: #F0E8DE; color: #2A1F1A; font-size: 13px; font-weight: 600;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Going</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="background: #F0E8DE; padding: 28px 20px; display: flex; flex-direction: column; gap: 14px;" aria-label="Vibhagas">
+    <div style="display: flex; flex-direction: column; gap: 2px;">
+      <h2 style="margin: 0; font-family: Lora, serif; font-size: 22px; font-weight: 600;">Our seva</h2>
+      <p style="margin: 0; font-size: 13px; font-weight: 500; color: #6E5F50;">The vibhagas of the Trust. Volunteer or give to any of them.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+      <a href="#adhyaya" style="display: flex; flex-direction: column; border-radius: 18px; background: #FFFFFF; overflow: hidden; text-decoration: none; color: #2A1F1A;">
+        <img src="../../../assets/photos/adhyaya-children.jpg" alt="Children at an Adhyaya class" style="width: 100%; height: 100px; object-fit: cover; display: block;">
+        <div style="padding: 12px;"><div style="font-family: Lora, serif; font-size: 16px; font-weight: 600;">Adhyaya</div><div style="font-size: 12px; font-weight: 500; color: #6E5F50;">Learning for children</div></div>
+      </a>
+      <a href="#ayuri" style="display: flex; flex-direction: column; border-radius: 18px; background: #FFFFFF; overflow: hidden; text-decoration: none; color: #2A1F1A;">
+        <img src="../../../assets/photos/ayuri-elders.jpg" alt="Volunteers with elders at an Āyuri visit" style="width: 100%; height: 100px; object-fit: cover; display: block;">
+        <div style="padding: 12px;"><div style="font-family: Lora, serif; font-size: 16px; font-weight: 600;">Āyuri</div><div style="font-size: 12px; font-weight: 500; color: #6E5F50;">Care for elders</div></div>
+      </a>
+      <a href="#bhandara" style="display: flex; flex-direction: column; border-radius: 18px; background: #FFFFFF; overflow: hidden; text-decoration: none; color: #2A1F1A;">
+        <img src="../../../assets/photos/bhandara-food.jpg" alt="Food being served at a Bhaṇḍāra" style="width: 100%; height: 100px; object-fit: cover; display: block;">
+        <div style="padding: 12px;"><div style="font-family: Lora, serif; font-size: 16px; font-weight: 600;">Bhaṇḍāra</div><div style="font-size: 12px; font-weight: 500; color: #6E5F50;">Food for all</div></div>
+      </a>
+      <a href="#samriddhi" style="display: flex; flex-direction: column; border-radius: 18px; background: #FFFFFF; overflow: hidden; text-decoration: none; color: #2A1F1A;">
+        <img src="../../../assets/photos/samriddhi-sewing.jpg" alt="Sewing training at a Samṛddhi centre" style="width: 100%; height: 100px; object-fit: cover; display: block;">
+        <div style="padding: 12px;"><div style="font-family: Lora, serif; font-size: 16px; font-weight: 600;">Samṛddhi</div><div style="font-size: 12px; font-weight: 500; color: #6E5F50;">Skills and livelihood</div></div>
+      </a>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 6px;">
+      <span style="font-size: 13px; font-weight: 600;">Pathways</span>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <a href="#bala" style="height: 40px; padding: 0 14px; border-radius: 999px; background: #FFFFFF; border: 1px solid #D6C3AE; color: #2A1F1A; font-size: 13px; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center;">Bala Chetana</a>
+        <a href="#yuva" style="height: 40px; padding: 0 14px; border-radius: 999px; background: #FFFFFF; border: 1px solid #D6C3AE; color: #2A1F1A; font-size: 13px; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center;">Yuva Chetana</a>
+        <a href="#dhyanodaya" style="height: 40px; padding: 0 14px; border-radius: 999px; background: #FFFFFF; border: 1px solid #D6C3AE; color: #2A1F1A; font-size: 13px; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center;">Dhyanodaya</a>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding: 26px 20px; display: flex; flex-direction: column; gap: 16px;" aria-label="Give">
+    <div style="display: flex; flex-direction: column; gap: 14px; padding: 20px; border-radius: 22px; background: #FFFFFF; border: 1.5px solid #C20000;">
+      <div style="display: flex; gap: 14px; align-items: center;">
+        <div style="width: 46px; height: 46px; border-radius: 999px; background: #F8F4EE; display: flex; align-items: center; justify-content: center; color: #C20000; flex-shrink: 0;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.5-7.5-10A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 7.5 3c0 5.5-7.5 10-7.5 10z"/></svg>
+        </div>
+        <div><div style="font-family: Lora, serif; font-size: 20px; font-weight: 600;">Give dāna</div><div style="font-size: 13px; font-weight: 500; color: #6E5F50;">Support the seva above, by UPI</div></div>
+      </div>
+      <a href="DonateV3.dc.html" style="height: 50px; border-radius: 999px; background: #C20000; color: #FFFFFF; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none;">Give by UPI</a>
+    </div>
+    <a href="#about" style="display: flex; align-items: center; gap: 14px; text-decoration: none; color: #2A1F1A; min-height: 44px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6E5F50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg>
+      <span style="flex-grow: 1; font-size: 14px; font-weight: 500;">About Mahagathe · Contact on WhatsApp</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6E5F50" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+    </a>
+  </section>
+
+  <div style="flex-grow: 1;"></div>
+
+  <nav aria-label="Main" style="display: flex; justify-content: space-around; background: #FFFFFF; border-top: 1px solid #E9DFD3; padding: 10px 6px 28px;">
+    <a href="HomeV3.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 60px; color: #6E5F50; font-size: 11px; font-weight: 500; text-decoration: none;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</a>
+    <a href="WisdomV3.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 60px; color: #6E5F50; font-size: 11px; font-weight: 500; text-decoration: none;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H20v15H5.5A1.5 1.5 0 0 0 4 19.5z"/><path d="M4 19.5A1.5 1.5 0 0 0 5.5 21H20v-3"/></svg>Wisdom</a>
+    <a href="SadhanaV3.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 60px; color: #6E5F50; font-size: 11px; font-weight: 500; text-decoration: none;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c2.5 3 4.5 5.3 4.5 8.5a4.5 4.5 0 0 1-9 0C7.5 8.3 9.5 6 12 3z"/><path d="M4 17c2 2.5 5 4 8 4s6-1.5 8-4"/></svg>Sādhanā</a>
+    <a href="SanghaV3.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 60px; color: #C20000; font-size: 11px; font-weight: 600; text-decoration: none;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18 14a6.5 6.5 0 0 1 3.5 6"/></svg>Sangha</a>
+    <a href="ProfileV3.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 60px; color: #6E5F50; font-size: 11px; font-weight: 500; text-decoration: none;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>
