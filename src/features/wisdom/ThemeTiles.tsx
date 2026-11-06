@@ -13,8 +13,9 @@ const THEME_ICONS: Record<VakyamTheme, IconName> = {
 };
 
 /** "Guru Vākyams by theme": 2×2 neutral tiles. */
-export function ThemeTiles({ themes }: { themes: ThemeSummary[] }) {
+export function ThemeTiles({ themes }: { themes: ThemeSummary[] | undefined }) {
   const router = useRouter();
+  if (!themes) return <AppText>Loading themes…</AppText>;
   const rows: ThemeSummary[][] = [];
   for (let i = 0; i < themes.length; i += 2) rows.push(themes.slice(i, i + 2));
   return (

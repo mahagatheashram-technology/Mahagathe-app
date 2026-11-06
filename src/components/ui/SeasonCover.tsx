@@ -18,13 +18,20 @@ type Props = {
   devanagari: string;
   /** Latin name, shown under the glyphs on the lead cover ("Ādi"). */
   name: string;
-  variant?: 'lead' | 'small';
+  variant?: 'lead' | 'small' | 'resume';
   /** Bottom caption. Defaults to the Latin name (lead) or "Coming" (small). */
   caption?: string;
   style?: ViewStyle;
 };
 
 export function SeasonCover({ number, roman, devanagari, name, variant = 'lead', caption, style }: Props) {
+  if (variant === 'resume') return (
+    <View accessible accessibilityLabel={`Parva ${roman}, ${name}`} style={[{ width: 78, height: 108, borderRadius: 10, backgroundColor: colors.maroon, alignItems: 'center', justifyContent: 'center', gap: 4 }, style]}>
+      <View pointerEvents="none" style={{ position: 'absolute', top: 4, left: 4, right: 4, bottom: 4, borderRadius: 6, borderWidth: 1, borderColor: colors.coverGoldLineMid }} />
+      <AppText style={{ fontFamily: fonts.devaSemibold, fontSize: 26, lineHeight: 31, color: colors.coverText }}>{devanagari}</AppText>
+      <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 9, lineHeight: 14, letterSpacing: 1.44, color: colors.gold }}>PARVA {roman}</AppText>
+    </View>
+  );
   const lead = variant === 'lead';
   const bg = PALETTE[(number - 1) % PALETTE.length];
   const dims = lead

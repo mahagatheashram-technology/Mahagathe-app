@@ -1,5 +1,5 @@
 import { Pressable, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 import { useState } from 'react';
 
 import { AppText, Card, DetailHeader, Icon, RedFeature, Screen } from '@/components/ui';
@@ -10,10 +10,12 @@ import { colors, fonts } from '@/theme/tokens';
 
 /** ParamparaV3: guru header on the red feature, lineage timeline, dīkṣā milestones, approval chip. */
 export default function ParamparaScreen() {
-  const insets = useSafeAreaInsets();
-  const { guru, lineage, milestones } = useParampara();
+  const insets = useScreenInsets();
+  const content = useParampara();
   const [allOpen, setAllOpen] = useState(false);
 
+  if (!content) return <Screen><DetailHeader /><AppText style={{ padding: 20 }}>{content === undefined ? 'Loading Paramparā…' : 'Paramparā will appear here once approved.'}</AppText></Screen>;
+  const { guru, lineage, milestones } = content;
   const first = lineage[0];
   const rest = lineage.slice(1);
 

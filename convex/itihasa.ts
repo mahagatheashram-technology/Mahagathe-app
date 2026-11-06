@@ -12,7 +12,7 @@ import {
 } from "./lib/content";
 import * as V from "./lib/validators";
 
-async function visibleEpisode(
+export async function visibleEpisode(
   ctx: Pick<QueryCtx, "db">,
   episode: Doc<"episodes">,
 ) {
@@ -169,5 +169,18 @@ export const saveReadingPosition = mutation({
         updatedAt: Date.now(),
       });
     return next;
+  },
+});
+
+/** W-08: zero means unseen; the client preserves undefined until this resolves. */
+export const readingPosition = query({
+  args: { episodeId: v.string() }, returns: v.number(),
+  handler: async (ctx, { episodeId }) => {
+    const user = await getUser(ctx);
+    if (!user) return 0;
+    const item = await publishedBySlug(ctx, "episodes", episodeId);
+    if (!item || !(await visibleEpisode(ctx, item))) return 0;
+    const row = await ctx.db.query("readingPositions").withIndex("by_user_episode", q => q.eq("userId", user._id).eq("episodeId", item._id)).unique();
+    return row?.progress ?? 0;
   },
 });

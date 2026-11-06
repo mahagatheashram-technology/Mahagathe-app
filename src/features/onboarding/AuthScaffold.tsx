@@ -1,9 +1,8 @@
 import type { ReactNode } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText, Icon } from '@/components/ui';
-import { MOCK_STATUS_BAR, useStatusBarInset } from '@/components/ui/useStatusBarInset';
+import { MOCK_STATUS_BAR, useStatusBarInset, useScreenInsets } from '@/components/ui/useStatusBarInset';
 import { colors, fonts, radii } from '@/theme/tokens';
 
 /**
@@ -22,7 +21,7 @@ export function AuthScaffold({
   children: ReactNode;
   cta: ReactNode;
 }) {
-  const insets = useSafeAreaInsets();
+  const insets = useScreenInsets();
   const top = useStatusBarInset();
   return (
     <KeyboardAvoidingView

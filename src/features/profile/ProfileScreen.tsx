@@ -28,8 +28,8 @@ import { useToast } from './Toast';
 
 const LANGUAGES: { key: Language; label: string }[] = [
   { key: 'en', label: 'English' },
-  { key: 'te', label: 'తెలుగు' },
-  { key: 'hi', label: 'हिन्दी' },
+  { key: 'te', label: 'తెలుగు · Coming soon' },
+  { key: 'hi', label: 'हिन्दी · Coming soon' },
 ];
 
 const NOTIFICATIONS: { key: keyof NotificationPrefs; label: string }[] = [
@@ -53,6 +53,9 @@ export default function ProfileScreen() {
   const [deleting, setDeleting] = useState(false);
   const toast = useToast();
 
+  const changePref = async (key: keyof NotificationPrefs, value: boolean) => {
+    try { await setPref(key, value); } catch { toast.show('We could not save this change. Please try again.'); }
+  };
   const version = (Constants.expoConfig?.version ?? '1.0').split('.').slice(0, 2).join('.');
   const footer = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, justifyContent: 'center', paddingTop: 6 }}>
@@ -139,9 +142,9 @@ export default function ProfileScreen() {
               key={n.key}
               label={n.label}
               last={i === NOTIFICATIONS.length - 1}
-              onPress={() => setPref(n.key, !prefs[n.key])}
+              onPress={() => changePref(n.key, !prefs[n.key])}
               accessibilityLabel={`${n.label}, ${prefs[n.key] ? 'on' : 'off'}`}
-              right={<ToggleSwitch value={prefs[n.key]} label={n.label} onValueChange={(v) => setPref(n.key, v)} />}
+              right={<ToggleSwitch value={prefs[n.key]} label={n.label} onValueChange={(v) => changePref(n.key, v)} />}
             />
           ))}
         </SettingsSection>
@@ -151,15 +154,15 @@ export default function ProfileScreen() {
           <SettingsRow
             label="Download my data"
             onPress={async () => {
-              await requestDataExport();
-              toast.show('Data export requested');
+              try { await requestDataExport(); toast.show('Data export requested'); }
+              catch { toast.show('We could not export your data. Please try again.'); }
             }}
           />
           <SettingsRow
             label="Sign out"
             onPress={async () => {
-              await signOut();
-              router.replace('/welcome');
+              try { await signOut(); router.replace('/welcome'); }
+              catch { toast.show('We could not sign out. Please try again.'); }
             }}
           />
           <SettingsRow label="Delete account" danger last onPress={() => setSheet('delete')} />
@@ -187,7 +190,8 @@ export default function ProfileScreen() {
       <OptionSheet
         visible={sheet === 'language'}
         title="Language"
-        options={LANGUAGES}
+        options={LANGUAGES.map(l => ({ ...l, disabled: l.key !== 'en' }))}
+        hint="Hindi and Telugu are coming soon. English is available now."
         selected={[profile.language]}
         onClose={() => setSheet(null)}
         onSubmit={([key]) => updateProfile({ language: key as Language })}
@@ -206,6 +210,8 @@ export default function ProfileScreen() {
                 await deleteAccount();
                 setSheet(null);
                 router.replace('/welcome');
+              } catch {
+                toast.show('We could not delete your account. Please try again.');
               } finally {
                 setDeleting(false);
               }

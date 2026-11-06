@@ -1,6 +1,10 @@
 /// <reference types="node" />
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { beforeEach, test } from "node:test";
+
+// Scheduled boundary handlers are invoked explicitly below; fake only their
+// timers so fixture jobs days in the future cannot keep Node alive.
+beforeEach(context => { if ("mock" in context) context.mock.timers.enable({ apis: ["setTimeout"] }); });
 import { convexTest } from "convex-test";
 import type { TestConvex } from "convex-test";
 import type { AgeBand } from "../../src/data/types";
@@ -27,6 +31,9 @@ type Backend = TestConvex<typeof schema>;
 async function setup() {
   const t = convexTest(schema, modules);
   await t.mutation(internal.seed.run, {});
+  await t.run(async ctx => {
+    for (const job of await ctx.db.system.query("_scheduled_functions").collect()) await ctx.scheduler.cancel(job._id);
+  });
   return t;
 }
 async function account(
@@ -140,9 +147,9 @@ void test("T-01/T-03/T-04: guest reads work; private writes and restricted media
   assert.equal(await t.query(api.profiles.me, {}), null);
   assert.equal(await t.query(api.mandala.active, {}), null);
   assert.equal((await t.query(api.sadhana.todayPractice, {}))?.access, "free");
-  assert.equal(
-    await t.mutation(api.sadhana.getPracticeAudioUrl, { id: "intro-samatha" }),
-    null,
+  await assert.rejects(
+    t.mutation(api.sadhana.getPracticeAudioUrl, { id: "intro-samatha" }),
+    /Sign in/,
   );
   assert.equal(
     (await t.query(api.sadhana.practice, { id: "attahasa" }))?.locked,
@@ -150,7 +157,7 @@ void test("T-01/T-03/T-04: guest reads work; private writes and restricted media
   );
   await assert.rejects(
     t.mutation(api.sadhana.getPracticeAudioUrl, { id: "attahasa" }),
-    /Enrollment/,
+    /Sign in/,
   );
   await assert.rejects(
     t.mutation(api.mandala.start, {
@@ -438,6 +445,8 @@ void test("G-06: volunteer application needs consent and is retry-safe", async (
     vibhagaId: "adhyaya",
     consentVersion: "v1",
     message: "Available weekends",
+    name: "[Volunteer name]",
+    phone: "+919876543210",
   };
   await assert.rejects(
     client.mutation(api.sangha.volunteerApply, { ...args, consent: false }),
@@ -558,7 +567,7 @@ void test("T-08/T-09/T-10/C-1: source checks, independent review, publication, w
     slug: "reviewed-vakyam",
   });
   assert.equal(
-    (await t.query(api.wisdom.search, { text: "santanu and ganga" })).length,
+    (await t.query(api.wisdom.search, { text: "santanu and ganga" })).vakyams.length,
     1,
   );
   await admin.client.mutation(api.cms.archive, {
@@ -715,6 +724,7 @@ void test("T-06: completions on either side of IST midnight receive separate ser
   });
   const first = await client.mutation(api.mandala.completeToday, { mandalaId });
   now = Date.parse("2026-11-06T18:30:00.000Z");
+  await t.mutation(internal.clock.tick, {});
   const second = await client.mutation(api.mandala.completeToday, {
     mandalaId,
   });
@@ -940,4 +950,94 @@ void test("T-02: correcting an adult profile to a minor purges previously stored
       .collect(),
   );
   assert.equal(prefs.length, 0);
+});
+
+void test("W-14: search includes published BORI episodes and excludes drafts and withdrawn seasons", async () => {
+  const t = await setup();
+  const result = await t.query(api.wisdom.search, { text: "santanu" });
+  assert.ok(result.episodes.some(e => /Śantanu/.test(e.title)));
+  assert.deepEqual(await t.query(api.wisdom.search, { text: " " }), { vakyams: [], episodes: [] });
+  await t.run(async ctx => {
+    const season = await ctx.db.query("seasons").withIndex("by_slug", q => q.eq("slug", "adi")).unique();
+    assert.ok(season);
+    await ctx.db.patch(season._id, { status: "archived" });
+  });
+  assert.equal((await t.query(api.wisdom.search, { text: "santanu" })).episodes.length, 0);
+});
+
+void test("W-08: reading position starts at zero, is private and never regresses", async () => {
+  const t = await setup();
+  const { client } = await account(t, "reader-position");
+  const other = await account(t, "other-reader-position");
+  assert.equal(await client.query(api.itihasa.readingPosition, { episodeId: "adi-e3" }), 0);
+  await client.mutation(api.itihasa.saveReadingPosition, { episodeId: "adi-e3", progress: 0.65 });
+  await client.mutation(api.itihasa.saveReadingPosition, { episodeId: "adi-e3", progress: 0.2 });
+  assert.equal(await client.query(api.itihasa.readingPosition, { episodeId: "adi-e3" }), 0.65);
+  assert.equal(await other.client.query(api.itihasa.readingPosition, { episodeId: "adi-e3" }), 0);
+  assert.equal(await t.query(api.itihasa.readingPosition, { episodeId: "adi-e3" }), 0);
+});
+
+void test("P-04: consent requests keep minimal details, retry once, prohibit age bypass, and require trusted verification", async () => {
+  const t = await setup();
+  const { client, id } = await account(t, "consent-request", "13-17");
+  const request = { ageBand: "13-17" as const, guardianPhone: "+919876543210" };
+  await client.mutation(api.profiles.requestGuardianConsent, request);
+  await client.mutation(api.profiles.requestGuardianConsent, request);
+  const rows = await t.run(async ctx => ctx.db.query("guardianConsentRequests").collect());
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].guardianPhone, request.guardianPhone);
+  assert.equal((await client.query(api.profiles.me, {}))?.displayName, "");
+  await assert.rejects(client.mutation(api.profiles.updateProfile, { patch: { ageBand: "25-44", displayName: "Bypass" } }), /correct/);
+  await assert.rejects(client.mutation(api.sadhana.getPracticeAudioUrl, { id: "intro-samatha" }), /consent/);
+  await assert.rejects(client.mutation(api.profiles.verifyGuardianConsent, { userId: id, consentVersion: "v1", evidenceRef: "self" }), /consent/);
+  await t.mutation(internal.profiles.recordGuardianConsent, { userId: id, consentVersion: "v1", evidenceRef: "verified:guardian:1" });
+  await client.mutation(api.profiles.updateProfile, { patch: { displayName: "[Consented name]" } });
+  assert.equal((await client.query(api.profiles.me, {}))?.guardianConsent, "granted");
+  assert.equal((await t.run(async ctx => ctx.db.query("guardianConsentRequests").collect())).length, 0);
+});
+
+void test("T-09: revisions and approved rollback retain public content and original author until publication", async () => {
+  const t = await setup();
+  const { author, reviewer, admin, sourceId } = await approvedSource(t);
+  const ref = { table: "vakyams" as const, slug: "revision-retention" };
+  const data = { text: "[Original teaching]", meaning: "[Meaning]", theme: "conduct" as const, verbatim: false, attribution: "[Archive]", sourceId, publishDate: dayKey(Date.now()) };
+  await author.client.mutation(api.cms.createDraft, { slug: ref.slug, payload: { table: ref.table, data } });
+  await author.client.mutation(api.cms.submitForReview, ref);
+  const originalVersion = await reviewer.client.mutation(api.cms.approve, ref);
+  await admin.client.mutation(api.cms.publish, ref);
+  await admin.client.mutation(api.cms.createRevision, ref);
+  await admin.client.mutation(api.cms.updateDraft, { slug: ref.slug, payload: { table: ref.table, data: { ...data, text: "[Revised teaching]" } } });
+  assert.equal((await t.query(api.wisdom.byId, { id: ref.slug }))?.text, data.text);
+  await admin.client.mutation(api.cms.submitForReview, ref);
+  await assert.rejects(admin.client.mutation(api.cms.approve, ref), /own work/);
+  await reviewer.client.mutation(api.cms.approve, ref);
+  assert.equal((await t.query(api.wisdom.byId, { id: ref.slug }))?.text, data.text);
+  await admin.client.mutation(api.cms.publish, ref);
+  assert.equal((await t.query(api.wisdom.byId, { id: ref.slug }))?.text, "[Revised teaching]");
+  const live = await t.run(async ctx => ctx.db.query("vakyams").withIndex("by_slug", q => q.eq("slug", ref.slug)).unique());
+  assert.equal(live?.authorId, author.id);
+  await admin.client.mutation(api.cms.restoreApprovedVersion, { versionId: originalVersion });
+  assert.equal((await t.query(api.wisdom.byId, { id: ref.slug }))?.text, "[Revised teaching]");
+  await admin.client.mutation(api.cms.publish, ref);
+  assert.equal((await t.query(api.wisdom.byId, { id: ref.slug }))?.text, data.text);
+});
+
+void test("daily clock refreshes at IST midnight and event cutoff hides past events", async context => {
+  let now = Date.parse("2026-11-06T18:29:59Z");
+  context.mock.method(Date, "now", () => now);
+  const t = await setup();
+  await t.run(async ctx => {
+    const source = await ctx.db.query("sources").first();
+    assert.ok(source);
+    await ctx.db.insert("vakyams", { slug: "midnight-card", status: "published", demo: true, text: "[Tomorrow]", meaning: "[Meaning]", theme: "conduct", verbatim: false, attribution: "[Archive]", sourceId: source._id, publishDate: "2026-11-07" });
+    const event = await ctx.db.query("events").first();
+    assert.ok(event);
+    await ctx.db.patch(event._id, { startsAt: now + 1000 });
+  });
+  assert.notEqual((await t.query(api.wisdom.today, {}))?.id, "midnight-card");
+  const count = (await t.query(api.sangha.events, {})).length;
+  now += 1000;
+  await t.mutation(internal.clock.tick, {});
+  assert.equal((await t.query(api.wisdom.today, {}))?.id, "midnight-card");
+  assert.equal((await t.query(api.sangha.events, {})).length, count - 1);
 });

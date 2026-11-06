@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText, Card } from '@/components/ui';
 import { photos, useEvents, useRegisterForEvent, useSession, type EventItem } from '@/data';
@@ -15,18 +15,20 @@ export function ComingUp() {
   const router = useRouter();
   const events = useEvents(3);
   const register = useRegisterForEvent();
-  const { status } = useSession();
+  const { status, canUsePersonalFeatures } = useSession();
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const toggle = async (e: EventItem) => {
     // T-01: guests can browse; registering needs an account.
-    if (status !== 'signedIn') {
-      router.push('/welcome');
+    if (!canUsePersonalFeatures) {
+      router.push(status === 'signedIn' ? '/setup' : '/welcome');
       return;
     }
     setBusyId(e.id);
     try {
       await register(e.id, !e.registered);
+    } catch {
+      Alert.alert('Registration unchanged', 'We could not update your registration. Please try again.');
     } finally {
       setBusyId(null);
     }

@@ -96,17 +96,19 @@ function useAudioEngine(url: string | undefined): Engine {
 export function usePracticePlayer({
   durationSec,
   audioUrl,
+  allowTimer = true,
 }: {
   /** Catalogue duration, used by the timer engine and until audio reports its own. */
   durationSec: number;
   audioUrl?: string;
+  allowTimer?: boolean;
 }): PracticePlayer {
   const useReal = !!audioUrl;
-  const timer = useTimerEngine(!useReal, durationSec);
+  const timer = useTimerEngine(!useReal && allowTimer, durationSec);
   const audio = useAudioEngine(audioUrl);
   const e = useReal ? audio : timer;
   const total = e.durationSec || durationSec;
-  const finished = total > 0 && e.positionSec >= total - 0.25 && !e.playing;
+  const finished = (useReal || allowTimer) && total > 0 && e.positionSec >= total - 0.25 && !e.playing;
 
   const { play, pause, seekTo, playing, positionSec } = e;
   const toggle = useCallback(() => (playing ? pause() : play()), [playing, play, pause]);

@@ -12,12 +12,16 @@ export function SetupForm({
   initialName,
   initialBand,
   saving,
+  error,
+  lockedBand,
   onBack,
   onSubmit,
 }: {
   initialName: string;
   initialBand: AgeBand | null;
   saving: boolean;
+  error?: string | null;
+  lockedBand?: boolean;
   onBack: () => void;
   onSubmit: (name: string, band: AgeBand) => void;
 }) {
@@ -30,7 +34,7 @@ export function SetupForm({
 
   const submit = () => {
     setTried(true);
-    if (!name.trim() || !band) return;
+    if (saving || !name.trim() || !band) return;
     onSubmit(name.trim(), band);
   };
 
@@ -71,6 +75,7 @@ export function SetupForm({
                     accessibilityRole="radio"
                     accessibilityState={{ selected, checked: selected }}
                     accessibilityLabel={b.label}
+                    disabled={lockedBand && !selected}
                     onPress={() => setBand(b.value)}
                     style={{
                       flex: 1,
@@ -105,9 +110,10 @@ export function SetupForm({
         ) : null}
       </View>
 
+      {error ? <AppText accessibilityLiveRegion="polite" color={colors.actionRed}>{error}</AppText> : null}
       <InfoCallout>
         We ask for an age band, not your birthday, so we can suggest the right programs. If you are under 18, we will
-        ask a parent or guardian to agree first and save nothing until they do.
+        ask a parent or guardian to agree before saving your name or personal activity.
       </InfoCallout>
     </AuthScaffold>
   );

@@ -20,14 +20,15 @@ To use the real backend, copy `.env.example` to `.env.local` and fill in the Con
 ## Backend setup
 
 Use Node.js 22.13+ (22.x), 24.3+ (24.x), or 26+ for Expo SDK 58. This backend was
-validated on Node.js 22.18.0. With no keys, the app continues using its existing mocks;
-this PR provides the backend and does not switch the app's hooks or providers.
+validated on Node.js 22.18.0. Both public environment keys must be present to select
+Clerk + Convex. With neither key, or only one key, the app stays in zero-key mock
+mode and does not initialize either service. Restart Expo after changing keys.
 
 1. Copy `.env.example` to `.env.local`.
 2. Run `npx convex dev` and create a new Convex project. It sets
    `CONVEX_DEPLOYMENT` and generates the deployment URL. Put the latter in
    `EXPO_PUBLIC_CONVEX_URL`.
-3. Create a Clerk app with **phone sign-in** enabled. Add a JWT template named
+3. Create a Clerk app with **phone sign-in and sign-up** enabled, phone-code authentication selected, and the Native API enabled for Expo. Add a JWT template named
    **`convex`**, using Clerk's Convex template (audience `convex`). Put its
    publishable key in `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY`.
 4. Set **`CLERK_JWT_ISSUER_DOMAIN`** to the Clerk issuer URL in the **Convex
@@ -47,7 +48,8 @@ separate development deployment for this seed; replace or archive demo records
 before production. Real group counts start at zero: sample group counts and the
 sample Mandala grid are retained as typed demo metadata, not fake user activity.
 
-After signing in and calling `profiles.upsertFromIdentity`, obtain the user's
+The live session provider calls `profiles.upsertFromIdentity` after Convex has
+verified Clerk authentication (including restored sessions). Obtain the user's
 Convex ID from `profiles.me`. An operator can bootstrap staff roles through the
 Convex dashboard or CLI, for example:
 
@@ -70,3 +72,25 @@ CI=1 npx expo export --platform web --output-dir /tmp/mg-web
 
 [Backend API and integration notes](convex/README.md) document endpoint names,
 required mutation arguments, provisional Mandala rules, and remaining provider setup.
+
+## Milestone validation and remaining setup
+
+[Phone-size QA and contract changes](docs/qa/live-contract/README.md) include
+390×844 comparisons for all 13 v3 app screens, interaction checks, and known
+content/layout differences. This is review evidence, not a pixel-equality claim.
+
+The live adapter is implemented but no Clerk/Convex credentials were available
+for hosted OTP, native device, or realtime deployment validation. Guardian
+requests remain pending until a trusted service/operator verifies consent with
+an evidence reference; delivery of the guardian message is not implemented.
+Live donations create a pending record and subscribe for a verified result;
+UPI checkout and its authenticated provider webhook still need infrastructure.
+Approved audio must be uploaded before live playback is available. Mock mode
+continues to simulate those flows with no keys. Hindi/Telugu translations are
+coming soon; English remains the available interface.
+
+Clerk Expo 2.20.1 is pinned for the recovered custom phone-code API; its upstream
+package is deprecated in favor of `@clerk/expo`. A Core 3 migration and hosted
+sign-in tests should precede production rollout. Account deletion currently
+removes Convex personal activity and signs out; Clerk identity deletion still
+requires the account-service integration. No production deployment is implied.

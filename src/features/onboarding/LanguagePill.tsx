@@ -1,20 +1,20 @@
-import { Pressable, Text } from 'react-native';
+import { Alert, Pressable, Text } from 'react-native';
 
 import { AppText } from '@/components/ui';
 import { colors, fonts } from '@/theme/tokens';
-import { LANGUAGES, useLanguagePref } from './languageStore';
+import { LANGUAGES } from './languageStore';
 
 /** "English · తెలుగు · हिंदी" pill. Tap cycles the language; the current one is set in the heavier weight. */
 export function LanguagePill() {
-  const { language, cycle } = useLanguagePref();
+  const language = 'en';
   const currentName = LANGUAGES.find((l) => l.value === language)?.name ?? 'English';
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`Change language, current ${currentName}`}
-      onPress={cycle}
+      accessibilityLabel={`Change language, current ${currentName}. Hindi and Telugu coming soon`}
+      onPress={() => Alert.alert('Languages', 'Hindi and Telugu are coming soon. English is available now.')}
       style={({ pressed }) => ({
-        height: 40,
+        minHeight: 44,
         paddingHorizontal: 16,
         borderWidth: 1,
         borderColor: colors.onFeaturePillBorder,

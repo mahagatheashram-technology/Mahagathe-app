@@ -6,14 +6,14 @@ import { useSession } from '@/data';
 /** Guests (T-01) can browse, but practice, Mandala and reminders need sign-in: route them to /welcome. */
 export function useAuthGate() {
   const router = useRouter();
-  const { status } = useSession();
-  const signedIn = status === 'signedIn';
+  const { status, canUsePersonalFeatures } = useSession();
+  const signedIn = canUsePersonalFeatures;
   const gate = useCallback(
     (action: () => void) => () => {
       if (signedIn) action();
-      else router.push('/welcome');
+      else router.push(status === 'signedIn' ? '/setup' : '/welcome');
     },
-    [signedIn, router],
+    [signedIn, status, router],
   );
   return { signedIn, gate };
 }

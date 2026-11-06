@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { PanResponder, StyleSheet, View } from 'react-native';
+import { PanResponder, Platform, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/ui';
 import { colors, fonts } from '@/theme/tokens';
@@ -60,12 +60,22 @@ export function Scrubber({
         onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
         accessible
         accessibilityRole="adjustable"
+        accessibilityState={{ disabled: !!disabled }}
+        tabIndex={disabled ? -1 : 0}
         accessibilityLabel="Position"
         accessibilityValue={{ min: 0, max: Math.round(durationSec), now: Math.round(positionSec) }}
         accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
         onAccessibilityAction={(e) =>
-          onSeek(positionSec + (e.nativeEvent.actionName === 'increment' ? 15 : -15))
+          !disabled && onSeek(Math.max(0, Math.min(durationSec, positionSec + (e.nativeEvent.actionName === 'increment' ? 15 : -15))))
         }
+        {...(Platform.OS === 'web' ? { onKeyDown: (event: object) => {
+          const e = event as { key: string; preventDefault: () => void };
+          if (disabled) return;
+          const next = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? positionSec + 15
+            : e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? positionSec - 15
+            : e.key === 'Home' ? 0 : e.key === 'End' ? durationSec : null;
+          if (next !== null) { e.preventDefault(); onSeek(Math.max(0, Math.min(durationSec, next))); }
+        } } : {})}
         style={styles.hit}>
         <View pointerEvents="none" style={styles.track}>
           <View style={[styles.fill, { width: `${fraction * 100}%` }]} />

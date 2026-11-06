@@ -42,12 +42,12 @@ export function GuardianAsk({
       }>
       <ScreenTitle
         title="We need a parent or guardian"
-        subtitle="Because you are under 18, a parent or guardian has to agree before we keep anything about you."
+        subtitle="Because you are under 18, a parent or guardian has to agree before we save your name or personal activity."
       />
 
       <TextField
         label="Their mobile number"
-        hint="We use it only to send one message asking for their consent."
+        hint="Used only to arrange guardian consent."
         error={fieldError}
         prefix="+91"
         value={phone}
@@ -60,8 +60,7 @@ export function GuardianAsk({
       />
 
       <InfoCallout>
-        We will send them a message with what we collect and why. Until they agree, we save nothing about you, not even
-        your name.
+        Your request helps us arrange guardian consent. Your name and personal activity stay private until consent is verified.
       </InfoCallout>
     </AuthScaffold>
   );
@@ -80,20 +79,20 @@ export function GuardianWaiting({
     <AuthScaffold stepLabel="Step 2 of 2" onBack={onBack} cta={<Button label="Explore as a guest" onPress={onExplore} />}>
       <ScreenTitle
         title="Waiting for your guardian"
-        subtitle={`We asked the guardian at ${maskedPhone} to agree. You can finish setting up as soon as they do.`}
+        subtitle={`Your consent request for ${maskedPhone} is pending. You can finish setting up once your guardian’s consent is verified.`}
       />
 
       <InfoCallout>
-        Nothing about you is saved yet. While you wait, you can read Guru Vākyams and Wisdom as a guest.
+        Your name and personal activity are not saved while you wait. You can read Guru Vākyams and Wisdom as a guest.
       </InfoCallout>
 
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Use a different age band or number"
+        accessibilityLabel="Update guardian number"
         onPress={onBack}
         style={{ alignSelf: 'center', minHeight: 44, paddingHorizontal: 12, justifyContent: 'center', marginTop: -8 }}>
         <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 14, lineHeight: 21, color: colors.actionRed }}>
-          Change age band or number
+          Update guardian number
         </AppText>
       </Pressable>
     </AuthScaffold>

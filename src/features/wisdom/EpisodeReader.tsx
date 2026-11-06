@@ -9,7 +9,7 @@ import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 
 import { EpisodeListSheet } from './EpisodeListSheet';
 import { QuestionsSheet } from './QuestionsSheet';
@@ -27,7 +27,7 @@ const FINISHED = 0.98;
 /** EpisodeV3 reader. Mounted with key={episodeId} so each episode gets fresh scroll/restore state. */
 export function EpisodeReader({ episodeId }: { episodeId: string }) {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
+  const insets = useScreenInsets();
   const episode = useEpisode(episodeId);
   const next = useEpisode(episode?.nextEpisodeId ?? undefined);
   const saved = useReadingPosition(episodeId);
@@ -35,6 +35,7 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
   const sizeKey = useTextSize();
   const size = TEXT_SIZES[sizeKey];
 
+  const [saveError, setSaveError] = useState(false);
   const [progress, setProgress] = useState(saved ?? 0);
   const [sheet, setSheet] = useState<null | 'size' | 'questions' | 'episodes'>(null);
 
@@ -48,15 +49,15 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
   const flush = useCallback(() => {
     if (timer.current) clearTimeout(timer.current);
     timer.current = null;
-    savePosition(episodeId, progressRef.current);
+    void savePosition(episodeId, progressRef.current).then(() => setSaveError(false)).catch(() => setSaveError(true));
   }, [episodeId, savePosition]);
 
   // Opening an episode counts as "last read" (W-08); leaving flushes the latest position.
   useEffect(() => {
-    savePosition(episodeId, progressRef.current);
+    void savePosition(episodeId, progressRef.current).then(() => setSaveError(false)).catch(() => setSaveError(true));
     return () => {
       if (timer.current) clearTimeout(timer.current);
-      savePosition(episodeId, progressRef.current);
+      void savePosition(episodeId, progressRef.current).then(() => setSaveError(false)).catch(() => setSaveError(true));
     };
   }, [episodeId, savePosition]);
 
@@ -124,6 +125,7 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.cream }}>
+      {saveError ? <AppText accessibilityLiveRegion="polite">Reading position could not be saved. We’ll try again as you read.</AppText> : null}
       <View style={[styles.header, { paddingTop: insets.top }]}>
         <DetailHeader
           label={`${episode.seasonTitle} · Episode ${episode.number} of ${episode.totalInSeason}`}

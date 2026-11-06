@@ -1,5 +1,5 @@
 import { Screen } from '@/components/ui';
-import { useContinueReading, useGroupCount, useMandala, useTodayPractice, useTodayVakyam } from '@/data';
+import { useCurrentTime, useContinueReading, useGroupCount, useMandala, useTodayPractice, useTodayVakyam } from '@/data';
 import { ComingUp } from '@/features/home/ComingUp';
 import { ContinueReading } from '@/features/home/ContinueReading';
 import { ParamparaCard } from '@/features/home/ParamparaCard';
@@ -13,7 +13,7 @@ export default function HomeScreen() {
   const mandala = useMandala();
   const group = useGroupCount();
   const reading = useContinueReading();
-  const now = new Date();
+  const now = new Date(useCurrentTime());
 
   return (
     <Screen edgeToEdgeTop>

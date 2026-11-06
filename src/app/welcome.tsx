@@ -1,17 +1,16 @@
 import { Redirect, useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText, Button, Icon, RedFeature } from '@/components/ui';
 import { Emblem } from '@/components/ui/Emblem';
-import { MOCK_STATUS_BAR, useStatusBarInset } from '@/components/ui/useStatusBarInset';
+import { MOCK_STATUS_BAR, useStatusBarInset, useScreenInsets } from '@/components/ui/useStatusBarInset';
 import { useProfile, useSession } from '@/data';
 import { LanguagePill } from '@/features/onboarding/LanguagePill';
 import { colors, fonts } from '@/theme/tokens';
 
 export default function WelcomeScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
+  const insets = useScreenInsets();
   const top = useStatusBarInset();
   const { status, continueAsGuest } = useSession();
   const profile = useProfile();

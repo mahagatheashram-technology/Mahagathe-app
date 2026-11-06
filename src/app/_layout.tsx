@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { AccountRouteGate } from '@/providers/AccountRouteGate';
 import { AppProviders } from '@/providers/AppProviders';
 import { useAppFonts } from '@/theme/fonts';
 import { colors } from '@/theme/tokens';
@@ -24,6 +25,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <AppProviders>
+          <AccountRouteGate>
           <StatusBar style="auto" />
           <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.cream } }}>
             <Stack.Screen name="(tabs)" />
@@ -32,6 +34,7 @@ export default function RootLayout() {
             <Stack.Screen name="setup" />
             <Stack.Screen name="player/[id]" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
           </Stack>
+          </AccountRouteGate>
         </AppProviders>
       </SafeAreaProvider>
     </GestureHandlerRootView>

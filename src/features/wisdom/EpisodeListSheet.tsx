@@ -26,7 +26,8 @@ export function EpisodeListSheet({
     <Sheet visible={visible} onClose={onClose} label={`${seasonTitle}, all episodes`}>
       <SheetHeader eyebrow={seasonTitle} title="All episodes" onClose={onClose} />
       <ScrollView style={{ flexGrow: 0 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
-        {episodes.map((e) => {
+        {episodes === undefined ? <AppText>Loading episodes…</AppText> : episodes.length === 0 ? <AppText>No episodes available yet.</AppText> : null}
+        {episodes?.map((e) => {
           const here = e.id === currentId;
           return (
             <Pressable

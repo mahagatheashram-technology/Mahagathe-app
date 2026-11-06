@@ -2,10 +2,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 
 import { AppText, Button, Icon } from '@/components/ui';
 import {
+  isLiveBackend,
+  usePracticeAudio,
   useCompleteMandalaDay,
   useGroupCount,
   useMandala,
@@ -22,7 +24,7 @@ import { usePracticePlayer } from './usePracticePlayer';
 export default function PlayerScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
+  const insets = useScreenInsets();
   const { status } = useSession();
   const practice = usePractice(id);
   const mandala = useMandala();
@@ -87,11 +89,12 @@ export default function PlayerScreen() {
         />
       ) : (
         <Session
+          key={practice.id}
           title={practice.title}
           subtitle={practice.subtitle}
           preparation={practice.preparation}
           durationSec={practice.durationSec}
-          audioUrl={practice.audioUrl}
+          practiceId={practice.id}
           mandala={forMandala ? mandala : null}
           noMandala={mandala === null}
           onOpenMandala={() => router.push('/mandala')}
@@ -157,7 +160,7 @@ function Session({
   subtitle,
   preparation,
   durationSec,
-  audioUrl,
+  practiceId,
   mandala,
   noMandala,
   onOpenMandala,
@@ -166,12 +169,32 @@ function Session({
   subtitle: string;
   preparation: string[];
   durationSec: number;
-  audioUrl?: string;
+  practiceId: string;
   mandala: Mandala | null;
   noMandala: boolean;
   onOpenMandala: () => void;
 }) {
-  const player = usePracticePlayer({ durationSec, audioUrl });
+  const requestAudio = usePracticeAudio();
+  const [audioUrl, setAudioUrl] = useState<string | undefined>();
+  const [loadingAudio, setLoadingAudio] = useState(false);
+  const [audioError, setAudioError] = useState<string | null>(null);
+  const player = usePracticePlayer({ durationSec, audioUrl, allowTimer: !isLiveBackend });
+  const controlsReady = !isLiveBackend || !!audioUrl;
+  const play = async () => {
+    if (isLiveBackend && !audioUrl) {
+      if (loadingAudio) return;
+      setLoadingAudio(true);
+      setAudioError(null);
+      try {
+        const url = await requestAudio(practiceId);
+        if (url) setAudioUrl(url);
+        else setAudioError('Approved audio will be available here soon.');
+      } catch { setAudioError('Audio could not be loaded. Please try again.'); }
+      finally { setLoadingAudio(false); }
+      return;
+    }
+    player.toggle();
+  };
   const completeDay = useCompleteMandalaDay();
   const group = useGroupCount();
   const [marking, setMarking] = useState(false);
@@ -180,6 +203,8 @@ function Session({
     setMarking(true);
     try {
       await completeDay();
+    } catch {
+      setAudioError('We could not mark your sitting. Please try again.');
     } finally {
       setMarking(false);
     }
@@ -248,26 +273,33 @@ function Session({
         )}
       </ScrollView>
 
-      <Scrubber positionSec={player.positionSec} durationSec={total} onSeek={player.seekTo} />
+      {audioError ? <AppText accessibilityLiveRegion="polite" color={colors.playerBody}>{audioError}</AppText> : null}
+      <Scrubber disabled={isLiveBackend && !audioUrl} positionSec={player.positionSec} durationSec={total} onSeek={player.seekTo} />
 
       <View style={styles.controls}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Back 15 seconds"
+          disabled={!controlsReady}
+          accessibilityState={{ disabled: !controlsReady }}
           onPress={() => player.skip(-15)}
           style={styles.skip}>
           <Icon name="replay15" size={28} strokeWidth={1.8} color={colors.white} />
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={player.playing ? 'Pause' : player.finished ? 'Play again' : 'Play'}
-          onPress={player.toggle}
+          accessibilityLabel={loadingAudio ? 'Loading audio' : !controlsReady ? 'Load practice audio' : player.playing ? 'Pause' : player.finished ? 'Play again' : 'Play'}
+          onPress={play}
+          disabled={loadingAudio}
+          accessibilityState={{ busy: loadingAudio }}
           style={styles.playBtn}>
           <Icon name={player.playing ? 'pause' : 'play'} size={34} color={colors.actionRed} />
         </Pressable>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Forward 15 seconds"
+          disabled={!controlsReady}
+          accessibilityState={{ disabled: !controlsReady }}
           onPress={() => player.skip(15)}
           style={styles.skip}>
           <Icon name="forward15" size={28} strokeWidth={1.8} color={colors.white} />

@@ -1,3 +1,4 @@
+import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 
@@ -9,24 +10,26 @@ import { useRegisterForEvent, useSession, type EventItem } from '@/data';
  */
 export function useEventToggle() {
   const router = useRouter();
-  const { isSignedIn } = useSession();
+  const { status, canUsePersonalFeatures: isSignedIn } = useSession();
   const register = useRegisterForEvent();
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const toggle = useCallback(
     async (event: EventItem) => {
       if (!isSignedIn) {
-        router.push('/welcome');
+        router.push(status === 'signedIn' ? '/setup' : '/welcome');
         return;
       }
       setBusyId(event.id);
       try {
         await register(event.id, !event.registered);
+      } catch {
+        Alert.alert('Registration unchanged', 'We could not update your registration. Please try again.');
       } finally {
         setBusyId(null);
       }
     },
-    [isSignedIn, register, router],
+    [isSignedIn, status, register, router],
   );
   return { toggle, busyId };
 }

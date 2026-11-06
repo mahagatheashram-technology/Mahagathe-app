@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, View, type ScrollViewProps, type ViewStyle } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 
 import { AppText } from './AppText';
 import { Icon, type IconName } from './Icon';
@@ -30,18 +30,18 @@ export function Screen({
   /** Extra ScrollView props (e.g. keyboardShouldPersistTaps). */
   scrollProps?: ScrollViewProps;
 }) {
-  const insets = useSafeAreaInsets();
+  const insets = useScreenInsets();
   const top = edgeToEdgeTop ? 0 : insets.top;
   const body = scroll ? (
     <ScrollView
       {...scrollProps}
       style={{ flex: 1 }}
-      contentContainerStyle={[{ paddingTop: top, flexGrow: 1 }, contentStyle]}
+      contentContainerStyle={[{ flexGrow: 1 }, contentStyle, { paddingTop: top + (typeof contentStyle?.paddingTop === 'number' ? contentStyle.paddingTop : 0) }]}
       showsVerticalScrollIndicator={false}>
       {children}
     </ScrollView>
   ) : (
-    <View style={[{ flex: 1, paddingTop: top }, contentStyle]}>{children}</View>
+    <View style={[{ flex: 1 }, contentStyle, { paddingTop: top + (typeof contentStyle?.paddingTop === 'number' ? contentStyle.paddingTop : 0) }]}>{children}</View>
   );
   return (
     <View style={{ flex: 1, backgroundColor: background }}>

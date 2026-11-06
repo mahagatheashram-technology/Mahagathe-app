@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, View } from 'react-native';
+import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 
 import { AppText, Button, Icon, RedFeature, SandBand, Screen } from '@/components/ui';
 import {
@@ -21,7 +21,7 @@ const DAYS = 40;
 /** MandalaV3 — 40-day grid, stats, group count, rules, "Begin today's sitting". */
 export default function MandalaScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
+  const insets = useScreenInsets();
   const { status } = useSession();
   const mandala = useMandala();
   const group = useGroupCount();
@@ -94,6 +94,8 @@ export default function MandalaScreen() {
       try {
         await startMandala(practice?.id ?? 'intro-samatha');
         setRulesOpen(false);
+      } catch {
+        Alert.alert('Mandala not started', 'We could not begin your Mandala. Please try again.');
       } finally {
         setStarting(false);
       }

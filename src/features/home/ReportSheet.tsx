@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 
 import { AppText, Button, Icon } from '@/components/ui';
 import { useReportContent } from '@/data';
@@ -15,7 +15,7 @@ const REASONS = [
 
 /** W-05: "Report a wrong source or text" bottom sheet. Sends the reason, then confirms. */
 export function ReportSheet({ contentId, visible, onClose }: { contentId: string; visible: boolean; onClose: () => void }) {
-  const insets = useSafeAreaInsets();
+  const insets = useScreenInsets();
   const report = useReportContent();
   const [reason, setReason] = useState<string | null>(null);
   const [sending, setSending] = useState(false);

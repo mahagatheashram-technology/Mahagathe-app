@@ -3,7 +3,7 @@ import { v, ConvexError } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import type { QueryCtx } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
-import { getUser, isEnrolled } from "./lib/auth";
+import { getUser, isEnrolled, requireConsentedUser } from "./lib/auth";
 import { canAccessPractice } from "./lib/logic";
 import {
   isPublished,
@@ -99,6 +99,7 @@ export const getPracticeAudioUrl = mutation({
   returns: v.union(v.string(), v.null()),
   handler: async (ctx, { id }) => {
     await observeClock(ctx);
+    await requireConsentedUser(ctx);
     const item = await needPublished(ctx, "practices", id);
     if (!(await visible(ctx, item)))
       throw new ConvexError("This practice is unavailable.");

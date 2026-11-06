@@ -54,13 +54,18 @@ function PickerBody({
   const [minute, setMinute] = useState(initial.minute);
   const [pm, setPm] = useState(initial.pm);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(false);
 
   const save = async () => {
     const h24 = (hour12 % 12) + (pm ? 12 : 0);
+    if (saving) return;
     setSaving(true);
+    setError(false);
     try {
       await onSave(`${String(h24).padStart(2, '0')}:${String(minute).padStart(2, '0')}`);
       onClose();
+    } catch {
+      setError(true);
     } finally {
       setSaving(false);
     }
@@ -68,6 +73,7 @@ function PickerBody({
 
   return (
     <>
+      {error ? <AppText accessibilityLiveRegion="polite" color={colors.actionRed}>We could not save your reminder. Please try again.</AppText> : null}
       <View style={styles.cols}>
         <Column
           label="Hour"

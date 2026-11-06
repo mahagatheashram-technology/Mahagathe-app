@@ -41,11 +41,9 @@ client-writable field.
 | `useVibhagas`, `usePathways`, `useParampara` | `sangha.vibhagas`, `sangha.pathways`, `sangha.parampara`            |
 | `useDonationOptions`                         | `dana.purposes`                                                     |
 | `useCreateDonation`                          | `dana.createDonation({amount,purposeId,currency?,clientRequestId})` |
-| `externalLinks`                              | `wisdom.externalLinks`                                              |
+| `useExternalLinks`                           | `wisdom.externalLinks`                                              |
 
-`useSession` belongs to Clerk. The next wiring PR must implement OTP/sign-out
-through Clerk and call `profiles.upsertFromIdentity({ageBand?})` with the verified
-JWT. There is no backend OTP simulator and no public endpoint accepting a caller's
+`useSession` uses Clerk phone OTP in live mode and calls `profiles.upsertFromIdentity({ageBand?})` after Convex verifies the Clerk JWT. There is no backend OTP simulator and no public endpoint accepting a caller's
 claimed user ID as authentication.
 
 Mutation additions required by the real backend:
@@ -141,3 +139,40 @@ must create the real UPI intent and verify webhook authenticity before calling
 `dana.markDonationResult` (internal). Guardian identity verification, push-token
 registration and reminder delivery similarly require their provider integrations;
 this PR stores preferences, reminder time, and verified-consent evidence.
+
+## Contract completion
+
+`src/data/hooks.ts` selects `hooks.mock.ts` or `hooks.live.ts` once per bundle;
+all existing exports remain. `Session.canUsePersonalFeatures` separates an
+OTP-authenticated session from an account with age/guardian permission. Private
+mutations also enforce this permission on the server.
+
+Additional mappings: `useRequestGuardianConsent` → `profiles.requestGuardianConsent`,
+`useWisdomSearch` → `wisdom.search` (now `{vakyams, episodes}`),
+`useReadingPosition` → `itihasa.readingPosition`, `useVolunteerSignup` →
+`sangha.volunteerApply` (explicit `name`, normalized `phone`, consent version),
+`useContactInfo` → `sangha.contactInfo`, detail hooks → `sangha.vibhaga/pathway`,
+`usePracticeAudio` → `sadhana.getPracticeAudioUrl`, and `useDonationResult` →
+`dana.donation`. Account export downloads JSON on web and opens the native share
+sheet on a device. `useSaveReadingPosition` is now asynchronous.
+
+The daily clock ticks at 18:30 UTC (midnight IST); event-start and enrollment-expiry
+jobs invalidate subscriptions at their own boundaries. Seed initializes the clock
+and event jobs. Existing deployments must rerun the idempotent seed for those jobs;
+existing grants without jobs refresh at the next daily tick. Query visibility
+checks for publication/expiry retain server-time checks as a defense against late
+scheduler execution. Search streams the published indexes to preserve accent and
+prefix semantics; a large corpus needs a bounded search index before production.
+
+`contentDrafts` stages revisions separately from public rows. Author IDs survive
+edits, every participating editor is excluded from self-approval, and publication
+atomically installs the independently approved payload. Approved rollback also
+stages a replacement until explicit publication. Optional new fields preserve
+compatibility with existing volunteer applications/settings/version rows.
+
+Guardian requests store the age band and guardian contact in an outbox, with no
+child name or activity. Re-requesting replaces the pending request. A trusted
+verifier/admin records evidence through the existing restricted consent APIs;
+children cannot grant consent or switch themselves to an adult age band. Delivery
+and evidence verification integrations are still required. Never treat the queued
+request as sent or approved.
