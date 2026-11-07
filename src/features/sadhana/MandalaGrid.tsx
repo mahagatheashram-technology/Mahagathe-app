@@ -20,18 +20,20 @@ export function MandalaGrid({ days, currentDay }: { days: MandalaDayState[]; cur
           {row.map((state, c) => {
             const day = r * 8 + c + 1;
             return (
-              <View key={day} style={[styles.cell, cellStyle[state]]}>
-                {state === 'sat' ? (
-                  <Icon name="check" size={15} strokeWidth={3} color={colors.white} />
-                ) : (
-                  <AppText
-                    style={[
-                      styles.num,
-                      state === 'today' && { fontFamily: fonts.sansSemibold, fontSize: 13, color: colors.actionRed },
-                    ]}>
-                    {day}
-                  </AppText>
-                )}
+              <View key={day} style={styles.slot}>
+                <View style={[styles.cell, cellStyle[state]]}>
+                  {state === 'sat' ? (
+                    <Icon name="check" size={15} strokeWidth={3} color={colors.white} />
+                  ) : (
+                    <AppText
+                      style={[
+                        styles.num,
+                        state === 'today' && { fontFamily: fonts.sansSemibold, fontSize: 13, color: colors.actionRed },
+                      ]}>
+                      {day}
+                    </AppText>
+                  )}
+                </View>
               </View>
             );
           })}
@@ -52,7 +54,7 @@ export function MandalaLegend() {
       {items.map((i) => (
         <View key={i.label} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <View style={[{ width: 12, height: 12, borderRadius: 4 }, i.style, i.label === 'Today' && { borderWidth: 2 }]} />
-          <AppText variant="caption">{i.label}</AppText>
+          <AppText variant="caption" style={{ lineHeight: 17.5 }}>{i.label}</AppText>
         </View>
       ))}
     </View>
@@ -60,7 +62,9 @@ export function MandalaLegend() {
 }
 
 const styles = StyleSheet.create({
-  cell: { flex: 1, minWidth: 0, aspectRatio: 1, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  // Border thickness belongs to the inner square, so Today cannot widen a grid column.
+  slot: { flex: 1, minWidth: 0, aspectRatio: 1 },
+  cell: { flex: 1, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   num: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 18, color: colors.muted },
 });
 const cellStyle = StyleSheet.create({

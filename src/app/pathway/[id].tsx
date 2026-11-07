@@ -17,7 +17,7 @@ export default function PathwayScreen() {
       <DetailHeader />
       {!pathway ? (
         <Card style={{ padding: 20, gap: 4 }}>
-          <AppText variant="label">This page is not available</AppText>
+          <AppText variant="label">{pathway === undefined ? 'Loading pathway…' : 'This page is not available'}</AppText>
           <AppText variant="meta">Go back to Sangha to see the pathways.</AppText>
         </Card>
       ) : (

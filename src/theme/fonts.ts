@@ -5,6 +5,7 @@ import {
   Lora_600SemiBold,
 } from '@expo-google-fonts/lora';
 import {
+  NotoSerifDevanagari_400Regular,
   NotoSerifDevanagari_500Medium,
   NotoSerifDevanagari_600SemiBold,
 } from '@expo-google-fonts/noto-serif-devanagari';
@@ -20,6 +21,7 @@ export function useAppFonts() {
     Poppins_400Regular,
     Poppins_500Medium,
     Poppins_600SemiBold,
+    NotoSerifDevanagari_400Regular,
     NotoSerifDevanagari_500Medium,
     NotoSerifDevanagari_600SemiBold,
   });

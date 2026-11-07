@@ -31,7 +31,7 @@ export function GiveSection({ onAbout }: { onAbout: () => void }) {
             <Icon name="heart" size={22} color={colors.actionRed} />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 20, lineHeight: 25.6 }}>Give dāna</AppText>
+            <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 20, lineHeight: 25.5 }}>Give dāna</AppText>
             <AppText variant="meta">Support the seva above, by UPI</AppText>
           </View>
         </View>

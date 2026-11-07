@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Image, Pressable, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 
 import { ApprovedPhotoPlaceholder, AppText, Button, Card, DetailHeader, EventList, EventRow, Icon, Screen } from '@/components/ui';
 import { photos, useEvents, useSession, useVibhaga } from '@/data';
@@ -13,10 +13,10 @@ import { colors, fonts, shadows } from '@/theme/tokens';
 export default function VibhagaScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
+  const insets = useScreenInsets();
   const vibhaga = useVibhaga(id);
   const events = useEvents();
-  const { isSignedIn } = useSession();
+  const { status, canUsePersonalFeatures: isSignedIn } = useSession();
   const { toggle, busyId } = useEventToggle();
   const [volunteerOpen, setVolunteerOpen] = useState(false);
   const [formKey, setFormKey] = useState(0);
@@ -32,14 +32,14 @@ export default function VibhagaScreen() {
       <Screen contentStyle={{ paddingHorizontal: 20, gap: 16 }}>
         <DetailHeader />
         <Card style={{ padding: 20, gap: 4 }}>
-          <AppText variant="label">This page is not available</AppText>
+          <AppText variant="label">{vibhaga === undefined ? 'Loading vibhaga…' : 'This page is not available'}</AppText>
           <AppText variant="meta">Go back to Sangha to see the vibhagas of the Trust.</AppText>
         </Card>
       </Screen>
     );
   }
 
-  const requireSignIn = (go: () => void) => (isSignedIn ? go() : router.push('/welcome'));
+  const requireSignIn = (go: () => void) => (isSignedIn ? go() : router.push(status === 'signedIn' ? '/setup' : '/welcome'));
 
   return (
     <Screen edgeToEdgeTop contentStyle={{ paddingBottom: 32 }}>

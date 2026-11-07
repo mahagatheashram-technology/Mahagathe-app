@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 
 import { MahabharataSection } from '@/features/wisdom/MahabharataSection';
 import { SearchField } from '@/features/wisdom/SearchField';
@@ -14,7 +14,7 @@ import { fonts } from '@/theme/tokens';
 
 /** WisdomV3. Readable by guests (P-01). */
 export default function WisdomScreen() {
-  const insets = useSafeAreaInsets();
+  const insets = useScreenInsets();
   const [query, setQuery] = useState('');
   const today = useTodayVakyam();
   const themes = useVakyamThemes();

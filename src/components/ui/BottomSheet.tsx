@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Animated, Easing, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Animated, Easing, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 
 import { AppText } from './AppText';
 import { colors, radii } from '@/theme/tokens';
@@ -15,13 +15,17 @@ export function BottomSheet({
   onClose,
   title,
   children,
+  scrollable = true,
+  label,
 }: {
   visible: boolean;
   onClose: () => void;
   title?: string;
   children: ReactNode;
+  scrollable?: boolean;
+  label?: string;
 }) {
-  const insets = useSafeAreaInsets();
+  const insets = useScreenInsets();
   const [mounted, setMounted] = useState(visible);
   const [progress] = useState(() => new Animated.Value(visible ? 1 : 0));
   const native = Platform.OS !== 'web';
@@ -46,7 +50,7 @@ export function BottomSheet({
 
   return (
     <Modal transparent animationType="none" visible onRequestClose={onClose} statusBarTranslucent>
-      <View style={styles.root}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.root}>
         <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: colors.scrim, opacity: progress }]}>
           <Pressable
             accessibilityRole="button"
@@ -57,6 +61,7 @@ export function BottomSheet({
         </Animated.View>
         <Animated.View
           accessibilityViewIsModal
+          accessibilityLabel={label ?? title}
           style={[
             styles.sheet,
             {
@@ -66,13 +71,16 @@ export function BottomSheet({
           ]}>
           <View style={styles.handle} />
           {title ? (
-            <AppText variant="section" style={{ marginBottom: 6 }} accessibilityRole="header">
-              {title}
-            </AppText>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <AppText variant="section" style={{ flex: 1 }} accessibilityRole="header">{title}</AppText>
+              <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={onClose} style={{ minWidth: 44, minHeight: 44, justifyContent: 'center' }}>
+                <AppText color={colors.actionRed}>Close</AppText>
+              </Pressable>
+            </View>
           ) : null}
-          {children}
+          {scrollable ? <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 12, paddingBottom: 4 }}>{children}</ScrollView> : children}
         </Animated.View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

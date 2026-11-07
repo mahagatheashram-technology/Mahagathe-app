@@ -2,7 +2,7 @@ import { observeClock } from "./lib/time";
 import { v, ConvexError } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getUser, requireConsentedUser } from "./lib/auth";
-import { boundedText, dayKey, normaliseForSearch } from "./lib/logic";
+import { boundedText, dayKey } from "./lib/logic";
 import {
   isPublished,
   needPublished,
@@ -10,21 +10,23 @@ import {
   toVakyam,
 } from "./lib/content";
 import { THEME_LABELS } from "../src/data/types";
+import { visibleEpisode } from "./itihasa";
+import { foldForSearch, matchesFolded } from "../src/data/search";
+import type { WisdomSearchResult } from "../src/data/types";
 import * as V from "./lib/validators";
 
 export const today = query({
   args: {},
   returns: v.union(V.vakyamResult, v.null()),
   handler: async (ctx) => {
-    await observeClock(ctx);
+    const now = await observeClock(ctx);
     const rows = await ctx.db
       .query("vakyams")
       .withIndex("by_status_date", (q) =>
-        q.eq("status", "published").lte("publishDate", dayKey(Date.now())),
+        q.eq("status", "published").lte("publishDate", dayKey(now)),
       )
-      .order("desc")
-      .collect();
-    for (const item of rows) {
+      .order("desc");
+    for await (const item of rows) {
       if (!isPublished(item)) continue;
       const result = await toVakyam(ctx, item);
       if (result) return result;
@@ -85,31 +87,32 @@ export const byTheme = query({
 });
 export const search = query({
   args: { text: v.string(), limit: v.optional(v.number()) },
-  returns: v.array(V.vakyamResult),
+  returns: v.object({
+    vakyams: v.array(V.vakyamResult),
+    episodes: v.array(v.object({ ...V.episodeSummary, seasonTitle: v.string(), boriRange: v.string() })),
+  }),
   handler: async (ctx, { text, limit = 50 }) => {
     await observeClock(ctx);
-    if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
-      throw new ConvexError("Limit must be 1–100.");
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100) throw new ConvexError("Limit must be 1–100.");
+    const result: WisdomSearchResult = { vakyams: [], episodes: [] };
+    const term = text.trim().slice(0, 200);
+    if (!term) return result;
+    // Indexed, streaming published-only reads preserve W-14's transliteration
+    // and word-prefix matching, unlike Convex's tokenised full-text semantics.
+    for await (const row of ctx.db.query("vakyams").withIndex("by_status", q => q.eq("status", "published"))) {
+      if (!isPublished(row) || !matchesFolded(foldForSearch(`${row.text} ${row.meaning} ${THEME_LABELS[row.theme]} vakyam guru`), term)) continue;
+      const value = await toVakyam(ctx, row);
+      if (value) result.vakyams.push(value);
+      if (result.vakyams.length >= limit) break;
     }
-    const term = normaliseForSearch(text.slice(0, 200));
-    if (!term) return [];
-    // Substring matching is deliberate: Convex full-text search tokenises rather
-    // than providing the IAST-insensitive substring contract in W-14.
-    const rows = await ctx.db
-      .query("vakyams")
-      .withIndex("by_status_date", (q) => q.eq("status", "published"))
-      .collect();
-    const matches = rows.filter(
-      (row) =>
-        isPublished(row) &&
-        normaliseForSearch(
-          `${row.text} ${row.meaning} ${row.attribution}`,
-        ).includes(term),
-    );
-    const values = await Promise.all(matches.map((row) => toVakyam(ctx, row)));
-    return values
-      .filter((row) => row !== null)
-      .slice(0, Math.max(1, Math.min(100, Math.floor(limit))));
+    for await (const row of ctx.db.query("episodes").withIndex("by_status", q => q.eq("status", "published"))) {
+      const season = await ctx.db.get(row.seasonId);
+      if (!season || !isPublished(season) || !(await visibleEpisode(ctx, row))) continue;
+      if (!matchesFolded(foldForSearch(`${row.title} ${season.title} ${row.boriRange} ${row.paragraphs.join(" ")} episode mahabharata`), term)) continue;
+      result.episodes.push({ id: row.slug, seasonId: season.slug, number: row.number, title: row.title, readMinutes: row.readMinutes, seasonTitle: season.title, boriRange: row.boriRange });
+      if (result.episodes.length >= limit) break;
+    }
+    return result;
   },
 });
 export const isSaved = query({

@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText, Card } from '@/components/ui';
 import { photos, useEvents, useRegisterForEvent, useSession, type EventItem } from '@/data';
@@ -15,18 +15,20 @@ export function ComingUp() {
   const router = useRouter();
   const events = useEvents(3);
   const register = useRegisterForEvent();
-  const { status } = useSession();
+  const { status, canUsePersonalFeatures } = useSession();
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const toggle = async (e: EventItem) => {
     // T-01: guests can browse; registering needs an account.
-    if (status !== 'signedIn') {
-      router.push('/welcome');
+    if (!canUsePersonalFeatures) {
+      router.push(status === 'signedIn' ? '/setup' : '/welcome');
       return;
     }
     setBusyId(e.id);
     try {
       await register(e.id, !e.registered);
+    } catch {
+      Alert.alert('Registration unchanged', 'We could not update your registration. Please try again.');
     } finally {
       setBusyId(null);
     }
@@ -38,7 +40,7 @@ export function ComingUp() {
   return (
     <View style={{ paddingTop: 28, paddingHorizontal: 20, paddingBottom: 20, gap: 14 }} accessibilityLabel="Coming up">
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <AppText variant="section" accessibilityRole="header" style={{ lineHeight: 26.88 }}>
+        <AppText variant="section" accessibilityRole="header" style={{ lineHeight: 27 }}>
           Coming up
         </AppText>
         <Pressable
@@ -82,7 +84,7 @@ export function ComingUp() {
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16 }}>
                 <View style={{ flex: 1 }}>
-                  <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 19, lineHeight: 24.32 }}>{lead.title}</AppText>
+                  <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 19, lineHeight: 24 }}>{lead.title}</AppText>
                   <AppText variant="meta" style={{ lineHeight: 19.5 }}>
                     {lead.place} · {lead.timeLabel}
                   </AppText>
@@ -117,7 +119,7 @@ export function ComingUp() {
                       <AppText variant="label" style={{ lineHeight: 21 }}>
                         {e.title}
                       </AppText>
-                      <AppText variant="caption" style={{ lineHeight: 18 }}>
+                      <AppText variant="caption" style={{ lineHeight: 17.5 }}>
                         {e.place} · {e.timeLabel}
                       </AppText>
                     </View>
@@ -151,7 +153,7 @@ function DateBadge({ iso }: { iso: string }) {
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 14, paddingHorizontal: 16 },
-  month: { fontFamily: fonts.sansSemibold, fontSize: 11, lineHeight: 16, letterSpacing: 0.88, color: colors.actionRed, textAlign: 'center' },
+  month: { fontFamily: fonts.sansSemibold, fontSize: 11, lineHeight: 16.5, letterSpacing: 0.88, color: colors.actionRed, textAlign: 'center' },
   day: { fontFamily: fonts.serifSemibold, fontSize: 22, lineHeight: 24.2, color: colors.ink, textAlign: 'center' },
   badge: {
     position: 'absolute',

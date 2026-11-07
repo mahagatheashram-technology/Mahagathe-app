@@ -4,22 +4,23 @@ import { Pressable, Share, StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { AppText, ApprovedPhotoPlaceholder, Button, Card, Chip, DetailHeader, Icon, Screen } from '@/components/ui';
-import { useStatusBarInset } from '@/components/ui/useStatusBarInset';
-import { THEME_LABELS, useSavedVakyam, useVakyam } from '@/data';
+import { useStatusBarInset, useScreenInsets } from '@/components/ui/useStatusBarInset';
+import { THEME_LABELS, useSavedVakyam, useVakyam, useSession } from '@/data';
 import { formatLongDate, parseCalendarDate } from '@/features/home/format';
 import { ReportSheet } from '@/features/home/ReportSheet';
 import { Skeleton } from '@/features/home/Skeleton';
 import { colors, fonts } from '@/theme/tokens';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function VakyamScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const vakyam = useVakyam(id);
   const { isSaved, toggle } = useSavedVakyam(id ?? '');
+  const { status, canUsePersonalFeatures } = useSession();
+  const [saveError, setSaveError] = useState(false);
   const [reporting, setReporting] = useState(false);
   const top = useStatusBarInset();
-  const insets = useSafeAreaInsets();
+  const insets = useScreenInsets();
 
   const content = {
     gap: 22,
@@ -32,7 +33,8 @@ export default function VakyamScreen() {
     return (
       <Screen edgeToEdgeTop contentStyle={content}>
         <DetailHeader />
-        <View style={{ gap: 18, paddingTop: 8 }}>
+        {saveError ? <AppText accessibilityLiveRegion="polite" color={colors.actionRed}>We could not save this Vākyam. Please try again.</AppText> : null}
+      <View style={{ gap: 18, paddingTop: 8 }}>
           <Skeleton width={240} height={48} radius={24} />
           <Skeleton height={42} />
           <Skeleton height={42} width="80%" />
@@ -76,7 +78,11 @@ export default function VakyamScreen() {
             accessibilityRole="button"
             accessibilityLabel={isSaved ? 'Remove from saved' : 'Save'}
             accessibilityState={{ selected: isSaved }}
-            onPress={toggle}
+            onPress={async () => {
+              if (!canUsePersonalFeatures) { router.push(status === 'signedIn' ? '/setup' : '/welcome'); return; }
+              setSaveError(false);
+              try { await toggle(); } catch { setSaveError(true); }
+            }}
             style={styles.bookmark}>
             <Svg width={20} height={20} viewBox="0 0 24 24">
               <Path
@@ -92,15 +98,16 @@ export default function VakyamScreen() {
         }
       />
 
+      {saveError ? <AppText accessibilityLiveRegion="polite" color={colors.actionRed}>We could not save this Vākyam. Please try again.</AppText> : null}
       <View style={{ gap: 18, paddingTop: 8 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <ApprovedPhotoPlaceholder />
           <View style={{ flex: 1, gap: 2 }}>
-            <AppText variant="eyebrow" style={{ letterSpacing: 1.68, lineHeight: 18 }}>
+            <AppText variant="eyebrow" style={{ letterSpacing: 1.68, lineHeight: 17.5 }}>
               Guru Vākyam · {THEME_LABELS[vakyam.theme]}
             </AppText>
             {vakyam.attribution ? (
-              <AppText variant="label" style={{ fontFamily: fonts.sansMedium, fontSize: 13, lineHeight: 20 }}>
+              <AppText variant="label" style={{ fontFamily: fonts.sansMedium, fontSize: 13, lineHeight: 19.5 }}>
                 {vakyam.attribution}
               </AppText>
             ) : null}
@@ -117,7 +124,7 @@ export default function VakyamScreen() {
       </View>
 
       <View style={styles.simple}>
-        <AppText variant="overline" style={{ lineHeight: 20 }}>
+        <AppText variant="overline" style={{ lineHeight: 19.5 }}>
           In simple words
         </AppText>
         <AppText variant="bodyLarge" style={{ lineHeight: 27.2 }}>
@@ -153,7 +160,7 @@ export default function VakyamScreen() {
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Report a wrong source or text"
-        onPress={() => setReporting(true)}
+        onPress={() => canUsePersonalFeatures ? setReporting(true) : router.push(status === 'signedIn' ? '/setup' : '/welcome')}
         style={styles.report}>
         <Icon name="flag" size={15} color={colors.muted} />
         <AppText variant="meta" style={{ lineHeight: 20 }}>

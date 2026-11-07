@@ -4,7 +4,7 @@ import { Pressable, View } from 'react-native';
 import { AppText, BottomSheet, Button, Icon } from '@/components/ui';
 import { colors, fonts } from '@/theme/tokens';
 
-export type Option = { key: string; label: string };
+export type Option = { key: string; label: string; disabled?: boolean };
 
 /**
  * Single- or multi-select sheet. Single: tapping a row selects and closes. Multi: toggle rows, then Save.
@@ -53,12 +53,17 @@ function OptionBody({
 }) {
   const [draft, setDraft] = useState<string[]>(selected);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(false);
 
   const submit = async (keys: string[]) => {
+    if (saving) return;
     setSaving(true);
+    setError(false);
     try {
       await onSubmit(keys);
       onClose();
+    } catch {
+      setError(true);
     } finally {
       setSaving(false);
     }
@@ -74,6 +79,8 @@ function OptionBody({
               key={o.key}
               accessibilityRole={multi ? 'checkbox' : 'radio'}
               accessibilityLabel={o.label}
+              disabled={o.disabled || saving}
+              accessibilityState={{ disabled: o.disabled || saving, checked: on }}
               aria-checked={on}
               onPress={() => {
                 if (multi) setDraft((d) => (on ? d.filter((k) => k !== o.key) : [...d, o.key]));
@@ -107,6 +114,7 @@ function OptionBody({
           );
         })}
       </View>
+      {error ? <AppText accessibilityLiveRegion="polite" color={colors.actionRed}>We could not save this change. Please try again.</AppText> : null}
       {multi ? <Button label="Save" onPress={() => submit(draft)} loading={saving} /> : null}
     </>
   );

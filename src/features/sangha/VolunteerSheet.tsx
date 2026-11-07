@@ -25,7 +25,7 @@ export function VolunteerSheet({
   const profile = useProfile();
   const signup = useVolunteerSignup();
   const [name, setName] = useState(profile?.displayName ?? '');
-  const [phone, setPhone] = useState(profile?.phoneMasked ?? '');
+  const [phone, setPhone] = useState('');
   const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
   const inFlight = useRef(false);

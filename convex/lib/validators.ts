@@ -88,6 +88,7 @@ export const editorialFields = {
   status: contentStatus,
   authorId: v.optional(v.id("users")),
   reviewerId: v.optional(v.id("users")),
+  editorIds: v.optional(v.array(v.id("users"))),
   publishAt: v.optional(v.number()),
   unpublishAt: v.optional(v.number()),
   demo: v.optional(v.boolean()),
@@ -193,7 +194,9 @@ export const paramparaFields = {
   sourceId: v.optional(v.id("sources")),
 };
 export const purposeFields = { name: v.string(), tagline: v.string() };
+export const contactInfo = v.object({ legalName: v.string(), address: v.string(), phone: v.string(), email: v.string() });
 export const settingsFields = {
+  contact: v.optional(contactInfo),
   demoMandalaDays: v.optional(
     v.array(
       v.union(

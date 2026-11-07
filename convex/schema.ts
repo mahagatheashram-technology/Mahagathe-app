@@ -33,6 +33,12 @@ export default defineSchema({
     recordedBy: v.optional(v.id("users")),
     grantedAt: v.number(),
   }).index("by_user", ["userId"]),
+  guardianConsentRequests: defineTable({
+    userId: v.id("users"),
+    ageBand: V.ageBand,
+    guardianPhone: v.string(),
+    status: v.union(v.literal("pending"), v.literal("granted")),
+  }).index("by_user", ["userId"]).index("by_status", ["status"]),
   notificationPrefs: defineTable({
     userId: v.id("users"),
     ...V.prefs.fields,
@@ -201,6 +207,8 @@ export default defineSchema({
     consent: v.boolean(),
     consentVersion: v.string(),
     message: v.string(),
+    name: v.optional(v.string()),
+    phone: v.optional(v.string()),
     createdAt: v.number(),
   })
     .index("by_user", ["userId"])
@@ -208,12 +216,24 @@ export default defineSchema({
   appSettings: defineTable({ ...V.editorialFields, ...V.settingsFields })
     .index("by_slug", ["slug"])
     .index("by_status", ["status"]),
+  contentDrafts: defineTable({
+    table: V.contentTable,
+    slug: v.string(),
+    payload: V.contentPayload,
+    status: V.contentStatus,
+    authorId: v.id("users"),
+    editorIds: v.array(v.id("users")),
+    reviewerId: v.optional(v.id("users")),
+    publishAt: v.optional(v.number()),
+    unpublishAt: v.optional(v.number()),
+  }).index("by_content", ["table", "slug"]).index("by_table_status", ["table", "status"]),
   contentVersions: defineTable({
     table: V.contentTable,
     slug: v.string(),
     payload: V.contentPayload,
     authorId: v.id("users"),
     reviewerId: v.id("users"),
+    editorIds: v.optional(v.array(v.id("users"))),
     approvedAt: v.number(),
   }).index("by_content", ["table", "slug"]),
 });

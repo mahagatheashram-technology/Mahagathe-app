@@ -1,0 +1,145 @@
+/** Live implementation of the screen data contract. Never imports mock fixtures. */
+import { useConvex, useMutation, useQuery } from 'convex/react';
+import { useCallback, useMemo, useRef } from 'react';
+import { Linking, Platform, Share } from 'react-native';
+
+import type { Id } from '../../convex/_generated/dataModel';
+import { api } from '../../convex/_generated/api';
+import { useLiveSession } from '../providers/LiveSessionProvider';
+import { useClock } from './clock';
+import { phoneWithCountryCode } from './phone';
+import type { Profile, VakyamTheme, VolunteerSignup } from './types';
+
+export const useSession = useLiveSession;
+export function useProfile() { return useLiveSession().profile; }
+export function useUpdateProfile() {
+  const update = useMutation(api.profiles.updateProfile);
+  return useCallback(async (patch: Partial<Pick<Profile, 'displayName' | 'ageBand' | 'roles' | 'language' | 'reminderTime'>>) => { await update({ patch }); }, [update]);
+}
+export function useRequestGuardianConsent() {
+  const request = useMutation(api.profiles.requestGuardianConsent);
+  return useCallback(async (input: Parameters<typeof request>[0]) => { await request({ ...input, guardianPhone: phoneWithCountryCode(input.guardianPhone) }); }, [request]);
+}
+export function useNotificationPrefs() {
+  const { canUsePersonalFeatures: allowed } = useSession();
+  const prefs = useQuery(api.profiles.notificationPrefs, allowed ? {} : 'skip');
+  return allowed ? prefs : undefined;
+}
+export function useSetNotificationPref() {
+  const update = useMutation(api.profiles.setNotificationPref);
+  return useCallback(async (key: 'practiceReminder' | 'dailyVakyam' | 'registeredEvents', value: boolean) => { await update({ key, value }); }, [update]);
+}
+export function useAccountActions() {
+  const client = useConvex();
+  const remove = useMutation(api.profiles.deleteAccount);
+  const { signOut } = useSession();
+  return {
+    requestDataExport: async () => {
+      const result = await client.query(api.profiles.requestDataExport, {});
+      if (Platform.OS === 'web') {
+        const url = URL.createObjectURL(new Blob([result.json], { type: 'application/json' }));
+        const anchor = document.createElement('a');
+        anchor.href = url; anchor.download = result.filename; anchor.click();
+        URL.revokeObjectURL(url);
+      } else await Share.share({ title: result.filename, message: result.json });
+    },
+    deleteAccount: async () => { await remove({}); await signOut(); },
+  };
+}
+export function useTodayVakyam() { return useQuery(api.wisdom.today, {}); }
+export function useVakyam(id: string | undefined) { return useQuery(api.wisdom.byId, id ? { id } : 'skip'); }
+export function useVakyamThemes() { return useQuery(api.wisdom.themes, {}); }
+export function useVakyamsByTheme(theme: VakyamTheme) { return useQuery(api.wisdom.byTheme, { theme }); }
+export function useSavedVakyam(id: string) {
+  const { canUsePersonalFeatures: allowed } = useSession();
+  const saved = useQuery(api.wisdom.isSaved, allowed && id ? { id } : 'skip');
+  const toggleSaved = useMutation(api.wisdom.toggleSaved);
+  const toggle = useCallback(async () => { if (!allowed) throw new Error('Finish account setup first.'); await toggleSaved({ id }); }, [allowed, toggleSaved, id]);
+  return { isSaved: saved ?? false, toggle };
+}
+export function useReportContent() {
+  const report = useMutation(api.wisdom.report);
+  return useCallback(async (input: { contentId: string; reason: string }) => { await report(input); }, [report]);
+}
+export function useWisdomSearch(query: string) { return useQuery(api.wisdom.search, { text: query }); }
+export function useSmallStep() { return useQuery(api.wisdom.smallStep, {}); }
+export function usePractices() { return useQuery(api.sadhana.practices, {}); }
+export function useTodayPractice() { return useQuery(api.sadhana.todayPractice, {}); }
+export function usePractice(id: string | undefined) { return useQuery(api.sadhana.practice, id ? { id } : 'skip'); }
+/** Fetch on an explicit play action: storage URLs never enter catalogue subscriptions. */
+export function usePracticeAudio() {
+  const request = useMutation(api.sadhana.getPracticeAudioUrl);
+  return useCallback((id: string) => request({ id }), [request]);
+}
+export function useMandala() {
+  const { canUsePersonalFeatures: allowed } = useSession();
+  const value = useQuery(api.mandala.active, allowed ? {} : 'skip');
+  return allowed ? value : null;
+}
+export function useGroupCount() { return useQuery(api.mandala.groupCount, {}); }
+export function useCompleteMandalaDay() {
+  const complete = useMutation(api.mandala.completeToday);
+  return useCallback(async () => { await complete({}); }, [complete]);
+}
+export function useStartMandala() {
+  const start = useMutation(api.mandala.start);
+  return useCallback(async (practiceId: string) => { await start({ practiceId, rulesAccepted: true }); }, [start]);
+}
+export function useSeasons() { return useQuery(api.itihasa.seasons, {}); }
+export function useSeasonEpisodes(seasonId: string) { return useQuery(api.itihasa.seasonEpisodes, { seasonId }); }
+export function useEpisode(id: string | undefined) { return useQuery(api.itihasa.episode, id ? { id } : 'skip'); }
+export function useContinueReading() {
+  const { canUsePersonalFeatures: allowed } = useSession();
+  const value = useQuery(api.itihasa.continueReading, allowed ? {} : 'skip');
+  return allowed ? value : null;
+}
+export function useReadingPosition(episodeId: string | undefined) {
+  const { canUsePersonalFeatures: allowed } = useSession();
+  const value = useQuery(api.itihasa.readingPosition, allowed && episodeId ? { episodeId } : 'skip');
+  return allowed ? value : 0;
+}
+export function useSaveReadingPosition() {
+  const save = useMutation(api.itihasa.saveReadingPosition);
+  const { canUsePersonalFeatures: allowed } = useSession();
+  return useCallback(async (episodeId: string, progress: number) => { if (allowed) await save({ episodeId, progress }); }, [save, allowed]);
+}
+export function useEvents(limit?: number) { return useQuery(api.sangha.events, { limit }); }
+export function useRegisterForEvent() {
+  const register = useMutation(api.sangha.register);
+  const unregister = useMutation(api.sangha.unregister);
+  return useCallback(async (eventId: string, going = true) => { await (going ? register : unregister)({ eventId }); }, [register, unregister]);
+}
+export function useVibhagas() { return useQuery(api.sangha.vibhagas, {}); }
+export function usePathways() { return useQuery(api.sangha.pathways, {}); }
+export function useVibhaga(id: string | undefined) { return useQuery(api.sangha.vibhaga, id ? { id } : 'skip'); }
+export function usePathway(id: string | undefined) { return useQuery(api.sangha.pathway, id ? { id } : 'skip'); }
+export function useVolunteerSignup() {
+  const apply = useMutation(api.sangha.volunteerApply);
+  return useCallback(async (input: VolunteerSignup) => { await apply({ ...input, phone: phoneWithCountryCode(input.phone), message: '', consentVersion: 'volunteer-v1' }); }, [apply]);
+}
+export function useContactInfo() { return useQuery(api.sangha.contactInfo, {}); }
+export function useParampara() { return useQuery(api.sangha.parampara, {}); }
+export function useDonationOptions() { return useQuery(api.dana.purposes, {}); }
+export function useCreateDonation() {
+  const create = useMutation(api.dana.createDonation);
+  const attempt = useRef<{ key: string; id: string } | null>(null);
+  return useCallback(async (input: { amount: number; purposeId: string }) => {
+    const key = JSON.stringify(input);
+    if (!attempt.current || attempt.current.key !== key) attempt.current = { key, id: `${Date.now()}-${Math.random().toString(36).slice(2)}` };
+    const result = await create({ ...input, clientRequestId: attempt.current.id });
+    if (result.status !== 'pending') attempt.current = null;
+    return result;
+  }, [create]);
+}
+export function useExternalLinks() { return useQuery(api.wisdom.externalLinks, {}); }
+export function useOpenWhatsApp() {
+  const links = useExternalLinks();
+  return useMemo(() => async () => { if (links?.whatsapp) await Linking.openURL(links.whatsapp); }, [links]);
+}
+
+export function useCurrentTime() { return useClock(); }
+
+export function useDonationResult(id: string | undefined) {
+  const { canUsePersonalFeatures: allowed } = useSession();
+  return useQuery(api.dana.donation, allowed && id ? { id: id as Id<'donations'> } : 'skip');
+}

@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 import { internalMutation } from "./_generated/server";
 import type { MutationCtx } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
@@ -22,6 +23,8 @@ export const run = internalMutation({
   args: {},
   returns: v.null(),
   handler: async (ctx) => {
+    const clock = await ctx.db.query("serverClock").withIndex("by_key", q => q.eq("key", "clock")).unique();
+    if (!clock) await ctx.db.insert("serverClock", { key: "clock", updatedAt: Date.now() });
     // This explicit demo-only exception is required by the zero-key milestone.
     // It is NOT editorial approval or rights clearance. Never use these source
     // records to approve production content in the CMS.
@@ -149,6 +152,8 @@ export const run = internalMutation({
           programId: "samatha",
         }),
       );
+      const event = await bySlug(ctx, "events", item.id);
+      if (event && event.startsAt > Date.now()) await ctx.scheduler.runAt(event.startsAt, internal.cms.refreshEvent, { slug: event.slug, boundary: event.startsAt });
     }
     for (const item of fixtures.pathways) {
       await ensure(ctx, "pathways", item.id, () =>
@@ -184,6 +189,7 @@ export const run = internalMutation({
         slug: "default",
         smallSteps: fixtures.smallSteps,
         donationPresets: fixtures.donationPresets,
+        contact: fixtures.contact,
         links: fixtures.links,
         // Preserve visual-demo fixtures without presenting fictitious community
         // activity or theme counts as real server records.

@@ -9,7 +9,9 @@ import { colors, fonts } from '@/theme/tokens';
 /** The single red feature block on Sangha: guru + lineage entry point (→ /parampara). */
 export function ParamparaCard() {
   const router = useRouter();
-  const { guru } = useParampara();
+  const content = useParampara();
+  if (!content) return <AppText>{content === undefined ? 'Loading Paramparā…' : 'Paramparā will appear here once approved.'}</AppText>;
+  const { guru } = content;
   return (
     <Pressable
       accessibilityRole="link"

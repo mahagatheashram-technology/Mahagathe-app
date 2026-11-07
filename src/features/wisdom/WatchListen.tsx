@@ -2,16 +2,18 @@ import { Linking, Pressable, StyleSheet, View } from 'react-native';
 
 import { tileStyles } from './ThemeTiles';
 import { AppText, Icon, type IconName } from '@/components/ui';
-import { externalLinks } from '@/data';
+import { useExternalLinks } from '@/data';
 import { colors, fonts } from '@/theme/tokens';
 
-const ITEMS: { key: string; title: string; sub: string; icon: IconName; url: string }[] = [
-  { key: 'youtube', title: 'YouTube', sub: 'Talks and answers', icon: 'video', url: externalLinks.youtube },
-  { key: 'podcast', title: 'Dharma Speaks', sub: 'Weekly podcast', icon: 'mic', url: externalLinks.podcast },
+const ITEMS: { key: string; title: string; sub: string; icon: IconName; url: 'youtube' | 'podcast' }[] = [
+  { key: 'youtube', title: 'YouTube', sub: 'Talks and answers', icon: 'video', url: 'youtube' },
+  { key: 'podcast', title: 'Dharma Speaks', sub: 'Weekly podcast', icon: 'mic', url: 'podcast' },
 ];
 
 /** W-13: links out of the app. */
 export function WatchListen() {
+  const links = useExternalLinks();
+  if (!links) return <AppText>{links === undefined ? 'Loading links…' : 'Links will appear here once approved.'}</AppText>;
   return (
     <View style={{ flexDirection: 'row', gap: 10 }}>
       {ITEMS.map((it) => (
@@ -19,7 +21,7 @@ export function WatchListen() {
           key={it.key}
           accessibilityRole="link"
           accessibilityLabel={`${it.title}, ${it.sub}. Opens outside the app`}
-          onPress={() => Linking.openURL(it.url).catch(() => {})}
+          onPress={() => Linking.openURL(links[it.url]).catch(() => {})}
           style={({ pressed }) => [styles.card, pressed && { opacity: 0.85 }]}>
           <View style={styles.top}>
             <View style={tileStyles.iconTile}>
@@ -48,6 +50,6 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  title: { fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 22 },
-  sub: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 18, color: colors.muted },
+  title: { fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23 },
+  sub: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 17.5, color: colors.muted },
 });

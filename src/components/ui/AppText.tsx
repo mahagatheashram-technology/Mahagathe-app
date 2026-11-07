@@ -12,9 +12,9 @@ export const textVariants = StyleSheet.create({
   /** Screen titles: Lora 600 30 */
   title: { fontFamily: fonts.serifSemibold, fontSize: 30, lineHeight: 36, color: colors.ink },
   /** Section heading: Lora 600 21 */
-  section: { fontFamily: fonts.serifSemibold, fontSize: 21, lineHeight: 28, color: colors.ink },
+  section: { fontFamily: fonts.serifSemibold, fontSize: 21, lineHeight: 27, color: colors.ink },
   /** Card title: Lora 600 18 */
-  cardTitle: { fontFamily: fonts.serifSemibold, fontSize: 18, lineHeight: 24, color: colors.ink },
+  cardTitle: { fontFamily: fonts.serifSemibold, fontSize: 18, lineHeight: 23, color: colors.ink },
   /** Teaching / quote: Lora 400 27 */
   quote: { fontFamily: fonts.serif, fontSize: 27, lineHeight: 37, color: colors.ink },
   /** Reading prose: Lora 400 17 */
@@ -23,7 +23,8 @@ export const textVariants = StyleSheet.create({
   eyebrow: {
     fontFamily: fonts.sansSemibold,
     fontSize: 12,
-    letterSpacing: 1.7,
+    letterSpacing: 1.68,
+    lineHeight: 17.5,
     textTransform: 'uppercase',
     color: colors.actionRed,
   },
@@ -39,9 +40,9 @@ export const textVariants = StyleSheet.create({
   bodyLarge: { fontFamily: fonts.sans, fontSize: 16, lineHeight: 27, color: colors.ink },
   label: { fontFamily: fonts.sansSemibold, fontSize: 14, lineHeight: 20, color: colors.ink },
   /** Secondary line: Poppins 500 13 muted */
-  meta: { fontFamily: fonts.sansMedium, fontSize: 13, lineHeight: 19, color: colors.muted },
+  meta: { fontFamily: fonts.sansMedium, fontSize: 13, lineHeight: 19.5, color: colors.muted },
   /** Caption: Poppins 500 12 muted */
-  caption: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 18, color: colors.muted },
+  caption: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 17.5, color: colors.muted },
   /** Devanagari scripture / season cover glyphs */
   deva: { fontFamily: fonts.devaSemibold, fontSize: 26, lineHeight: 34, color: colors.ink },
 });

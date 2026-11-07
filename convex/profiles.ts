@@ -65,7 +65,7 @@ export const upsertFromIdentity = mutation({
       userId,
       ageBand: args.ageBand,
       guardianConsent:
-        !args.ageBand || isMinor(args.ageBand) ? "pending" : "notRequired",
+        isMinor(args.ageBand) ? "pending" : "notRequired",
     });
     return userId;
   },
@@ -129,7 +129,7 @@ export const updateProfile = mutation({
     const phone = identity?.phoneNumber;
     if (typeof phone === "string")
       await ctx.db.patch(user._id, {
-        phoneMasked: `•••••••${phone.slice(-3)}`,
+        phoneMasked: `${phone.startsWith("+91") ? "+91 " : "+ "}••••• ••${phone.slice(-3)}`,
       });
     return null;
   },
@@ -162,6 +162,9 @@ async function recordConsent(
     grantedAt: Date.now(),
   });
   await ctx.db.patch(profile._id, { guardianConsent: "granted" });
+  for (const request of await userRows(ctx, "guardianConsentRequests", args.userId)) {
+    await ctx.db.delete(request._id);
+  }
   return null;
 }
 
@@ -241,6 +244,7 @@ export const requestDataExport = query({
     const user = await requireUser(ctx);
     const tables = [
       "profiles",
+      "guardianConsentRequests",
       "guardianConsents",
       "notificationPrefs",
       "enrollments",
@@ -278,6 +282,27 @@ export const deleteAccount = mutation({
       await ctx.db.delete(row._id);
     await ctx.db.delete(user._id);
     // Aggregate group counts have no user identifiers and deliberately survive.
+    return null;
+  },
+});
+
+/** Minimal outbox for the trusted guardian verification service. No child name. */
+export const requestGuardianConsent = mutation({
+  args: { ageBand: V.ageBand, guardianPhone: v.string() },
+  returns: v.null(),
+  handler: async (ctx, { ageBand, guardianPhone }) => {
+    const user = await requireUser(ctx);
+    if (!isMinor(ageBand)) throw new ConvexError("A minor age band is required.");
+    const phone = guardianPhone.replace(/[\s()-]/g, "");
+    if (!/^\+[1-9]\d{7,14}$/.test(phone)) throw new ConvexError("Enter a guardian phone number with country code.");
+    const profile = await ctx.db.query("profiles").withIndex("by_user", q => q.eq("userId", user._id)).unique();
+    if (!profile) throw new ConvexError("Create your profile first.");
+    if (isMinor(profile.ageBand) && profile.ageBand !== ageBand) throw new ConvexError("Contact support to correct a minor age band.");
+    if (profile.guardianConsent === "granted") throw new ConvexError("Guardian consent has already been verified.");
+    await ctx.db.patch(profile._id, { ageBand, guardianConsent: "pending", displayName: undefined, roles: undefined, language: undefined, reminderTime: undefined });
+    await ctx.db.patch(user._id, { phoneMasked: undefined, staffRoles: [] });
+    await erasePersonalActivity(ctx, user._id);
+    await ctx.db.insert("guardianConsentRequests", { userId: user._id, ageBand, guardianPhone: phone, status: "pending" });
     return null;
   },
 });

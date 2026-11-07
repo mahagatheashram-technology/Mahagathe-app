@@ -6,7 +6,8 @@ const MONTHS = [
 
 /** "Friday, 6 November" */
 export function formatLongDate(d: Date) {
-  return `${WEEKDAYS[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]}`;
+  const india = new Date(d.getTime() + IST_OFFSET_MS);
+  return `${WEEKDAYS[india.getUTCDay()]}, ${india.getUTCDate()} ${MONTHS[india.getUTCMonth()]}`;
 }
 
 /** An ISO calendar date ("2026-11-06") as a local date, with no timezone shift. */

@@ -7,7 +7,7 @@ import {
   requireUser,
   isEnrolled,
 } from "./lib/auth";
-import { isPublished, needPublished, sourceApproved } from "./lib/content";
+import { isPublished, needPublished, publishedBySlug, sourceApproved } from "./lib/content";
 import { boundedText } from "./lib/logic";
 import * as V from "./lib/validators";
 
@@ -15,7 +15,7 @@ export const events = query({
   args: { limit: v.optional(v.number()) },
   returns: v.array(V.eventResult),
   handler: async (ctx, { limit }) => {
-    await observeClock(ctx);
+    const now = await observeClock(ctx);
     if (
       limit !== undefined &&
       (!Number.isInteger(limit) || limit < 1 || limit > 100)
@@ -24,7 +24,7 @@ export const events = query({
     const user = await getUser(ctx);
     const rows = await ctx.db
       .query("events")
-      .withIndex("by_status_start", (q) => q.eq("status", "published"))
+      .withIndex("by_status_start", (q) => q.eq("status", "published").gt("startsAt", now))
       .collect();
     return Promise.all(
       rows
@@ -210,6 +210,8 @@ export const volunteerApply = mutation({
     consent: v.boolean(),
     consentVersion: v.string(),
     message: v.string(),
+    name: v.string(),
+    phone: v.string(),
   },
   returns: v.id("volunteerApplications"),
   handler: async (ctx, args) => {
@@ -227,12 +229,16 @@ export const volunteerApply = mutation({
       )
       .unique();
     if (existing) return existing._id;
+    const phone = args.phone.replace(/[\s()-]/g, "");
+    if (!/^\+[1-9]\d{7,14}$/.test(phone)) throw new ConvexError("Enter a phone number with country code.");
     return ctx.db.insert("volunteerApplications", {
+      name: boundedText(args.name, "Name", 120),
+      phone,
       userId: user._id,
       vibhagaId: vibhaga._id,
       consent: true,
       consentVersion: boundedText(args.consentVersion, "Consent version", 100),
-      message: boundedText(args.message, "Message"),
+      message: args.message.trim() ? boundedText(args.message, "Message") : "",
       createdAt: Date.now(),
     });
   },
@@ -284,4 +290,24 @@ export const eventRegistrations = query({
       }),
     );
   },
+});
+
+export const vibhaga = query({
+  args: { id: v.string() },
+  returns: v.union(v.object({ id: v.string(), name: v.string(), tagline: v.string(), photo: V.photo, about: v.string() }), v.null()),
+  handler: async (ctx, { id }) => {
+    const row = await publishedBySlug(ctx, "vibhagas", id);
+    return row ? { id: row.slug, name: row.name, tagline: row.tagline, photo: row.photo, about: row.about } : null;
+  },
+});
+export const pathway = query({
+  args: { id: v.string() }, returns: v.union(v.object({ id: v.string(), ...V.pathwayFields }), v.null()),
+  handler: async (ctx, { id }) => {
+    const row = await publishedBySlug(ctx, "pathways", id);
+    return row ? { id: row.slug, name: row.name, about: row.about } : null;
+  },
+});
+export const contactInfo = query({
+  args: {}, returns: v.union(V.contactInfo, v.null()),
+  handler: async ctx => (await publishedBySlug(ctx, "appSettings", "default"))?.contact ?? null,
 });

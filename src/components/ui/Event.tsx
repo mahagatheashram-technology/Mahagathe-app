@@ -67,7 +67,7 @@ function RegisterControl({ event, onToggle, busy, wide }: ToggleProps & { wide?:
       styles.btnBase,
       wide ? styles.btnWide : styles.btnRow,
       event.registered
-        ? { backgroundColor: colors.sand }
+        ? { backgroundColor: colors.sand, ...(!wide ? { paddingHorizontal: 12 } : {}) }
         : wide
           ? { backgroundColor: colors.actionRed }
           : { borderWidth: 1.5, borderColor: colors.actionRed },
@@ -82,7 +82,7 @@ function RegisterControl({ event, onToggle, busy, wide }: ToggleProps & { wide?:
         accessibilityLabel={`Going to ${event.title}. Double tap to cancel your registration`}
         accessibilityState={{ selected: true, busy: !!busy }}>
         <Icon name="check" size={14} color={colors.ink} strokeWidth={2.6} />
-        <AppText style={[styles.btnText, { color: colors.ink, fontSize: wide ? 15 : 13 }]}>Going</AppText>
+        <AppText style={[styles.btnText, { color: colors.ink, fontSize: wide ? 15 : 13, lineHeight: wide ? 23 : 19.5 }]}>Going</AppText>
       </Pressable>
     );
   }
@@ -91,7 +91,7 @@ function RegisterControl({ event, onToggle, busy, wide }: ToggleProps & { wide?:
       {...common}
       accessibilityLabel={full ? `${event.title} is full` : `Register for ${event.title}`}
       accessibilityState={{ disabled: full, busy: !!busy }}>
-      <AppText style={[styles.btnText, { color: wide ? colors.white : colors.actionRed, fontSize: wide ? 15 : 13 }]}>
+      <AppText style={[styles.btnText, { color: wide ? colors.white : colors.actionRed, fontSize: wide ? 15 : 13, lineHeight: wide ? 23 : 19.5 }]}>
         {full ? 'Full' : 'Register'}
       </AppText>
     </Pressable>
@@ -192,9 +192,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     alignItems: 'center',
   },
-  badgeMon: { fontFamily: fonts.sansSemibold, fontSize: 11, lineHeight: 16, letterSpacing: 0.88, color: colors.actionRed },
+  badgeMon: { fontFamily: fonts.sansSemibold, fontSize: 11, lineHeight: 16.5, letterSpacing: 0.88, color: colors.actionRed },
   badgeDay: { fontFamily: fonts.serifSemibold, fontSize: 24, lineHeight: 26.4 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 16, paddingVertical: 14 },
-  rowMon: { fontFamily: fonts.sansSemibold, fontSize: 11, lineHeight: 16, letterSpacing: 0.88, color: colors.actionRed },
+  rowMon: { fontFamily: fonts.sansSemibold, fontSize: 11, lineHeight: 16.5, letterSpacing: 0.88, color: colors.actionRed },
   rowDay: { fontFamily: fonts.serifSemibold, fontSize: 22, lineHeight: 24.2 },
 });

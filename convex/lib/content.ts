@@ -92,6 +92,7 @@ export async function toVakyam(
 
 type UserTable =
   | "profiles"
+  | "guardianConsentRequests"
   | "guardianConsents"
   | "notificationPrefs"
   | "enrollments"

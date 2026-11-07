@@ -9,6 +9,7 @@ export async function erasePersonalActivity(
   userId: Id<"users">,
 ): Promise<void> {
   const tables = [
+    "guardianConsentRequests",
     "guardianConsents",
     "notificationPrefs",
     "enrollments",

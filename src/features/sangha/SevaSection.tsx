@@ -11,6 +11,8 @@ export function SevaSection() {
   const vibhagas = useVibhagas();
   const pathways = usePathways();
 
+  if (!vibhagas || !pathways) return <AppText accessibilityLiveRegion="polite" style={{ padding: 20 }}>Loading seva…</AppText>;
+
   const rows: (typeof vibhagas)[] = [];
   for (let i = 0; i < vibhagas.length; i += 2) rows.push(vibhagas.slice(i, i + 2));
 

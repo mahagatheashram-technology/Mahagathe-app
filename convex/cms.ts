@@ -31,9 +31,13 @@ async function mustGet(
   table: ContentTable,
   slug: string,
 ) {
-  const row = await bySlug(ctx, table, slug);
+  const row = await revision(ctx, table, slug) ?? await bySlug(ctx, table, slug);
   if (!row) throw new ConvexError("Content not found.");
   return row;
+}
+
+async function revision(ctx: Pick<QueryCtx, "db">, table: ContentTable, slug: string) {
+  return ctx.db.query("contentDrafts").withIndex("by_content", q => q.eq("table", table).eq("slug", slug)).unique();
 }
 
 /** Narrow on the discriminator before database writes; no untyped CMS blobs. */
@@ -74,9 +78,16 @@ async function replaceDraft(
   ctx: MutationCtx,
   payload: Payload,
   slug: string,
-  authorId: Id<"users">,
+  editorId: Id<"users">,
+  liveOnly = false,
 ) {
-  const meta = { slug, authorId, status: "draft" as const, demo: false };
+  const draft = liveOnly ? null : await revision(ctx, payload.table, slug);
+  if (draft) {
+    await ctx.db.patch(draft._id, { payload, editorIds: Array.from(new Set([...draft.editorIds, editorId])), status: "draft", reviewerId: undefined });
+    return;
+  }
+  const current = await bySlug(ctx, payload.table, slug);
+  const meta = { slug, authorId: current?.authorId ?? editorId, editorIds: Array.from(new Set([...(current?.editorIds ?? []), editorId])), status: "draft" as const, demo: false };
   switch (payload.table) {
     case "sources": {
       const row = await bySlug(ctx, "sources", slug);
@@ -152,6 +163,8 @@ async function snapshot(
   table: ContentTable,
   slug: string,
 ): Promise<Payload> {
+  const draft = await revision(ctx, table, slug);
+  if (draft) return draft.payload;
   switch (table) {
     case "sources": {
       const row = await bySlug(ctx, "sources", slug);
@@ -428,20 +441,20 @@ export const approve = mutation({
     const row = await mustGet(ctx, table, slug);
     if (row.status !== "in_review")
       throw new ConvexError("Only items in review may be approved.");
-    if (!canApprove(row.authorId, reviewer._id))
+    if (!canApprove(row.authorId, reviewer._id) || row.editorIds?.includes(reviewer._id))
       throw new ConvexError("A reviewer cannot approve their own work.");
     const payload = await snapshot(ctx, table, slug);
     await validateForApproval(ctx, payload);
     await ctx.db.patch(row._id, {
       status: "approved",
       reviewerId: reviewer._id,
-      demo: false,
     });
     return ctx.db.insert("contentVersions", {
       table,
       slug,
       payload,
       authorId: row.authorId!,
+      editorIds: row.editorIds ?? [],
       reviewerId: reviewer._id,
       approvedAt: Date.now(),
     });
@@ -450,12 +463,20 @@ export const approve = mutation({
 
 async function checkPublishable(
   ctx: Pick<QueryCtx, "db">,
-  row: ContentDoc,
+  row: Pick<ContentDoc, "authorId" | "reviewerId" | "editorIds">,
   payload: Payload,
 ) {
-  if (!row.reviewerId || !canApprove(row.authorId, row.reviewerId))
+  if (!row.reviewerId || !canApprove(row.authorId, row.reviewerId) || row.editorIds?.includes(row.reviewerId))
     throw new ConvexError("Independent approval is required.");
   await validateForApproval(ctx, payload);
+}
+
+async function installRevision(ctx: MutationCtx, draft: Doc<"contentDrafts">) {
+  await replaceDraft(ctx, draft.payload, draft.slug, draft.authorId, true);
+  const live = await bySlug(ctx, draft.table, draft.slug);
+  if (!live) throw new ConvexError("Content not found.");
+  await ctx.db.patch(live._id, { status: "published", authorId: draft.authorId, editorIds: draft.editorIds, reviewerId: draft.reviewerId, publishAt: draft.publishAt, unpublishAt: draft.unpublishAt, demo: false });
+  await ctx.db.delete(draft._id);
 }
 
 export const publish = mutation({
@@ -487,6 +508,13 @@ export const publish = mutation({
       unpublishAt,
       status: start <= now ? "published" : "approved",
     });
+    const draft = await revision(ctx, table, slug);
+    if (draft && start <= now) await installRevision(ctx, draft);
+    // Event start is a boundary too: refresh only this event's subscribers.
+    const payload = await snapshot(ctx, table, slug);
+    if (payload.table === "events" && payload.data.startsAt > now) {
+      await ctx.scheduler.runAt(payload.data.startsAt, internal.cms.refreshEvent, { slug, boundary: payload.data.startsAt });
+    }
     if (start > now)
       await ctx.scheduler.runAt(start, internal.cms.applySchedule, {
         table,
@@ -510,9 +538,12 @@ export const archive = mutation({
   returns: v.null(),
   handler: async (ctx, { table, slug }) => {
     await requireRole(ctx, "admin");
-    const row = await mustGet(ctx, table, slug);
+    const draft = await revision(ctx, table, slug);
+    if (draft) await ctx.db.delete(draft._id);
+    const live = await bySlug(ctx, table, slug);
+    if (!live) return null;
     // Clear scheduling fields so already queued publication jobs become no-ops.
-    await ctx.db.patch(row._id, {
+    await ctx.db.patch(live._id, {
       status: "archived",
       publishAt: undefined,
       unpublishAt: undefined,
@@ -522,35 +553,35 @@ export const archive = mutation({
 });
 
 export const applySchedule = internalMutation({
-  args: {
-    ...V.contentRef,
-    boundary: v.number(),
-    action: v.union(v.literal("publish"), v.literal("archive")),
-  },
+  args: { ...V.contentRef, boundary: v.number(), action: v.union(v.literal("publish"), v.literal("archive")) },
   returns: v.null(),
   handler: async (ctx, { table, slug, boundary, action }) => {
-    const row = await bySlug(ctx, table, slug);
-    if (!row) return null;
-    if (
-      action === "publish" &&
-      Date.now() >= boundary &&
-      row.publishAt === boundary &&
-      row.status === "approved" &&
-      (row.unpublishAt === undefined || row.unpublishAt > Date.now())
-    ) {
+    if (Date.now() < boundary) return null;
+    const draft = await revision(ctx, table, slug);
+    const live = await bySlug(ctx, table, slug);
+    if (action === "publish") {
+      const row = draft ?? live;
+      if (!row || row.status !== "approved" || row.publishAt !== boundary || (row.unpublishAt !== undefined && row.unpublishAt <= Date.now())) return null;
       await checkPublishable(ctx, row, await snapshot(ctx, table, slug));
-      await ctx.db.patch(row._id, { status: "published" });
+      if (draft) await installRevision(ctx, draft);
+      else await ctx.db.patch(row._id, { status: "published" });
+    } else {
+      if (live?.unpublishAt === boundary) await ctx.db.patch(live._id, { status: "archived", publishAt: undefined, unpublishAt: undefined });
+      if (draft?.unpublishAt === boundary) await ctx.db.delete(draft._id);
     }
-    if (
-      action === "archive" &&
-      row.unpublishAt === boundary &&
-      Date.now() >= boundary
-    ) {
-      await ctx.db.patch(row._id, {
-        status: "archived",
-        publishAt: undefined,
-        unpublishAt: undefined,
-      });
+    return null;
+  },
+});
+
+/** A same-value write invalidates this row at its registration cutoff. */
+export const refreshEvent = internalMutation({
+  args: { slug: v.string(), boundary: v.number() }, returns: v.null(),
+  handler: async (ctx, { slug, boundary }) => {
+    const event = await bySlug(ctx, "events", slug);
+    if (event?.startsAt === boundary && Date.now() >= boundary) {
+      const clock = await ctx.db.query("serverClock").withIndex("by_key", q => q.eq("key", "clock")).unique();
+      if (clock) await ctx.db.patch(clock._id, { updatedAt: Date.now() });
+      else await ctx.db.insert("serverClock", { key: "clock", updatedAt: Date.now() });
     }
     return null;
   },
@@ -569,14 +600,9 @@ export const createRevision = mutation({
       table !== "vibhagas"
     )
       throw new ConvexError("Only the author may revise this content.");
-    await ctx.db.patch(row._id, {
-      status: "draft",
-      authorId: user._id,
-      reviewerId: undefined,
-      publishAt: undefined,
-      unpublishAt: undefined,
-      demo: false,
-    });
+    if (await revision(ctx, table, slug)) throw new ConvexError("A revision already exists.");
+    if (!["published", "approved", "archived"].includes(row.status)) throw new ConvexError("Only approved content can be revised.");
+    await ctx.db.insert("contentDrafts", { table, slug, payload: await snapshot(ctx, table, slug), status: "draft", authorId: row.authorId ?? user._id, editorIds: [user._id] });
     return null;
   },
 });
@@ -587,15 +613,12 @@ export const restoreApprovedVersion = mutation({
   handler: async (ctx, { versionId }) => {
     await requireRole(ctx, "admin");
     const version = await ctx.db.get(versionId);
-    if (!version || !canApprove(version.authorId, version.reviewerId))
+    if (!version || !canApprove(version.authorId, version.reviewerId) || version.editorIds?.includes(version.reviewerId))
       throw new ConvexError("An independently approved version is required.");
     await validateForApproval(ctx, version.payload);
-    await replaceDraft(ctx, version.payload, version.slug, version.authorId);
-    const row = await mustGet(ctx, version.table, version.slug);
-    await ctx.db.patch(row._id, {
-      status: "approved",
-      reviewerId: version.reviewerId,
-    });
+    const draft = await revision(ctx, version.table, version.slug);
+    if (draft) await ctx.db.delete(draft._id);
+    await ctx.db.insert("contentDrafts", { table: version.table, slug: version.slug, payload: version.payload, status: "approved", authorId: version.authorId, editorIds: version.editorIds ?? [], reviewerId: version.reviewerId });
     return null;
   },
 });
@@ -694,6 +717,7 @@ export const grantEnrollment = mutation({
         grantedBy: admin._id,
         expiry: args.expiry,
       });
+    if (args.expiry !== undefined) await ctx.scheduler.runAt(args.expiry, internal.cms.expireEnrollment, { id, boundary: args.expiry });
     await ctx.db.insert("enrollmentAudit", {
       userId: args.userId,
       enrollmentId: id,
@@ -783,5 +807,14 @@ export const listContent = query({
       authorId: row.authorId,
       reviewerId: row.reviewerId,
     }));
+  },
+});
+
+export const expireEnrollment = internalMutation({
+  args: { id: v.id("enrollments"), boundary: v.number() }, returns: v.null(),
+  handler: async (ctx, { id, boundary }) => {
+    const row = await ctx.db.get(id);
+    if (row?.expiry === boundary && Date.now() >= boundary && row.status === "active") await ctx.db.patch(id, { status: "revoked" });
+    return null;
   },
 });

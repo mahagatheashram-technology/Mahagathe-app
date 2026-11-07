@@ -17,7 +17,7 @@ import {
 } from "./lib/logic";
 import { mandalaResult } from "./lib/validators";
 
-async function present(ctx: Pick<QueryCtx, "db">, item: Doc<"mandalas">) {
+async function present(ctx: Pick<QueryCtx, "db">, item: Doc<"mandalas">, now: number) {
   const practice = await ctx.db.get(item.practiceId);
   if (!practice) return null;
   const rows = await ctx.db
@@ -31,7 +31,7 @@ async function present(ctx: Pick<QueryCtx, "db">, item: Doc<"mandalas">) {
     startDate: item.startDay,
     ...mandalaProgress(
       item.startDay,
-      dayKey(Date.now()),
+      dayKey(now),
       rows.map((row) => row.day),
     ),
   };
@@ -40,7 +40,7 @@ export const active = query({
   args: {},
   returns: v.union(mandalaResult, v.null()),
   handler: async (ctx) => {
-    await observeClock(ctx);
+    const now = await observeClock(ctx);
     const user = await getUser(ctx);
     if (!user) return null;
     const item = await ctx.db
@@ -49,9 +49,9 @@ export const active = query({
         q.eq("userId", user._id).eq("status", "active"),
       )
       .unique();
-    if (!item || dayOffset(item.startDay, dayKey(Date.now())) >= MANDALA_LENGTH)
+    if (!item || dayOffset(item.startDay, dayKey(now)) >= MANDALA_LENGTH)
       return null;
-    return present(ctx, item);
+    return present(ctx, item, now);
   },
 });
 export const start = mutation({
@@ -217,8 +217,8 @@ export const groupCount = query({
   args: { cycleId: v.optional(v.string()) },
   returns: v.object({ todayCount: v.number(), cycleSittings: v.number() }),
   handler: async (ctx, { cycleId }) => {
-    await observeClock(ctx);
-    const day = dayKey(Date.now());
+    const now = await observeClock(ctx);
+    const day = dayKey(now);
     let cohort = cycleId ?? day.slice(0, 7);
     if (cycleId === undefined) {
       const user = await getUser(ctx);

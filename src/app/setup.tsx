@@ -1,5 +1,5 @@
 import { Redirect, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { isMinor, useProfile, useRequestGuardianConsent, useSession, useUpdateProfile, type AgeBand } from '@/data';
 import { GuardianAsk, GuardianWaiting } from '@/features/onboarding/GuardianConsent';
@@ -19,17 +19,18 @@ export default function SetupScreen() {
   const [draftName, setDraftName] = useState('');
   const [maskedPhone, setMaskedPhone] = useState('');
   const [busy, setBusy] = useState(false);
+  const inFlight = useRef(false);
   const [error, setError] = useState<string | null>(null);
 
   if (status === 'signedOut' || status === 'guest') return <Redirect href="/welcome" />;
 
   const back = () => (router.canGoBack() ? router.back() : router.replace('/welcome'));
 
-  if (step === 'guardianWaiting') {
+  if (step === 'guardianWaiting' && profile?.guardianConsent !== 'granted') {
     return (
       <GuardianWaiting
         maskedPhone={maskedPhone || 'the number you gave'}
-        onBack={() => setStep('form')}
+        onBack={() => { setBand(profile?.ageBand ?? band); setStep(profile?.ageBand ? 'guardianAsk' : 'form'); }}
         onExplore={() => {
           continueAsGuest();
           router.replace('/(tabs)');
@@ -38,7 +39,7 @@ export default function SetupScreen() {
     );
   }
 
-  if (step === 'guardianAsk' && band) {
+  if (step === 'guardianAsk' && band && profile?.guardianConsent !== 'granted') {
     return (
       <GuardianAsk
         sending={busy}
@@ -48,6 +49,8 @@ export default function SetupScreen() {
           setStep('form');
         }}
         onSend={async (guardianPhone) => {
+          if (inFlight.current) return;
+          inFlight.current = true;
           setBusy(true);
           setError(null);
           try {
@@ -57,6 +60,7 @@ export default function SetupScreen() {
           } catch {
             setError('We could not send the request. Please try again.');
           } finally {
+            inFlight.current = false;
             setBusy(false);
           }
         }}
@@ -69,20 +73,28 @@ export default function SetupScreen() {
       initialName={draftName || profile?.displayName || ''}
       initialBand={band ?? profile?.ageBand ?? null}
       saving={busy}
+      error={error}
+      lockedBand={!!profile?.ageBand && isMinor(profile.ageBand)}
       onBack={back}
       onSubmit={async (name, picked) => {
         setBand(picked);
         setDraftName(name);
         // T-02: under 18 → stop and ask a guardian first. Nothing is saved at this point.
-        if (isMinor(picked)) {
+        if (isMinor(picked) && profile?.guardianConsent !== 'granted') {
           setStep('guardianAsk');
           return;
         }
+        if (inFlight.current) return;
+        inFlight.current = true;
         setBusy(true);
+        setError(null);
         try {
           await updateProfile({ displayName: name, ageBand: picked });
           router.replace('/(tabs)');
+        } catch {
+          setError('We could not save your profile. Please try again.');
         } finally {
+          inFlight.current = false;
           setBusy(false);
         }
       }}

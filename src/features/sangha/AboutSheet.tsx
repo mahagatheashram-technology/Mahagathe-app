@@ -1,7 +1,7 @@
 import { Linking, View } from 'react-native';
 
 import { AppText, Button, Card, Icon } from '@/components/ui';
-import { externalLinks, useContactInfo } from '@/data';
+import { externalLinks, useContactInfo, useOpenWhatsApp } from '@/data';
 import { BottomSheet } from './BottomSheet';
 import { colors } from '@/theme/tokens';
 
@@ -16,12 +16,13 @@ export async function openWhatsApp() {
 
 export function AboutSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const contact = useContactInfo();
+  const contactOnWhatsApp = useOpenWhatsApp();
   return (
     <BottomSheet visible={visible} onClose={onClose} title="About Mahagathe">
       <AppText variant="body" style={{ lineHeight: 23 }}>
         The Mahagathe Foundation is a Public Charitable Trust. [About text, as approved]
       </AppText>
-      <Card radius={18}>
+      {!contact ? <AppText>{contact === undefined ? 'Loading contact details…' : 'Contact details will appear here once approved.'}</AppText> : <Card radius={18}>
         {[
           { label: 'Trust', value: contact.legalName },
           { label: 'Address', value: contact.address },
@@ -37,10 +38,10 @@ export function AboutSheet({ visible, onClose }: { visible: boolean; onClose: ()
             </AppText>
           </View>
         ))}
-      </Card>
+      </Card>}
       <Button
         label="Contact on WhatsApp"
-        onPress={openWhatsApp}
+        onPress={() => contactOnWhatsApp().catch(() => undefined)}
         icon={<Icon name="externalLink" size={18} color={colors.white} />}
       />
     </BottomSheet>

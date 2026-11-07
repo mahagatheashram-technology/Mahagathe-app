@@ -50,6 +50,9 @@ let state: MockState = {
   donations: [],
 };
 
+let sessionGeneration = 0;
+export const getMockSessionGeneration = () => sessionGeneration;
+
 const listeners = new Set<() => void>();
 
 export function getState() {
@@ -72,3 +75,13 @@ export function useMockState<T>(selector: (s: MockState) => T): T {
 
 /** Simulated network latency so loading states are exercised. */
 export const delay = (ms = 350) => new Promise((r) => setTimeout(r, ms));
+
+/** Clear account-scoped state; anonymous group totals are deliberately retained. */
+export function clearMockUserData() {
+  sessionGeneration++;
+  setState(() => ({ session: 'signedOut', pendingPhone: null, profile: null,
+    prefs: { practiceReminder: false, dailyVakyam: false, registeredEvents: false },
+    registeredEventIds: [], mandala: null, savedVakyamIds: [], readingPositions: {},
+    lastEpisodeId: null, donations: [],
+  }));
+}

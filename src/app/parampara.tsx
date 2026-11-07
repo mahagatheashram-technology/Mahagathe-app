@@ -1,5 +1,5 @@
 import { Pressable, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 import { useState } from 'react';
 
 import { AppText, Card, DetailHeader, Icon, RedFeature, Screen } from '@/components/ui';
@@ -10,10 +10,12 @@ import { colors, fonts } from '@/theme/tokens';
 
 /** ParamparaV3: guru header on the red feature, lineage timeline, dīkṣā milestones, approval chip. */
 export default function ParamparaScreen() {
-  const insets = useSafeAreaInsets();
-  const { guru, lineage, milestones } = useParampara();
+  const insets = useScreenInsets();
+  const content = useParampara();
   const [allOpen, setAllOpen] = useState(false);
 
+  if (!content) return <Screen><DetailHeader /><AppText style={{ padding: 20 }}>{content === undefined ? 'Loading Paramparā…' : 'Paramparā will appear here once approved.'}</AppText></Screen>;
+  const { guru, lineage, milestones } = content;
   const first = lineage[0];
   const rest = lineage.slice(1);
 
@@ -94,7 +96,7 @@ export default function ParamparaScreen() {
             backgroundColor: colors.sand,
           }}>
           <Icon name="shieldCheck" size={13} color={colors.actionRed} strokeWidth={2.2} />
-          <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 12, lineHeight: 18 }}>Approved by the content authority</AppText>
+          <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 12, lineHeight: 17.5 }}>Approved by the content authority</AppText>
         </View>
       </View>
 
@@ -122,8 +124,8 @@ function Node({ label, name, present, last }: { label: string; name: string; pre
         )}
       </View>
       <View style={{ flex: 1, paddingBottom: last || present ? 0 : 22 }}>
-        <AppText style={{ fontFamily: present ? fonts.sansSemibold : fonts.sansMedium, fontSize: 12, lineHeight: 18, color: present ? colors.actionRed : colors.muted }}>{label}</AppText>
-        <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 22.5 }}>{name}</AppText>
+        <AppText style={{ fontFamily: present ? fonts.sansSemibold : fonts.sansMedium, fontSize: 12, lineHeight: 17.5, color: present ? colors.actionRed : colors.muted }}>{label}</AppText>
+        <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23 }}>{name}</AppText>
       </View>
     </View>
   );

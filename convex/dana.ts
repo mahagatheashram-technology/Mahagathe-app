@@ -1,7 +1,7 @@
 import { observeClock } from "./lib/time";
 import { v, ConvexError } from "convex/values";
 import { query, mutation, internalMutation } from "./_generated/server";
-import { getUser, requireConsentedUser, requireUser } from "./lib/auth";
+import { getUser, requireConsentedUser } from "./lib/auth";
 import { isPublished, needPublished, publishedBySlug } from "./lib/content";
 import { boundedText, validateDonation } from "./lib/logic";
 import * as V from "./lib/validators";
@@ -96,7 +96,8 @@ export const donation = query({
   returns: v.union(V.donationResult, v.null()),
   handler: async (ctx, { id }) => {
     await observeClock(ctx);
-    const user = await requireUser(ctx);
+    const user = await getUser(ctx);
+    if (!user) return null;
     const row = await ctx.db.get(id);
     if (!row || row.userId !== user._id) return null;
     const purpose = await ctx.db.get(row.purposeId);

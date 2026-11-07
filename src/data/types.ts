@@ -22,6 +22,17 @@ export type Language = 'en' | 'te' | 'hi';
 
 export type SessionStatus = 'loading' | 'signedOut' | 'guest' | 'signedIn';
 
+/** Authentication and consent are separate permissions in both backends. */
+export type Session = {
+  status: SessionStatus;
+  isSignedIn: boolean;
+  canUsePersonalFeatures: boolean;
+  sendOtp: (phone: string) => Promise<void>;
+  verifyOtp: (code: string) => Promise<boolean>;
+  continueAsGuest: () => void;
+  signOut: () => Promise<void>;
+};
+
 export type Profile = {
   id: Id;
   displayName: string;

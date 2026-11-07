@@ -1,8 +1,8 @@
 import { useRouter } from 'expo-router';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 
 import { AppText, Button, Card, Icon, type IconName } from '@/components/ui';
-import { externalLinks, type DonationResult } from '@/data';
+import { useOpenWhatsApp, type DonationResult } from '@/data';
 import { formatRupees } from './format';
 import { colors, fonts } from '@/theme/tokens';
 
@@ -25,8 +25,8 @@ export function DonationOutcome({
     },
     pending: {
       icon: 'clock' as IconName,
-      title: 'Confirming your payment',
-      body: 'We have not had confirmation from your bank yet. Please do not pay again until you see a receipt here.',
+      title: 'Confirmation pending',
+      body: 'Your dāna request is pending. A receipt will appear here once payment is confirmed. Please do not submit it again while you wait.',
     },
     failed: {
       icon: 'info' as IconName,
@@ -35,6 +35,7 @@ export function DonationOutcome({
     },
   }[result.status];
 
+  const contactOnWhatsApp = useOpenWhatsApp();
   return (
     <View style={{ flex: 1, gap: 22 }} accessibilityLiveRegion="polite">
       <View style={{ alignItems: 'center', gap: 14, paddingTop: 24 }}>
@@ -78,7 +79,7 @@ export function DonationOutcome({
             <Button
               label="Contact us on WhatsApp"
               variant="outline"
-              onPress={() => Linking.openURL(externalLinks.whatsapp).catch(() => undefined)}
+              onPress={() => contactOnWhatsApp().catch(() => undefined)}
             />
           </>
         ) : (
