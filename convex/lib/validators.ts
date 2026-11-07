@@ -7,6 +7,7 @@ export const ageBand = v.union(
   v.literal("25-44"),
   v.literal("45-64"),
   v.literal("65plus"),
+  v.literal("unspecified"),
 );
 export const role = v.union(
   v.literal("sadhaka"),

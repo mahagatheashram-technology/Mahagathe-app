@@ -111,7 +111,7 @@ export function useUpdateProfile() {
         if (!s.profile) return {};
         const next = { ...s.profile, ...patch };
         if (s.profile.ageBand && isMinor(s.profile.ageBand) && patch.ageBand && patch.ageBand !== s.profile.ageBand) throw new Error('Contact support to correct your age band.');
-        if (patch.ageBand) next.guardianConsent = isMinor(patch.ageBand as AgeBand) ? s.profile.guardianConsent : 'notRequired';
+        if (patch.ageBand) next.guardianConsent = isMinor(patch.ageBand) ? s.profile.guardianConsent : 'notRequired';
         if (!next.ageBand || (isMinor(next.ageBand) && next.guardianConsent !== 'granted')) {
           return { profile: { ...next, displayName: '', roles: [], reminderTime: null, guardianConsent: 'pending' } };
         }

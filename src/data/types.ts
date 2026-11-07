@@ -6,7 +6,7 @@
 
 export type Id = string;
 
-export type AgeBand = 'under13' | '13-17' | '18-24' | '25-44' | '45-64' | '65plus';
+export type AgeBand = 'under13' | '13-17' | '18-24' | '25-44' | '45-64' | '65plus' | 'unspecified';
 export const AGE_BANDS: { value: AgeBand; label: string }[] = [
   { value: 'under13', label: 'Under 13' },
   { value: '13-17', label: '13–17' },
@@ -14,6 +14,7 @@ export const AGE_BANDS: { value: AgeBand; label: string }[] = [
   { value: '25-44', label: '25–44' },
   { value: '45-64', label: '45–64' },
   { value: '65plus', label: '65+' },
+  { value: 'unspecified', label: 'Prefer not to say' },
 ];
 export const isMinor = (b: AgeBand) => b === 'under13' || b === '13-17';
 

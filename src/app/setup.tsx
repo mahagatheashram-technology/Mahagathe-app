@@ -24,7 +24,7 @@ export default function SetupScreen() {
 
   if (status === 'signedOut' || status === 'guest') return <Redirect href="/welcome" />;
 
-  const back = () => (router.canGoBack() ? router.back() : router.replace('/welcome'));
+  const back = () => router.dismissTo('/welcome');
 
   if (step === 'guardianWaiting' && profile?.guardianConsent !== 'granted') {
     return (

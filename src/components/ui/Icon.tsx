@@ -7,6 +7,10 @@ import { colors, fonts } from '@/theme/tokens';
  * Stroke icons on a 24×24 grid. Use `strokeWidth` to match the mock (2 default, 2.2 on active tab/chevrons).
  */
 export type IconName =
+  | 'lamp'
+  | 'offering-hands'
+  | 'globe'
+  | 'grid'
   | 'home'
   | 'wisdom'
   | 'sadhana'
@@ -68,6 +72,14 @@ export function Icon({ name, size = 24, color = colors.ink, strokeWidth = 2 }: P
 
 function render(name: IconName, p: Record<string, unknown>, color: string) {
   switch (name) {
+    case 'lamp':
+      return <><Path {...p} d="M12 3c1.6 1.9 2.6 3.3 2.6 4.8a2.6 2.6 0 0 1-5.2 0C9.4 6.3 10.4 4.9 12 3z" /><Path {...p} d="M4 13h16c0 3.3-3.6 6-8 6s-8-2.7-8-6z" /><Path {...p} d="M9 21h6" /></>;
+    case 'offering-hands':
+      return <><Path {...p} d="M12 21c-4.5 0-8-2.8-8-6.2V12l3.2 2.4" /><Path {...p} d="M12 21c4.5 0 8-2.8 8-6.2V12l-3.2 2.4" /><Path {...p} d="M12 8.5c-1.6-2.1-4.5-1.4-4.5 1 0 2 4.5 4.5 4.5 4.5s4.5-2.5 4.5-4.5c0-2.4-2.9-3.1-4.5-1z" /></>;
+    case 'globe':
+      return <><Circle {...p} cx="12" cy="12" r="9" /><Path {...p} d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18" /></>;
+    case 'grid':
+      return <><Rect {...p} x="4" y="4" width="7" height="7" rx="1.5" /><Rect {...p} x="13" y="4" width="7" height="7" rx="1.5" /><Rect {...p} x="4" y="13" width="7" height="7" rx="1.5" /><Rect {...p} x="13" y="13" width="7" height="7" rx="1.5" /></>;
     case 'home':
       return <Path {...p} d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" />;
     case 'wisdom':

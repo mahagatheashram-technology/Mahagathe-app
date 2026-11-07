@@ -1041,3 +1041,13 @@ void test("daily clock refreshes at IST midnight and event cutoff hides past eve
   assert.equal((await t.query(api.wisdom.today, {}))?.id, "midnight-card");
   assert.equal((await t.query(api.sangha.events, {})).length, count - 1);
 });
+
+void test('v12: unspecified age is stored without requiring guardian consent', async () => {
+  const t = await setup();
+  const { client } = await account(t, 'unspecified-age', 'unspecified');
+  await client.mutation(api.profiles.updateProfile, { patch: { displayName: 'Arjun', ageBand: 'unspecified' } });
+  const profile = await client.query(api.profiles.me, {});
+  assert.equal(profile?.ageBand, 'unspecified');
+  assert.equal(profile?.displayName, 'Arjun');
+  assert.equal(profile?.guardianConsent, 'notRequired');
+});

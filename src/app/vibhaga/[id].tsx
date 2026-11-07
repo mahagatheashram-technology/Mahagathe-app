@@ -1,13 +1,13 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Image, Pressable, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 
-import { ApprovedPhotoPlaceholder, AppText, Button, Card, DetailHeader, EventList, EventRow, Icon, Screen } from '@/components/ui';
+import { ApprovedPhotoPlaceholder, AppText, Button, Card, DetailHeader, EventList, EventRow, Screen } from '@/components/ui';
 import { photos, useEvents, useSession, useVibhaga } from '@/data';
 import { VolunteerSheet } from '@/features/sangha/VolunteerSheet';
 import { useEventToggle } from '@/features/sangha/useEventToggle';
-import { colors, fonts, shadows } from '@/theme/tokens';
+import { fonts } from '@/theme/tokens';
 
 /** Vibhaga hub (G-04): photo, about, head, upcoming events, Volunteer (G-06), Give to this vibhaga. */
 export default function VibhagaScreen() {
@@ -30,7 +30,7 @@ export default function VibhagaScreen() {
   if (!vibhaga) {
     return (
       <Screen contentStyle={{ paddingHorizontal: 20, gap: 16 }}>
-        <DetailHeader />
+        <DetailHeader backLabel="Offer seva" backHref="/seva" />
         <Card style={{ padding: 20, gap: 4 }}>
           <AppText variant="label">{vibhaga === undefined ? 'Loading vibhaga…' : 'This page is not available'}</AppText>
           <AppText variant="meta">Go back to Sangha to see the vibhagas of the Trust.</AppText>
@@ -45,14 +45,8 @@ export default function VibhagaScreen() {
     <Screen edgeToEdgeTop contentStyle={{ paddingBottom: 32 }}>
       <View style={{ height: 220 + insets.top }}>
         <Image source={photos[vibhaga.photo]} accessibilityIgnoresInvertColors style={{ width: '100%', height: 220 + insets.top }} resizeMode="cover" />
-        <View style={{ position: 'absolute', left: 10, top: insets.top + 4 }}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Back"
-            onPress={() => (router.canGoBack() ? router.back() : router.replace('/sangha'))}
-            style={[{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }, shadows.card]}>
-            <Icon name="back" size={22} color={colors.ink} />
-          </Pressable>
+        <View style={{ position: 'absolute', left: 24, right: 24, top: insets.top + 4 }}>
+          <DetailHeader backLabel="Offer seva" backHref="/seva" />
         </View>
       </View>
 

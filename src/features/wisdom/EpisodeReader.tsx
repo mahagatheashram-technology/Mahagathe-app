@@ -15,16 +15,16 @@ import { EpisodeListSheet } from './EpisodeListSheet';
 import { QuestionsSheet } from './QuestionsSheet';
 import { TEXT_SIZES, useTextSize } from './textSize';
 import { TextSizeSheet } from './TextSizeSheet';
-import { AppText, Button, Chip, DetailHeader, Icon, Screen } from '@/components/ui';
+import { AppText, Button, DetailHeader, Icon, Screen } from '@/components/ui';
 import { useEpisode, useReadingPosition, useSaveReadingPosition } from '@/data';
 import { colors, fonts } from '@/theme/tokens';
+import { v12 } from '@/theme/v12';
 
-const COUNT_WORDS = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
 const SAVE_EVERY_MS = 800;
 /** Treat a saved position this close to the end as "finished": reopen at the top. */
 const FINISHED = 0.98;
 
-/** EpisodeV3 reader. Mounted with key={episodeId} so each episode gets fresh scroll/restore state. */
+/** v12 reader. Mounted with key={episodeId} so each episode gets fresh scroll/restore state. */
 export function EpisodeReader({ episodeId }: { episodeId: string }) {
   const router = useRouter();
   const insets = useScreenInsets();
@@ -36,7 +36,6 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
   const size = TEXT_SIZES[sizeKey];
 
   const [saveError, setSaveError] = useState(false);
-  const [progress, setProgress] = useState(saved ?? 0);
   const [sheet, setSheet] = useState<null | 'size' | 'questions' | 'episodes'>(null);
 
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
@@ -49,15 +48,21 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
   const flush = useCallback(() => {
     if (timer.current) clearTimeout(timer.current);
     timer.current = null;
-    void savePosition(episodeId, progressRef.current).then(() => setSaveError(false)).catch(() => setSaveError(true));
+    void savePosition(episodeId, progressRef.current)
+      .then(() => setSaveError(false))
+      .catch(() => setSaveError(true));
   }, [episodeId, savePosition]);
 
   // Opening an episode counts as "last read" (W-08); leaving flushes the latest position.
   useEffect(() => {
-    void savePosition(episodeId, progressRef.current).then(() => setSaveError(false)).catch(() => setSaveError(true));
+    void savePosition(episodeId, progressRef.current)
+      .then(() => setSaveError(false))
+      .catch(() => setSaveError(true));
     return () => {
       if (timer.current) clearTimeout(timer.current);
-      void savePosition(episodeId, progressRef.current).then(() => setSaveError(false)).catch(() => setSaveError(true));
+      void savePosition(episodeId, progressRef.current)
+        .then(() => setSaveError(false))
+        .catch(() => setSaveError(true));
     };
   }, [episodeId, savePosition]);
 
@@ -71,7 +76,6 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
       scrollRef.current?.scrollTo({ y: p * range, animated: false });
     } else if (p >= FINISHED) {
       progressRef.current = 0;
-      setProgress(0);
     }
   }, []);
 
@@ -80,7 +84,6 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
     if (saved === undefined || restored.current) return;
     restoreTo.current = saved;
     progressRef.current = Math.max(progressRef.current, saved);
-    setProgress(saved);
     tryRestore();
   }, [saved, tryRestore]);
 
@@ -91,7 +94,6 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
       if (range <= 0 || !restored.current) return;
       const p = Math.min(1, Math.max(0, contentOffset.y / range));
       progressRef.current = p;
-      setProgress((prev) => (Math.abs(prev - p) >= 0.004 ? p : prev));
       if (!timer.current) timer.current = setTimeout(flush, SAVE_EVERY_MS);
     },
     [flush],
@@ -105,7 +107,7 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
   if (!episode) {
     return (
       <Screen contentStyle={{ paddingHorizontal: 20 }}>
-        <DetailHeader label="Mahabharata" />
+        <DetailHeader backLabel="Wisdom" backHref="/(tabs)/wisdom" />
         <View style={{ paddingTop: 48, alignItems: 'center', gap: 10 }}>
           <AppText style={styles.emptyTitle}>
             {episode === undefined ? 'Loading…' : 'This episode is not available'}
@@ -120,32 +122,31 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
     );
   }
 
-  const pct = Math.round(progress * 100);
   const nQ = episode.questions.length;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.cream }}>
-      {saveError ? <AppText accessibilityLiveRegion="polite">Reading position could not be saved. We’ll try again as you read.</AppText> : null}
-      <View style={[styles.header, { paddingTop: insets.top }]}>
+      {saveError ? (
+        <AppText accessibilityLiveRegion="polite">
+          Reading position could not be saved. We’ll try again as you read.
+        </AppText>
+      ) : null}
+      <View style={[styles.header, { paddingTop: insets.top + 4 }]}>
         <DetailHeader
-          label={`${episode.seasonTitle} · Episode ${episode.number} of ${episode.totalInSeason}`}
+          backLabel="Wisdom"
+          backHref="/(tabs)/wisdom"
           trailing={
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Text size"
+              hitSlop={2}
               onPress={() => setSheet('size')}
               style={styles.aa}>
-              <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 18, lineHeight: 23 }}>Aa</AppText>
+              <AppText style={{ fontFamily: fonts.serif, fontSize: 16, lineHeight: 22 }}>Aa</AppText>
+              <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 14, lineHeight: 21 }}>Text</AppText>
             </Pressable>
           }
         />
-        <View
-          style={styles.track}
-          accessibilityRole="progressbar"
-          accessibilityLabel={`Read ${pct} percent`}
-          accessibilityValue={{ min: 0, max: 100, now: pct }}>
-          <View style={[styles.fill, { width: `${pct}%` }]} />
-        </View>
       </View>
 
       <ScrollView
@@ -163,16 +164,22 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
           tryRestore();
         }}>
         <View style={[styles.article, { paddingBottom: 32 + insets.bottom }]}>
-          <View style={{ gap: 10 }}>
-            <AppText accessibilityRole="header" style={styles.title}>
-              {episode.title}
+          <AppText accessibilityRole="header" style={styles.title}>
+            {episode.title}
+          </AppText>
+          <View
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+            <AppText style={{ fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 21, color: v12.muted }}>
+              Episode {episode.number} of {episode.totalInSeason} · {episode.readMinutes} min
             </AppText>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              <Chip label={`BORI · ${episode.boriRange}`} icon="book" />
-              <View style={styles.readChip}>
-                <AppText style={styles.readChipLabel}>{episode.readMinutes} min read</AppText>
-              </View>
-            </View>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="All episodes"
+              onPress={() => setSheet('episodes')}
+              style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+              <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 14 }}>All episodes</AppText>
+              <Icon name="chevronRight" size={14} strokeWidth={2.4} />
+            </Pressable>
           </View>
 
           {episode.paragraphs.map((para, i) => (
@@ -189,57 +196,46 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
           ))}
 
           <View style={styles.reflect} accessibilityLabel="Reflection">
-            <AppText variant="overline" color={colors.actionRed}>
+            <AppText
+              style={{
+                fontFamily: fonts.sansSemibold,
+                fontSize: 12,
+                lineHeight: 18,
+                letterSpacing: 1.68,
+                textTransform: 'uppercase',
+                color: v12.label,
+              }}>
               Reflect
             </AppText>
             <AppText style={styles.reflectText}>{episode.reflection}</AppText>
-          </View>
-
-          {nQ > 0 ? (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`${COUNT_WORDS[nQ] ?? nQ} questions. A gentle check-in, no scores`}
-              onPress={() => setSheet('questions')}
-              style={({ pressed }) => [styles.qaRow, pressed && { opacity: 0.85 }]}>
-              <View style={styles.qaIcon}>
-                <Icon name="help" size={18} color={colors.actionRed} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <AppText style={styles.qaTitle}>{COUNT_WORDS[nQ] ?? nQ} questions</AppText>
-                <AppText style={styles.qaSub}>A gentle check-in, no scores</AppText>
-              </View>
-              <Icon name="chevronRight" size={18} color={colors.muted} strokeWidth={2.2} />
-            </Pressable>
-          ) : null}
-
-          <AppText style={styles.provenance}>
-            Written in Mahagathe&apos;s own words from the BORI critical edition, and checked against it by a second
-            reviewer.
-          </AppText>
-
-          <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Button
-              label="All episodes"
-              variant="outline"
-              size="md"
-              style={{ flex: 1, height: 52 }}
-              onPress={() => setSheet('episodes')}
-            />
-            {next ? (
-              <Button
-                label={`Episode ${next.number}`}
-                size="md"
-                style={{ flex: 1, height: 52 }}
-                trailingIcon={<Icon name="chevronRight" size={16} color={colors.white} strokeWidth={2.2} />}
-                onPress={() => goTo(next.id)}
-              />
+            {nQ > 0 ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Two more questions"
+                onPress={() => setSheet('questions')}
+                style={{ minHeight: 44, flexDirection: 'row', gap: 4, alignItems: 'center', marginTop: 2 }}>
+                <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15 }}>Two more questions</AppText>
+                <Icon name="chevronRight" size={15} strokeWidth={2.4} />
+              </Pressable>
             ) : null}
           </View>
+          <AppText style={{ fontSize: 13, lineHeight: 20, color: v12.muted }}>
+            From the BORI critical edition · {episode.boriRange}
+          </AppText>
+          {next ? (
+            <View style={{ paddingTop: 6, paddingBottom: 36 }}>
+              <Button label={`Next: ${next.title}`} onPress={() => goTo(next.id)} />
+            </View>
+          ) : null}
         </View>
       </ScrollView>
 
       <TextSizeSheet visible={sheet === 'size'} onClose={() => setSheet(null)} />
-      <QuestionsSheet visible={sheet === 'questions'} onClose={() => setSheet(null)} questions={episode.questions} />
+      <QuestionsSheet
+        visible={sheet === 'questions'}
+        onClose={() => setSheet(null)}
+        questions={episode.questions}
+      />
       <EpisodeListSheet
         visible={sheet === 'episodes'}
         onClose={() => setSheet(null)}
@@ -253,50 +249,23 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: 20,
-    paddingBottom: 12,
-    gap: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.sand,
-  },
-  aa: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  track: { height: 4, borderRadius: 4, backgroundColor: colors.sand },
-  fill: { height: 4, borderRadius: 4, backgroundColor: colors.actionRed },
-  article: { paddingTop: 24, paddingHorizontal: 24, gap: 18 },
-  title: { fontFamily: fonts.serifSemibold, fontSize: 30, lineHeight: 36, color: colors.ink },
-  readChip: {
-    height: 32, // mock: 30 + 1px border (content-box); the BORI chip stretches to match
-    paddingHorizontal: 12,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: colors.border,
-    justifyContent: 'center',
-  },
-  readChipLabel: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 18, color: colors.muted },
-  reflect: { gap: 10, paddingVertical: 18, paddingHorizontal: 20, borderRadius: 18, backgroundColor: colors.sand },
-  reflectText: { fontFamily: fonts.sansMedium, fontSize: 15, lineHeight: 24, color: colors.ink },
-  qaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: 16,
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  qaIcon: {
-    width: 40,
+  header: { paddingHorizontal: 24 },
+  aa: {
     height: 40,
-    borderRadius: 12,
-    backgroundColor: colors.tile,
+    minWidth: 44,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: v12.outline,
+    borderRadius: 999,
+    backgroundColor: colors.white,
+    flexDirection: 'row',
+    gap: 6,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  qaTitle: { fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23, color: colors.ink },
-  qaSub: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 17.5, color: colors.muted },
-  provenance: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 19.2, color: colors.muted },
+  article: { paddingTop: 20, paddingHorizontal: 24, gap: 18 },
+  title: { fontFamily: fonts.serifSemibold, fontSize: 32, lineHeight: 38.4, color: colors.ink },
+  reflect: { gap: 8, padding: 20, borderRadius: 20, backgroundColor: v12.sand },
+  reflectText: { fontFamily: fonts.serif, fontSize: 19, lineHeight: 28.5, color: colors.ink },
   emptyTitle: { fontFamily: fonts.serifSemibold, fontSize: 20, lineHeight: 26, textAlign: 'center' },
 });

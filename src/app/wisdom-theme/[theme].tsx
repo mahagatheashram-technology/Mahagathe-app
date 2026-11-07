@@ -15,7 +15,7 @@ export default function WisdomThemeScreen() {
 
   return (
     <Screen contentStyle={{ paddingHorizontal: 20, paddingBottom: 32 }}>
-      <DetailHeader label="Guru Vākyams" />
+      <DetailHeader backLabel="Past teachings" backHref="/teachings" />
       <View style={{ paddingTop: 12, paddingBottom: 20, gap: 4 }}>
         <AppText variant="eyebrow">By theme</AppText>
         <AppText accessibilityRole="header" style={{ fontFamily: fonts.serifSemibold, fontSize: 30, lineHeight: 36 }}>

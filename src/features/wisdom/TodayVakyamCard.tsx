@@ -1,58 +1,41 @@
 import { useRouter } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { AppText, Icon } from '@/components/ui';
+import type { Vakyam } from '@/data';
+import { fonts } from '@/theme/tokens';
+import { v12 } from '@/theme/v12';
 
-import { AppText, Icon, RedFeature } from '@/components/ui';
-import { THEME_LABELS, type Vakyam } from '@/data';
-import { colors, fonts } from '@/theme/tokens';
-
-/** The single red feature block of the Wisdom screen. */
 export function TodayVakyamCard({ vakyam }: { vakyam: Vakyam }) {
   const router = useRouter();
-  const kind = vakyam.verbatim ? 'Verbatim' : 'Paraphrase';
   return (
     <Pressable
       accessibilityRole="link"
-      accessibilityLabel={`Today's Guru Vākyam: ${vakyam.text}. ${kind}, ${THEME_LABELS[vakyam.theme]}. Read`}
+      accessibilityLabel={`Today's teaching: ${vakyam.text}. Read`}
       onPress={() => router.push(`/vakyam/${vakyam.id}`)}
-      style={({ pressed }) => pressed && { opacity: 0.92 }}>
-      <RedFeature style={styles.card}>
-        <AppText style={styles.eyebrow}>Today&apos;s Guru Vākyam</AppText>
-        <AppText style={styles.quote}>“{vakyam.text}”</AppText>
-        <View style={styles.row}>
-          <AppText style={styles.meta}>
-            {kind} · {THEME_LABELS[vakyam.theme]}
-          </AppText>
-          <View style={styles.read}>
-            <AppText style={styles.readLabel}>Read</AppText>
-            <Icon name="chevronRight" size={15} color={colors.actionRed} strokeWidth={2.2} />
-          </View>
-        </View>
-      </RedFeature>
+      style={({ pressed }) => ({
+        gap: 8,
+        paddingVertical: 20,
+        paddingHorizontal: 22,
+        borderRadius: 22,
+        backgroundColor: v12.sand,
+        opacity: pressed ? 0.85 : 1,
+      })}>
+      <AppText
+        style={{
+          fontFamily: fonts.sansSemibold,
+          fontSize: 12,
+          lineHeight: 18,
+          letterSpacing: 1.68,
+          textTransform: 'uppercase',
+          color: v12.label,
+        }}>
+        Today’s teaching
+      </AppText>
+      <AppText style={{ fontFamily: fonts.serif, fontSize: 21, lineHeight: 30.45 }}>“{vakyam.text}”</AppText>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+        <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23 }}>Read</AppText>
+        <Icon name="chevronRight" size={15} strokeWidth={2.4} />
+      </View>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  card: { gap: 14, padding: 22, borderRadius: 24 },
-  eyebrow: {
-    fontFamily: fonts.sansSemibold,
-    fontSize: 12,
-    lineHeight: 17.5,
-    letterSpacing: 1.68,
-    textTransform: 'uppercase',
-    color: colors.onFeatureMuted,
-  },
-  quote: { fontFamily: fonts.serif, fontSize: 24, lineHeight: 33.12, color: colors.white },
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  meta: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 17.5, color: colors.onFeatureMuted },
-  read: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    height: 36,
-    paddingHorizontal: 14,
-    borderRadius: 999,
-    backgroundColor: colors.white,
-  },
-  readLabel: { fontFamily: fonts.sansSemibold, fontSize: 13, lineHeight: 19.5, color: colors.actionRed },
-});

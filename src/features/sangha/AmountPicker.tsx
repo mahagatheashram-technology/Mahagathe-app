@@ -1,10 +1,11 @@
+import { useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
-
-import { AppText } from '@/components/ui';
-import { formatRupees } from './format';
+import { AppText, Icon } from '@/components/ui';
 import { colors, fonts } from '@/theme/tokens';
+import { v12 } from '@/theme/v12';
+import { formatRupees } from './format';
 
-/** Preset amount tiles + a digits-only custom amount field (DonateV3). A typed amount overrides the preset. */
+/** Three presets and an equal fourth tile; the custom field is revealed on request. */
 export function AmountPicker({
   presets,
   preset,
@@ -20,66 +21,79 @@ export function AmountPicker({
   onCustom: (digits: string) => void;
   invalid?: boolean;
 }) {
+  const [other, setOther] = useState(custom !== '');
+  const choices = [...presets.slice(0, 3), null];
   return (
     <View style={{ gap: 10 }}>
-      <View style={{ flexDirection: 'row', gap: 8 }}>
-        {presets.map((n) => {
-          const selected = custom === '' && preset === n;
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+        {choices.map((n) => {
+          const selected = n === null ? other : !other && custom === '' && preset === n;
           return (
             <Pressable
-              key={n}
+              key={n ?? 'other'}
               accessibilityRole="button"
-              accessibilityLabel={formatRupees(n)}
+              accessibilityLabel={n === null ? 'Other amount' : formatRupees(n)}
               accessibilityState={{ selected }}
-              onPress={() => onPreset(n)}
+              onPress={() => {
+                setOther(n === null);
+                if (n !== null) onPreset(n);
+                else onCustom('');
+              }}
               style={{
-                flex: 1,
-                height: 50,
-                borderRadius: 14,
+                width: '48%',
+                flexGrow: 1,
+                height: 56,
+                borderRadius: 16,
+                borderWidth: 1,
+                borderColor: selected ? colors.actionRed : v12.outline,
+                backgroundColor: selected ? colors.actionRed : colors.white,
+                flexDirection: 'row',
+                gap: 6,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: selected ? colors.actionRed : colors.white,
-                borderWidth: selected ? 0 : 1,
-                borderColor: colors.border,
               }}>
+              {selected ? <Icon name="check" size={14} color={colors.white} strokeWidth={3} /> : null}
               <AppText
                 style={{
-                  fontFamily: selected ? fonts.sansSemibold : fonts.sansMedium,
-                  fontSize: 15,
-                  lineHeight: 23,
+                  fontFamily: fonts.sansSemibold,
+                  fontSize: 17,
+                  lineHeight: 26,
                   color: selected ? colors.white : colors.ink,
                 }}>
-                {formatRupees(n)}
+                {n === null ? 'Other amount' : formatRupees(n)}
               </AppText>
             </Pressable>
           );
         })}
       </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 8,
-          height: 52,
-          paddingHorizontal: 16,
-          borderRadius: 14,
-          backgroundColor: colors.white,
-          borderWidth: invalid ? 1.5 : 1,
-          borderColor: invalid ? colors.actionRed : colors.border,
-        }}>
-        <AppText style={{ fontFamily: fonts.sansMedium, fontSize: 15, lineHeight: 23, color: colors.muted }}>₹</AppText>
-        <TextInput
-          value={custom}
-          onChangeText={(t) => onCustom(t.replace(/\D/g, '').slice(0, 7))}
-          keyboardType="number-pad"
-          inputMode="numeric"
-          placeholder="Other amount"
-          placeholderTextColor={colors.muted}
-          accessibilityLabel="Other amount in rupees"
-          maxLength={7}
-          style={{ flex: 1, fontFamily: fonts.sans, fontSize: 15, color: colors.ink, paddingVertical: 0, height: 50, outlineStyle: 'none' } as never}
-        />
-      </View>
+      {other ? (
+        <View
+          style={{
+            height: 54,
+            borderRadius: 14,
+            borderWidth: 1,
+            borderColor: invalid ? colors.actionRed : v12.outline,
+            backgroundColor: colors.white,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            paddingHorizontal: 16,
+          }}>
+          <AppText style={{ fontSize: 17 }}>₹</AppText>
+          <TextInput
+            value={custom}
+            autoFocus
+            onChangeText={(t) => onCustom(t.replace(/\D/g, '').slice(0, 7))}
+            keyboardType="number-pad"
+            inputMode="numeric"
+            placeholder="Enter amount"
+            placeholderTextColor={v12.muted}
+            accessibilityLabel="Other amount in rupees"
+            maxLength={7}
+            style={{ flex: 1, height: 52, fontFamily: fonts.sans, fontSize: 17, color: colors.ink }}
+          />
+        </View>
+      ) : null}
       {invalid ? (
         <AppText variant="caption" color={colors.actionRed} accessibilityLiveRegion="polite">
           Enter an amount of ₹1 or more.
