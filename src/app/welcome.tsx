@@ -6,7 +6,6 @@ import { Emblem } from '@/components/ui/Emblem';
 import { useProfile, useSession } from '@/data';
 import { LanguagePill } from '@/features/onboarding/LanguagePill';
 import { colors, fonts } from '@/theme/tokens';
-import { v12 } from '@/theme/v12';
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -52,7 +51,7 @@ export default function WelcomeScreen() {
           accessibilityLabel="Look around first"
           onPress={explore}
           style={{ alignSelf: 'center', minHeight: 44, justifyContent: 'center' }}>
-          <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23, color: v12.muted }}>
+          <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23, color: colors.textSecondary }}>
             Look around first
           </AppText>
         </Pressable>
@@ -88,7 +87,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.deva,
     fontSize: 17,
     lineHeight: 26,
-    color: v12.label,
+    color: colors.label,
     textAlign: 'center',
   },
   tagline: { fontFamily: fonts.serif, fontSize: 19, lineHeight: 29.45, textAlign: 'center', maxWidth: 290 },

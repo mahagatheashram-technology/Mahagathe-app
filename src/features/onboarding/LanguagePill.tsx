@@ -1,7 +1,6 @@
 import { Alert, Pressable } from 'react-native';
 import { AppText, Icon } from '@/components/ui';
-import { fonts } from '@/theme/tokens';
-import { v12 } from '@/theme/v12';
+import { colors, fonts } from '@/theme/tokens';
 
 /** The quieter Welcome selector retains the existing language availability notice. */
 export function LanguagePill() {
@@ -18,11 +17,11 @@ export function LanguagePill() {
         gap: 6,
         opacity: pressed ? 0.7 : 1,
       })}>
-      <Icon name="globe" size={16} color={v12.muted} strokeWidth={1.8} />
-      <AppText style={{ fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 21, color: v12.muted }}>
+      <Icon name="globe" size={16} color={colors.textSecondary} strokeWidth={1.8} />
+      <AppText style={{ fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 21, color: colors.textSecondary }}>
         English
       </AppText>
-      <Icon name="chevronDown" size={14} color={v12.muted} strokeWidth={2.2} />
+      <Icon name="chevronDown" size={14} color={colors.textSecondary} strokeWidth={2.2} />
     </Pressable>
   );
 }

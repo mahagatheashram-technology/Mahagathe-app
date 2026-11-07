@@ -5,7 +5,8 @@ import { AppText } from '@/components/ui';
 import { colors, fonts } from '@/theme/tokens';
 import { formatClock } from './format';
 
-const fractionAt = (x: number, w: number) => (w > 0 ? Math.min(1, Math.max(0, x / w)) : 0);
+const fractionAt = (x: number, w: number) =>
+  w > 0 ? Math.min(1, Math.max(0, x / w)) : 0;
 
 /**
  * Player scrubber from PlayerV3: 4pt track on rgba white, 16pt white thumb, elapsed/total below.
@@ -26,7 +27,13 @@ export function Scrubber({
   const [width, setWidth] = useState(0);
   const [dragFraction, setDragFraction] = useState<number | null>(null);
   // Mutable bag read by the gesture callbacks (created once); refreshed after every render.
-  const [live] = useState(() => ({ width: 0, durationSec, onSeek, disabled: !!disabled, startX: 0 }));
+  const [live] = useState(() => ({
+    width: 0,
+    durationSec,
+    onSeek,
+    disabled: !!disabled,
+    startX: 0,
+  }));
   useEffect(() => {
     Object.assign(live, { width, durationSec, onSeek, disabled: !!disabled });
   });
@@ -40,7 +47,8 @@ export function Scrubber({
         live.startX = e.nativeEvent.locationX;
         setDragFraction(fractionAt(live.startX, live.width));
       },
-      onPanResponderMove: (_e, g) => setDragFraction(fractionAt(live.startX + g.dx, live.width)),
+      onPanResponderMove: (_e, g) =>
+        setDragFraction(fractionAt(live.startX + g.dx, live.width)),
       onPanResponderRelease: (_e, g) => {
         const f = fractionAt(live.startX + g.dx, live.width);
         setDragFraction(null);
@@ -50,8 +58,11 @@ export function Scrubber({
     }),
   );
 
-  const fraction = dragFraction ?? (durationSec > 0 ? Math.min(1, positionSec / durationSec) : 0);
-  const shownSec = dragFraction != null ? dragFraction * durationSec : positionSec;
+  const fraction =
+    dragFraction ??
+    (durationSec > 0 ? Math.min(1, positionSec / durationSec) : 0);
+  const shownSec =
+    dragFraction != null ? dragFraction * durationSec : positionSec;
 
   return (
     <View style={{ gap: 8 }}>
@@ -63,23 +74,60 @@ export function Scrubber({
         accessibilityState={{ disabled: !!disabled }}
         tabIndex={disabled ? -1 : 0}
         accessibilityLabel="Position"
-        accessibilityValue={{ min: 0, max: Math.round(durationSec), now: Math.round(positionSec) }}
+        aria-valuemin={0}
+        aria-valuemax={Math.round(durationSec)}
+        aria-valuenow={Math.round(positionSec)}
+        accessibilityValue={{
+          min: 0,
+          max: Math.round(durationSec),
+          now: Math.round(positionSec),
+        }}
         accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
         onAccessibilityAction={(e) =>
-          !disabled && onSeek(Math.max(0, Math.min(durationSec, positionSec + (e.nativeEvent.actionName === 'increment' ? 15 : -15))))
+          !disabled &&
+          onSeek(
+            Math.max(
+              0,
+              Math.min(
+                durationSec,
+                positionSec +
+                  (e.nativeEvent.actionName === 'increment' ? 15 : -15),
+              ),
+            ),
+          )
         }
-        {...(Platform.OS === 'web' ? { onKeyDown: (event: object) => {
-          const e = event as { key: string; preventDefault: () => void };
-          if (disabled) return;
-          const next = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? positionSec + 15
-            : e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? positionSec - 15
-            : e.key === 'Home' ? 0 : e.key === 'End' ? durationSec : null;
-          if (next !== null) { e.preventDefault(); onSeek(Math.max(0, Math.min(durationSec, next))); }
-        } } : {})}
-        style={styles.hit}>
+        {...(Platform.OS === 'web'
+          ? {
+              onKeyDown: (event: object) => {
+                const e = event as { key: string; preventDefault: () => void };
+                if (disabled) return;
+                const next =
+                  e.key === 'ArrowRight' || e.key === 'ArrowUp'
+                    ? positionSec + 15
+                    : e.key === 'ArrowLeft' || e.key === 'ArrowDown'
+                      ? positionSec - 15
+                      : e.key === 'Home'
+                        ? 0
+                        : e.key === 'End'
+                          ? durationSec
+                          : null;
+                if (next !== null) {
+                  e.preventDefault();
+                  onSeek(Math.max(0, Math.min(durationSec, next)));
+                }
+              },
+            }
+          : {})}
+        style={styles.hit}
+      >
         <View pointerEvents="none" style={styles.track}>
           <View style={[styles.fill, { width: `${fraction * 100}%` }]} />
-          <View style={[styles.thumb, { left: fraction * width - 8 }]} />
+          <View
+            style={[
+              styles.thumb,
+              { left: fraction * Math.max(0, width - 14) - 2 },
+            ]}
+          />
         </View>
       </View>
       <View style={styles.times}>
@@ -93,16 +141,33 @@ export function Scrubber({
 const styles = StyleSheet.create({
   // 44pt touch target around a 4pt track; negative margins keep the layout height at 4pt.
   hit: { height: 44, marginVertical: -20, justifyContent: 'center' },
-  track: { height: 4, borderRadius: 4, backgroundColor: colors.playerTrack, justifyContent: 'center' },
-  fill: { position: 'absolute', left: 0, top: 0, bottom: 0, borderRadius: 4, backgroundColor: colors.playerMuted },
+  track: {
+    height: 4,
+    borderRadius: 4,
+    backgroundColor: colors.playerTrack,
+    justifyContent: 'center',
+  },
+  fill: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    borderRadius: 4,
+    backgroundColor: colors.playerMuted,
+  },
   thumb: {
     position: 'absolute',
-    top: -6,
-    width: 16,
-    height: 16,
+    top: -7,
+    width: 18,
+    height: 18,
     borderRadius: 999,
     backgroundColor: colors.white,
   },
   times: { flexDirection: 'row', justifyContent: 'space-between' },
-  time: { fontSize: 12, lineHeight: 17.5, fontFamily: fonts.sansMedium, color: colors.playerMuted },
+  time: {
+    fontSize: 14,
+    lineHeight: 21,
+    fontFamily: fonts.sansMedium,
+    color: colors.playerMuted,
+  },
 });

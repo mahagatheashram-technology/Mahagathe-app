@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
 import { AppText, Icon } from '@/components/ui';
 import { colors, fonts } from '@/theme/tokens';
-import { v12 } from '@/theme/v12';
 import { formatRupees } from './format';
 
 /** Three presets and an equal fourth tile; the custom field is revealed on request. */
@@ -45,7 +44,7 @@ export function AmountPicker({
                 height: 56,
                 borderRadius: 16,
                 borderWidth: 1,
-                borderColor: selected ? colors.actionRed : v12.outline,
+                borderColor: selected ? colors.actionRed : colors.outline,
                 backgroundColor: selected ? colors.actionRed : colors.white,
                 flexDirection: 'row',
                 gap: 6,
@@ -72,7 +71,7 @@ export function AmountPicker({
             height: 54,
             borderRadius: 14,
             borderWidth: 1,
-            borderColor: invalid ? colors.actionRed : v12.outline,
+            borderColor: invalid ? colors.actionRed : colors.outline,
             backgroundColor: colors.white,
             flexDirection: 'row',
             alignItems: 'center',
@@ -87,7 +86,7 @@ export function AmountPicker({
             keyboardType="number-pad"
             inputMode="numeric"
             placeholder="Enter amount"
-            placeholderTextColor={v12.muted}
+            placeholderTextColor={colors.textSecondary}
             accessibilityLabel="Other amount in rupees"
             maxLength={7}
             style={{ flex: 1, height: 52, fontFamily: fonts.sans, fontSize: 17, color: colors.ink }}

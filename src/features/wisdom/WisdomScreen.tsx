@@ -6,7 +6,6 @@ import { AppText, Icon, ListRow, Screen } from '@/components/ui';
 import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 import { useContinueReading, useSeasonEpisodes, useSeasons, useTodayVakyam } from '@/data';
 import { colors, fonts } from '@/theme/tokens';
-import { v12 } from '@/theme/v12';
 import { TodayVakyamCard } from './TodayVakyamCard';
 
 export function WisdomScreen() {
@@ -21,14 +20,14 @@ export function WisdomScreen() {
   return (
     <Screen edgeToEdgeTop>
       <LinearGradient
-        colors={[v12.headerTop, colors.cream]}
+        colors={[colors.headerTop, colors.cream]}
         style={{ paddingTop: insets.top + 32, paddingHorizontal: 24, paddingBottom: 24 }}>
         <AppText
           accessibilityRole="header"
           style={{ fontFamily: fonts.serifSemibold, fontSize: 32, lineHeight: 41, marginBottom: 6 }}>
           Wisdom
         </AppText>
-        <AppText style={{ fontSize: 15, lineHeight: 23, color: v12.muted }}>
+        <AppText style={{ fontSize: 15, lineHeight: 23, color: colors.textSecondary }}>
           Today’s teaching, and the great story.
         </AppText>
       </LinearGradient>
@@ -52,7 +51,7 @@ export function WisdomScreen() {
               padding: 16,
               backgroundColor: colors.white,
               borderWidth: 1,
-              borderColor: v12.cardBorder,
+              borderColor: colors.cardBorder,
               borderRadius: 22,
             }}>
             <View
@@ -90,7 +89,7 @@ export function WisdomScreen() {
             </View>
             <View style={{ flex: 1, gap: 3 }}>
               <AppText
-                style={{ fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 21, color: v12.muted }}>
+                style={{ fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 21, color: colors.textSecondary }}>
                 Mahabharata · episode {episode.number} of {season?.episodeCount ?? 10}
               </AppText>
               <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 18, lineHeight: 23 }}>

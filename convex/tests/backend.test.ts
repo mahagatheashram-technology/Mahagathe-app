@@ -1051,3 +1051,48 @@ void test('v12: unspecified age is stored without requiring guardian consent', a
   assert.equal(profile?.displayName, 'Arjun');
   assert.equal(profile?.guardianConsent, 'notRequired');
 });
+
+void test("v12: sitting progress survives calendar gaps and reports its last completion", async () => {
+  const t = await setup();
+  const { client } = await account(t, "unhurried-sitter");
+  const id = await client.mutation(api.mandala.start, { practiceId: "intro-samatha", rulesAccepted: true });
+  const empty = await client.query(api.mandala.active, {});
+  assert.equal(empty?.sittingsDone, 0);
+  assert.equal(empty?.lastSittingAt, null);
+  // Move the start outside the old 40-day cutoff without changing the test clock.
+  await t.run(async ctx => { await ctx.db.patch(id, { startDay: "2020-01-01" }); });
+  const completed = await client.mutation(api.mandala.completeToday, { mandalaId: id });
+  await client.mutation(api.mandala.completeToday, { mandalaId: id });
+  const progress = await client.query(api.mandala.active, {});
+  assert.equal(progress?.sittingsDone, 1);
+  assert.equal(progress?.lastSittingAt, new Date(completed.createdAt).toISOString());
+  assert.equal(progress?.todayComplete, true);
+  assert.equal(await client.mutation(api.mandala.start, { practiceId: "intro-samatha", rulesAccepted: true }), id);
+});
+
+void test("v12: the fortieth sitting completes a Mandala without permitting a forty-first", async context => {
+  let now = Date.parse("2026-11-07T06:00:00Z");
+  context.mock.method(Date, "now", () => now);
+  const t = await setup();
+  const { client, id: userId } = await account(t, "forty-sitter");
+  const id = await client.mutation(api.mandala.start, { practiceId: "intro-samatha", rulesAccepted: true });
+  await t.run(async ctx => {
+    await ctx.db.patch(id, { startDay: "2020-01-01" });
+    for (let i = 0; i < 39; i++) {
+      const createdAt = Date.now() - (i + 1) * 86400000;
+      await ctx.db.insert("mandalaCompletions", { mandalaId: id, userId, day: dayKey(createdAt), createdAt });
+    }
+  });
+  assert.equal((await client.query(api.mandala.active, {}))?.sittingsDone, 39);
+  const fortieth = await client.mutation(api.mandala.completeToday, { mandalaId: id });
+  assert.equal((await t.run(ctx => ctx.db.get(id)))?.status, "completed");
+  assert.equal((await client.query(api.mandala.active, {}))?.sittingsDone, 40);
+  assert.deepEqual(await client.mutation(api.mandala.completeToday, {}), fortieth);
+  const nextId = await client.mutation(api.mandala.start, { practiceId: "intro-samatha", rulesAccepted: true });
+  await assert.rejects(client.mutation(api.mandala.completeToday, { mandalaId: nextId }), /one sitting/);
+  now += 86400000;
+  await t.mutation(internal.clock.tick, {});
+  await assert.rejects(client.mutation(api.mandala.completeToday, { mandalaId: id }), /remaining/);
+  await client.mutation(api.mandala.completeToday, { mandalaId: nextId });
+  assert.equal((await client.query(api.mandala.active, {}))?.sittingsDone, 1);
+});

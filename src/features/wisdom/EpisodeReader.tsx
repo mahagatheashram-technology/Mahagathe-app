@@ -18,7 +18,6 @@ import { TextSizeSheet } from './TextSizeSheet';
 import { AppText, Button, DetailHeader, Icon, Screen } from '@/components/ui';
 import { useEpisode, useReadingPosition, useSaveReadingPosition } from '@/data';
 import { colors, fonts } from '@/theme/tokens';
-import { v12 } from '@/theme/v12';
 
 const SAVE_EVERY_MS = 800;
 /** Treat a saved position this close to the end as "finished": reopen at the top. */
@@ -169,7 +168,7 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
           </AppText>
           <View
             style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-            <AppText style={{ fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 21, color: v12.muted }}>
+            <AppText style={{ fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 21, color: colors.textSecondary }}>
               Episode {episode.number} of {episode.totalInSeason} · {episode.readMinutes} min
             </AppText>
             <Pressable
@@ -203,7 +202,7 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
                 lineHeight: 18,
                 letterSpacing: 1.68,
                 textTransform: 'uppercase',
-                color: v12.label,
+                color: colors.label,
               }}>
               Reflect
             </AppText>
@@ -219,7 +218,7 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
               </Pressable>
             ) : null}
           </View>
-          <AppText style={{ fontSize: 13, lineHeight: 20, color: v12.muted }}>
+          <AppText style={{ fontSize: 13, lineHeight: 20, color: colors.textSecondary }}>
             From the BORI critical edition · {episode.boriRange}
           </AppText>
           {next ? (
@@ -255,7 +254,7 @@ const styles = StyleSheet.create({
     minWidth: 44,
     paddingHorizontal: 12,
     borderWidth: 1,
-    borderColor: v12.outline,
+    borderColor: colors.outline,
     borderRadius: 999,
     backgroundColor: colors.white,
     flexDirection: 'row',
@@ -265,7 +264,7 @@ const styles = StyleSheet.create({
   },
   article: { paddingTop: 20, paddingHorizontal: 24, gap: 18 },
   title: { fontFamily: fonts.serifSemibold, fontSize: 32, lineHeight: 38.4, color: colors.ink },
-  reflect: { gap: 8, padding: 20, borderRadius: 20, backgroundColor: v12.sand },
+  reflect: { gap: 8, padding: 20, borderRadius: 20, backgroundColor: colors.iconSand },
   reflectText: { fontFamily: fonts.serif, fontSize: 19, lineHeight: 28.5, color: colors.ink },
   emptyTitle: { fontFamily: fonts.serifSemibold, fontSize: 20, lineHeight: 26, textAlign: 'center' },
 });

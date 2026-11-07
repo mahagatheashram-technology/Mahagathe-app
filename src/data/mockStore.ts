@@ -15,6 +15,9 @@ export type MockState = {
   prefs: NotificationPrefs;
   registeredEventIds: string[];
   mandala: Mandala | null;
+  /** Mock audit dates beyond the legacy first-40-calendar-day grid. */
+  mandalaCompletionDays: string[];
+  lastCountedSittingDay: string | null;
   groupTodayCount: number;
   groupCycleSittings: number;
   savedVakyamIds: string[];
@@ -31,6 +34,8 @@ const initialMandala: Mandala = {
   currentDay: 12,
   days: fx.mandalaDays,
   daysSat: fx.mandalaDays.filter((d) => d === 'sat').length,
+  sittingsDone: fx.mandalaDays.filter((d) => d === 'sat').length,
+  lastSittingAt: '2026-11-05',
   streak: 5,
   todayComplete: false,
 };
@@ -39,9 +44,11 @@ let state: MockState = {
   session: 'signedOut',
   pendingPhone: null,
   profile: null,
-  prefs: { practiceReminder: true, dailyVakyam: true, registeredEvents: true },
+  prefs: { practiceReminder: true, dailyVakyam: false, registeredEvents: false },
   registeredEventIds: fx.events.filter((e) => e.registered).map((e) => e.id),
   mandala: initialMandala,
+  mandalaCompletionDays: [],
+  lastCountedSittingDay: null,
   groupTodayCount: fx.groupCount.todayCount,
   groupCycleSittings: fx.groupCount.cycleSittings,
   savedVakyamIds: [],
@@ -81,7 +88,7 @@ export function clearMockUserData() {
   sessionGeneration++;
   setState(() => ({ session: 'signedOut', pendingPhone: null, profile: null,
     prefs: { practiceReminder: false, dailyVakyam: false, registeredEvents: false },
-    registeredEventIds: [], mandala: null, savedVakyamIds: [], readingPositions: {},
+    registeredEventIds: [], mandala: null, mandalaCompletionDays: [], lastCountedSittingDay: null, savedVakyamIds: [], readingPositions: {},
     lastEpisodeId: null, donations: [],
   }));
 }

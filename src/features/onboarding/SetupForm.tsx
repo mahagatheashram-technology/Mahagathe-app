@@ -4,7 +4,6 @@ import { KeyboardAvoidingView, Platform, Pressable, TextInput, View } from 'reac
 import { AppText, Button, DetailHeader, Icon, Screen } from '@/components/ui';
 import { AGE_BANDS, type AgeBand } from '@/data';
 import { colors, fonts } from '@/theme/tokens';
-import { v12 } from '@/theme/v12';
 
 /** Name and age, with an equal option to leave age unspecified. */
 export function SetupForm({
@@ -92,7 +91,7 @@ export function SetupForm({
           <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23, marginBottom: 4 }}>
             Your age
           </AppText>
-          <AppText style={{ fontSize: 14, lineHeight: 21, color: v12.muted, marginBottom: 12 }}>
+          <AppText style={{ fontSize: 14, lineHeight: 21, color: colors.textSecondary, marginBottom: 12 }}>
             So we can suggest the right programmes for you.
           </AppText>
           <View style={{ gap: 10 }}>
@@ -122,7 +121,7 @@ export function SetupForm({
                         justifyContent: 'center',
                         backgroundColor: selected ? colors.actionRed : colors.white,
                         borderWidth: 1,
-                        borderColor: selected ? colors.actionRed : v12.outline,
+                        borderColor: selected ? colors.actionRed : colors.outline,
                       }}>
                       {selected ? <Icon name="check" size={14} color={colors.white} strokeWidth={3} /> : null}
                       <AppText
@@ -153,7 +152,7 @@ export function SetupForm({
                   height: 22,
                   borderRadius: 6,
                   borderWidth: 1.5,
-                  borderColor: adultConfirmed ? colors.actionRed : v12.outline,
+                  borderColor: adultConfirmed ? colors.actionRed : colors.outline,
                   backgroundColor: adultConfirmed ? colors.actionRed : colors.white,
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -177,7 +176,7 @@ export function SetupForm({
         <View style={{ flexGrow: 1, maxHeight: 90, minHeight: 24 }} />
         <Button label="Continue" loading={saving} onPress={submit} />
         <AppText
-          style={{ minHeight: 40, paddingTop: 10, textAlign: 'center', fontSize: 14, color: v12.muted }}>
+          style={{ minHeight: 40, paddingTop: 10, textAlign: 'center', fontSize: 14, color: colors.textSecondary }}>
           You can change these any time in Profile.
         </AppText>
       </Screen>

@@ -6,7 +6,6 @@ import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 import { AppText } from './AppText';
 import { Icon, type IconName } from './Icon';
 import { colors, fonts } from '@/theme/tokens';
-import { v12 } from '@/theme/v12';
 
 /**
  * Scrollable cream page. `edgeToEdgeTop` lets a red feature block run under the status bar
@@ -121,7 +120,7 @@ const styles = StyleSheet.create({
   backPill: {
     height: 40,
     borderRadius: 999,
-    backgroundColor: v12.sand,
+    backgroundColor: colors.iconSand,
     marginLeft: -4,
     paddingLeft: 10,
     paddingRight: 14,

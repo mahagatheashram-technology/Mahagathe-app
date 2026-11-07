@@ -4,7 +4,6 @@ import { AppText, DetailHeader, LineOrnament, ListRow, Screen } from '@/componen
 import { Emblem } from '@/components/ui/Emblem';
 import { useParampara } from '@/data';
 import { colors, fonts } from '@/theme/tokens';
-import { v12 } from '@/theme/v12';
 import { BottomSheet } from './BottomSheet';
 
 export function ParamparaScreen() {
@@ -48,7 +47,7 @@ export function ParamparaScreen() {
                   lineHeight: 18,
                   letterSpacing: 1.44,
                   textTransform: 'uppercase',
-                  color: v12.label,
+                  color: colors.label,
                 }}>
                 70th head of the lineage
               </AppText>
@@ -59,7 +58,7 @@ export function ParamparaScreen() {
               </AppText>
             </View>
           </View>
-          <AppText style={{ marginTop: 18, fontSize: 16, lineHeight: 25.6, color: v12.muted }}>
+          <AppText style={{ marginTop: 18, fontSize: 16, lineHeight: 25.6, color: colors.textSecondary }}>
             {content.guru.bio}
           </AppText>
           <View style={{ marginTop: 18 }}>
@@ -77,7 +76,7 @@ export function ParamparaScreen() {
               onPress={() => setSheet('milestones')}
             />
           </View>
-          <View style={{ marginTop: 18, padding: 22, borderRadius: 22, backgroundColor: v12.sand }}>
+          <View style={{ marginTop: 18, padding: 22, borderRadius: 22, backgroundColor: colors.iconSand }}>
             <AppText
               style={{ fontFamily: fonts.serifItalic, fontSize: 19, lineHeight: 28.5, textAlign: 'center' }}>
               “[A short teaching on the lineage, as approved.]”
@@ -92,11 +91,11 @@ export function ParamparaScreen() {
                 <>
                   {content.lineage.map((n) => (
                     <View key={n.label} style={{ gap: 4 }}>
-                      <AppText color={v12.muted}>{n.label}</AppText>
+                      <AppText color={colors.textSecondary}>{n.label}</AppText>
                       <AppText variant="label">{n.name}</AppText>
                     </View>
                   ))}
-                  <AppText color={v12.muted}>
+                  <AppText color={colors.textSecondary}>
                     The full list will appear here once approved by the content authority.
                   </AppText>
                 </>

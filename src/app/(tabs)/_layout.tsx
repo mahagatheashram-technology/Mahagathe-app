@@ -23,10 +23,9 @@ export default function TabsLayout() {
   return (
     <Tabs tabBar={(props) => <TabBar {...props} />} screenOptions={{ headerShown: false }}>
       <Tabs.Screen name="index" />
+      <Tabs.Screen name="practice" />
       <Tabs.Screen name="wisdom" />
-      <Tabs.Screen name="sadhana" />
       <Tabs.Screen name="sangha" />
-      <Tabs.Screen name="profile" />
     </Tabs>
   );
 }

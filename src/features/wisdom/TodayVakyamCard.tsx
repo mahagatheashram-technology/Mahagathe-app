@@ -2,8 +2,7 @@ import { useRouter } from 'expo-router';
 import { Pressable, View } from 'react-native';
 import { AppText, Icon } from '@/components/ui';
 import type { Vakyam } from '@/data';
-import { fonts } from '@/theme/tokens';
-import { v12 } from '@/theme/v12';
+import { colors, fonts } from '@/theme/tokens';
 
 export function TodayVakyamCard({ vakyam }: { vakyam: Vakyam }) {
   const router = useRouter();
@@ -17,7 +16,7 @@ export function TodayVakyamCard({ vakyam }: { vakyam: Vakyam }) {
         paddingVertical: 20,
         paddingHorizontal: 22,
         borderRadius: 22,
-        backgroundColor: v12.sand,
+        backgroundColor: colors.iconSand,
         opacity: pressed ? 0.85 : 1,
       })}>
       <AppText
@@ -27,7 +26,7 @@ export function TodayVakyamCard({ vakyam }: { vakyam: Vakyam }) {
           lineHeight: 18,
           letterSpacing: 1.68,
           textTransform: 'uppercase',
-          color: v12.label,
+          color: colors.label,
         }}>
         Today’s teaching
       </AppText>

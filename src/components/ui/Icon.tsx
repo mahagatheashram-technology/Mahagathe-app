@@ -27,6 +27,7 @@ export type IconName =
   | 'shield'
   | 'shieldCheck'
   | 'book'
+  | 'signOut'
   | 'drop'
   | 'heart'
   | 'homeHeart'
@@ -96,6 +97,13 @@ function render(name: IconName, p: Record<string, unknown>, color: string) {
         <>
           <Path {...p} d="M12 3c2.5 3 4.5 5.3 4.5 8.5a4.5 4.5 0 0 1-9 0C7.5 8.3 9.5 6 12 3z" />
           <Path {...p} d="M4 17c2 2.5 5 4 8 4s6-1.5 8-4" />
+        </>
+      );
+    case 'signOut':
+      return (
+        <>
+          <Path {...p} d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4" />
+          <Path {...p} d="M10 16l-4-4 4-4M6 12h10" />
         </>
       );
     case 'drop':

@@ -96,6 +96,10 @@ export type Mandala = {
   startDate: string; // ISO
   currentDay: number; // 1..40
   days: MandalaDayState[]; // length 40
+  /** Completed sittings, independent of elapsed calendar days (0–40). */
+  sittingsDone: number;
+  /** ISO timestamp or calendar date of the most recent sitting; null before the first. */
+  lastSittingAt: string | null;
   daysSat: number;
   streak: number;
   todayComplete: boolean;

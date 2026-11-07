@@ -13,6 +13,7 @@
  * never a freshly built object/array — derive with useMemo afterwards.
  */
 import { useCallback, useMemo } from 'react';
+import { mandalaRule } from '../../convex/lib/logic';
 
 import * as fx from './fixtures';
 import { clearMockUserData, getMockSessionGeneration, delay, getState, setState, useMockState } from './mockStore';
@@ -281,20 +282,27 @@ export function usePractice(id: string | undefined): (Practice & { locked: boole
   return useMemo(() => list?.find((p) => p.id === id) ?? null, [list, id]);
 }
 
-/** Active Mandala, or null when none is running (H-03 hides the Home row). */
+/** Preserve the old grid as audit history; count sittings across all calendar dates. */
+function mockCompletionDays(mandala: Mandala, audit: readonly string[]) {
+  const historical = mandala.days.flatMap((state, index) => state === 'sat'
+    ? [new Date(Date.parse(mandala.startDate) + index * 86400000).toISOString().slice(0, 10)] : []);
+  return [...new Set([...historical, ...audit])].sort();
+}
+
 export function useMandala(): Mandala | null | undefined {
   const mandala = useMockState(s => s.mandala);
+  const audit = useMockState(s => s.mandalaCompletionDays);
   const day = istDay(useClock());
   return useMemo(() => {
     if (!mandala) return null;
-    const currentDay = Math.floor((Date.parse(day) - Date.parse(mandala.startDate)) / 86400000) + 1;
-    if (currentDay < 1 || currentDay > 40) return null;
-    const days = mandala.days.map((d, i) => d === 'sat' ? d : i + 1 < currentDay ? 'missed' : i + 1 === currentDay ? 'today' : 'future') as Mandala['days'];
-    let streak = 0;
-    let i = days[currentDay - 1] === 'sat' ? currentDay - 1 : currentDay - 2;
-    for (; i >= 0 && days[i] === 'sat'; i--) streak++;
-    return { ...mandala, currentDay, days, streak, todayComplete: days[currentDay - 1] === 'sat' };
-  }, [mandala, day]);
+    const dates = mockCompletionDays(mandala, audit);
+    const rule = mandalaRule(mandala.startDate, day, dates);
+    const elapsed = Math.floor((Date.parse(day) - Date.parse(mandala.startDate)) / 86400000) + 1;
+    const days = mandala.days.map((state, i) => state === 'sat' ? state : i + 1 < elapsed ? 'missed' : i + 1 === elapsed ? 'today' : 'future') as Mandala['days'];
+    return { ...mandala, currentDay: Math.min(40, Math.max(1, elapsed)), days, daysSat: rule.sittingsDone,
+      sittingsDone: rule.sittingsDone, lastSittingAt: dates.filter(date => date <= day).at(-1) ?? null,
+      todayComplete: rule.todayComplete };
+  }, [mandala, audit, day]);
 }
 
 export function useGroupCount(): GroupCount | undefined {
@@ -309,13 +317,20 @@ export function useCompleteMandalaDay() {
     await personalDelay();
     setState((s) => {
       const base = s.mandala;
-      const currentDay = base ? Math.floor((Date.parse(istDay(Date.now())) - Date.parse(base.startDate)) / 86400000) + 1 : 0;
-      const m = base && currentDay >= 1 && currentDay <= 40 ? { ...base, currentDay, todayComplete: base.days[currentDay - 1] === 'sat' } : null;
-      if (!m || m.todayComplete) return {};
-      const days = m.days.slice();
-      days[m.currentDay - 1] = 'sat';
+      if (!base) throw new Error('No active Mandala was found.');
+      const day = istDay(Date.now());
+      const dates = mockCompletionDays(base, s.mandalaCompletionDays);
+      const rule = mandalaRule(base.startDate, day, dates, s.lastCountedSittingDay === day);
+      if (rule.decision === 'existing') return {};
+      if (rule.decision === 'dailyLimit') throw new Error('Only one sitting can count per IST day.');
+      if (rule.decision !== 'insert') throw new Error('This Mandala has no sittings remaining.');
+      const elapsed = Math.floor((Date.parse(day) - Date.parse(base.startDate)) / 86400000);
+      const days = base.days.slice();
+      if (elapsed < 40) days[elapsed] = 'sat';
       return {
-        mandala: { ...m, days, daysSat: m.daysSat + 1, streak: m.streak + 1, todayComplete: true },
+        mandala: { ...base, days, daysSat: rule.sittingsDone + 1, sittingsDone: rule.sittingsDone + 1, lastSittingAt: day, todayComplete: true },
+        mandalaCompletionDays: [...s.mandalaCompletionDays, day],
+        lastCountedSittingDay: day,
         groupTodayCount: s.groupTodayCount + 1,
         groupCycleSittings: s.groupCycleSittings + 1,
       };
@@ -329,7 +344,13 @@ export function useStartMandala() {
     await personalDelay();
     const p = fx.practices.find((x) => x.id === practiceId) ?? fx.practices[0];
     const days = Array.from({ length: 40 }, (_, i) => (i === 0 ? 'today' : 'future')) as Mandala['days'];
+    const previous = getState();
+    if (previous.mandala && !mandalaRule(previous.mandala.startDate, istDay(Date.now()), mockCompletionDays(previous.mandala, previous.mandalaCompletionDays)).complete) {
+      if (previous.mandala.practiceId !== p.id) throw new Error('Finish your active Mandala before starting another.');
+      return;
+    }
     setState(() => ({
+      mandalaCompletionDays: [],
       mandala: {
         id: `mandala-${Date.now()}`,
         practiceId: p.id,
@@ -337,6 +358,8 @@ export function useStartMandala() {
         startDate: istDay(Date.now()),
         currentDay: 1,
         days,
+        sittingsDone: 0,
+        lastSittingAt: null,
         daysSat: 0,
         streak: 0,
         todayComplete: false,

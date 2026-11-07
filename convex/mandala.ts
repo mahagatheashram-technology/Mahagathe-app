@@ -7,17 +7,19 @@ import { getUser, requireConsentedUser, isEnrolled } from "./lib/auth";
 import { needPublished, isPublished, sourceApproved } from "./lib/content";
 import {
   dayKey,
-  dayOffset,
-  completionDecision,
+  mandalaRule,
   mandalaProgress,
   canAccessPractice,
   MANDALA_TIMEZONE,
   MANDALA_RULES_VERSION,
-  MANDALA_LENGTH,
 } from "./lib/logic";
 import { mandalaResult } from "./lib/validators";
 
-async function present(ctx: Pick<QueryCtx, "db">, item: Doc<"mandalas">, now: number) {
+async function present(
+  ctx: Pick<QueryCtx, "db">,
+  item: Doc<"mandalas">,
+  now: number,
+) {
   const practice = await ctx.db.get(item.practiceId);
   if (!practice) return null;
   const rows = await ctx.db
@@ -29,6 +31,9 @@ async function present(ctx: Pick<QueryCtx, "db">, item: Doc<"mandalas">, now: nu
     practiceId: practice.slug,
     practiceTitle: practice.title,
     startDate: item.startDay,
+    lastSittingAt: rows.length
+      ? new Date(Math.max(...rows.map((row) => row.createdAt))).toISOString()
+      : null,
     ...mandalaProgress(
       item.startDay,
       dayKey(now),
@@ -49,9 +54,17 @@ export const active = query({
         q.eq("userId", user._id).eq("status", "active"),
       )
       .unique();
-    if (!item || dayOffset(item.startDay, dayKey(now)) >= MANDALA_LENGTH)
-      return null;
-    return present(ctx, item, now);
+    // Keep the completed ring visible until the sādhaka chooses another Mandala.
+    const latest =
+      item ??
+      (await ctx.db
+        .query("mandalas")
+        .withIndex("by_user_status", (q) =>
+          q.eq("userId", user._id).eq("status", "completed"),
+        )
+        .order("desc")
+        .first());
+    return latest ? present(ctx, latest, now) : null;
   },
 });
 export const start = mutation({
@@ -85,24 +98,27 @@ export const start = mutation({
         q.eq("userId", user._id).eq("status", "active"),
       )
       .unique();
-    if (existing && dayOffset(existing.startDay, day) < MANDALA_LENGTH) {
+    const existingCount = existing
+      ? await ctx.db
+          .query("mandalaCompletions")
+          .withIndex("by_mandala_day", (q) => q.eq("mandalaId", existing._id))
+          .collect()
+      : [];
+    if (
+      existing &&
+      !mandalaRule(
+        existing.startDay,
+        day,
+        existingCount.map((row) => row.day),
+      ).complete
+    ) {
       if (existing.practiceId !== practice._id)
         throw new ConvexError(
           "Finish your active Mandala before starting another.",
         );
       return existing._id;
     }
-    if (existing) {
-      await ctx.db.patch(existing._id, { status: "expired" });
-      await ctx.db.insert("mandalaAudit", {
-        mandalaId: existing._id,
-        userId: user._id,
-        action: "expire",
-        day,
-        timezone: MANDALA_TIMEZONE,
-        createdAt: now,
-      });
-    }
+    if (existing) await ctx.db.patch(existing._id, { status: "completed" });
     // Provisional group cycles are calendar-month cohorts until D-23 is settled.
     const id = await ctx.db.insert("mandalas", {
       userId: user._id,
@@ -135,7 +151,7 @@ export const completeToday = mutation({
   handler: async (ctx, args) => {
     await observeClock(ctx);
     const user = await requireConsentedUser(ctx);
-    const item = args.mandalaId
+    const active = args.mandalaId
       ? await ctx.db.get(args.mandalaId)
       : await ctx.db
           .query("mandalas")
@@ -143,21 +159,40 @@ export const completeToday = mutation({
             q.eq("userId", user._id).eq("status", "active"),
           )
           .unique();
+    const item =
+      active ??
+      (args.mandalaId
+        ? null
+        : await ctx.db
+            .query("mandalas")
+            .withIndex("by_user_status", (q) =>
+              q.eq("userId", user._id).eq("status", "completed"),
+            )
+            .order("desc")
+            .first());
     if (!item || item.userId !== user._id)
       throw new ConvexError("No active Mandala was found.");
     const now = Date.now();
     const day = dayKey(now);
-    const existing = await ctx.db
+    const completed = await ctx.db
       .query("mandalaCompletions")
-      .withIndex("by_mandala_day", (q) =>
-        q.eq("mandalaId", item._id).eq("day", day),
+      .withIndex("by_mandala_day", (q) => q.eq("mandalaId", item._id))
+      .collect();
+    const countedTodayElsewhere = await ctx.db
+      .query("mandalaCompletions")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .filter((q) =>
+        q.and(q.eq(q.field("day"), day), q.neq(q.field("mandalaId"), item._id)),
       )
-      .unique();
-    if (
-      completionDecision(item.startDay, day, existing !== null) ===
-        "existing" &&
-      existing
-    ) {
+      .first();
+    const rule = mandalaRule(
+      item.startDay,
+      day,
+      completed.map((row) => row.day),
+      countedTodayElsewhere !== null,
+    );
+    if (rule.decision === "existing") {
+      const existing = completed.find((row) => row.day === day)!;
       return {
         id: existing._id,
         mandalaId: item._id,
@@ -165,6 +200,12 @@ export const completeToday = mutation({
         createdAt: existing.createdAt,
       };
     }
+    if (rule.decision === "beforeStart")
+      throw new ConvexError("This Mandala has not begun yet.");
+    if (rule.decision === "dailyLimit")
+      throw new ConvexError("Only one sitting can count per IST day.");
+    if (rule.decision === "complete")
+      throw new ConvexError("This Mandala has no sittings remaining.");
     if (item.status !== "active")
       throw new ConvexError("This Mandala is no longer active.");
     const practice = await ctx.db.get(item.practiceId);
@@ -188,6 +229,12 @@ export const completeToday = mutation({
       day,
       createdAt: now,
     });
+    if (
+      mandalaRule(item.startDay, day, [...completed.map((row) => row.day), day])
+        .complete
+    ) {
+      await ctx.db.patch(item._id, { status: "completed" });
+    }
     const count = await ctx.db
       .query("groupCounts")
       .withIndex("by_cycle_day", (q) =>
@@ -230,10 +277,7 @@ export const groupCount = query({
             )
             .unique()
         : null;
-      if (
-        activeMandala &&
-        dayOffset(activeMandala.startDay, day) < MANDALA_LENGTH
-      ) {
+      if (activeMandala) {
         cohort = activeMandala.cycleId;
       }
     }

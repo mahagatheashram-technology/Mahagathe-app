@@ -1,14 +1,10 @@
-import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Image, View } from 'react-native';
-
-import { AppText, BottomSheet, Button, Card, Icon, Screen } from '@/components/ui';
+import { ActivityIndicator, Pressable, TextInput, View } from 'react-native';
+import { AppText, BottomSheet, Button, Icon, Screen, DetailHeader } from '@/components/ui';
 import {
-  AGE_BANDS,
-  ROLE_LABELS,
-  brand,
   useAccountActions,
+  useMandala,
   useNotificationPrefs,
   useProfile,
   useSession,
@@ -16,209 +12,401 @@ import {
   useUpdateProfile,
   type Language,
   type NotificationPrefs,
-  type Role,
 } from '@/data';
-import { colors, fonts, radii } from '@/theme/tokens';
-import { formatReminder } from '@/features/sadhana/format';
 import { TimePickerSheet } from '@/features/sadhana/TimePickerSheet';
+import { formatReminder } from '@/features/sadhana/format';
+import { colors, fonts } from '@/theme/tokens';
 import { OptionSheet } from './OptionSheet';
-import { SettingsRow, SettingsSection } from './Settings';
 import { ToggleSwitch } from './ToggleSwitch';
 import { useToast } from './Toast';
 
-const LANGUAGES: { key: Language; label: string }[] = [
-  { key: 'en', label: 'English' },
-  { key: 'te', label: 'తెలుగు · Coming soon' },
-  { key: 'hi', label: 'हिन्दी · Coming soon' },
+type Sheet =
+  null | 'time' | 'language' | 'account' | 'delete' | 'edit' | 'morning';
+const NOTIFICATIONS: {
+  key: keyof NotificationPrefs;
+  label: string;
+  timing: string;
+}[] = [
+  { key: 'practiceReminder', label: 'Daily practice', timing: '6:00 AM' },
+  { key: 'dailyVakyam', label: 'Morning teaching', timing: '7:00 AM' },
+  { key: 'registeredEvents', label: 'My gatherings', timing: 'The day before' },
 ];
 
-const NOTIFICATIONS: { key: keyof NotificationPrefs; label: string }[] = [
-  { key: 'practiceReminder', label: 'Practice reminder' },
-  { key: 'dailyVakyam', label: 'Guru Vākyam each morning' },
-  { key: 'registeredEvents', label: 'Events I registered for' },
-];
-
-type Sheet = null | 'time' | 'roles' | 'language' | 'delete';
-
-/** ProfileV3 — identity, practice, notifications, app settings. Guests see a sign-in card. */
 export default function ProfileScreen() {
   const router = useRouter();
-  const { status, signOut } = useSession();
+  const { status, canUsePersonalFeatures, signOut } = useSession();
   const profile = useProfile();
   const prefs = useNotificationPrefs();
+  const mandala = useMandala();
   const setPref = useSetNotificationPref();
   const updateProfile = useUpdateProfile();
   const { requestDataExport, deleteAccount } = useAccountActions();
   const [sheet, setSheet] = useState<Sheet>(null);
-  const [deleting, setDeleting] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [draftName, setDraftName] = useState('');
   const toast = useToast();
-
   const changePref = async (key: keyof NotificationPrefs, value: boolean) => {
-    try { await setPref(key, value); } catch { toast.show('We could not save this change. Please try again.'); }
+    try {
+      await setPref(key, value);
+    } catch {
+      toast.show('We could not save this change. Please try again.');
+    }
   };
-  const version = (Constants.expoConfig?.version ?? '1.0').split('.').slice(0, 2).join('.');
-  const footer = (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, justifyContent: 'center', paddingTop: 6 }}>
-      <Image source={brand.emblem} style={{ width: 18, height: 26.3 }} accessibilityIgnoresInvertColors />
-      <AppText variant="caption">Mahagathe Foundation · v{version}</AppText>
-    </View>
-  );
-
-  if (status === 'loading' || (status === 'signedIn' && (profile === undefined || prefs === undefined))) {
+  const run = async (action: () => Promise<void>) => {
+    setBusy(true);
+    try {
+      await action();
+    } catch {
+      toast.show('We could not save this change. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
+  if (
+    status === 'loading' ||
+    (canUsePersonalFeatures && (profile === undefined || prefs === undefined))
+  )
     return (
       <Screen contentStyle={{ justifyContent: 'center' }}>
-        <ActivityIndicator color={colors.actionRed} accessibilityLabel="Loading" />
+        <ActivityIndicator
+          accessibilityLabel="Loading your profile"
+          color={colors.actionRed}
+        />
       </Screen>
     );
-  }
-
-  if (status !== 'signedIn' || !profile || !prefs) {
+  if (!canUsePersonalFeatures || !profile || !prefs)
     return (
-      <Screen contentStyle={styles.main}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-          <View style={[styles.avatar, { backgroundColor: colors.sand }]}>
-            <Icon name="profile" size={28} color={colors.muted} />
-          </View>
-          <AppText variant="title" style={{ fontSize: 26, lineHeight: 33 }}>
-            Your profile
-          </AppText>
-        </View>
-        <Card style={{ padding: 20, gap: 14 }}>
-          <AppText variant="cardTitle">Sign in to keep your practice</AppText>
-          <AppText>
-            Your reminders, Mandala and registrations are kept for you once you sign in. Home and Wisdom stay open to
-            everyone.
-          </AppText>
-          <Button label="Sign in" onPress={() => router.push('/welcome')} />
-        </Card>
-        {footer}
+      <Screen contentStyle={{ paddingTop: 4, paddingHorizontal: 24, gap: 24 }}>
+        <DetailHeader backLabel="Home" backHref="/" />
+        <AppText variant="title">Your profile</AppText>
+        <AppText>Sign in to keep your practice and reminders.</AppText>
+        <Button label="Sign in" onPress={() => router.push('/welcome')} />
       </Screen>
     );
-  }
-
-  const ageLabel = AGE_BANDS.find((b) => b.value === profile.ageBand)?.label;
   const name = profile.displayName.trim() || 'Friend';
-  const roles = profile.roles.map((r) => ROLE_LABELS[r]).join(', ');
-  const language = LANGUAGES.find((l) => l.key === profile.language)?.label ?? 'English';
-
   return (
     <View style={{ flex: 1 }}>
-      <Screen contentStyle={styles.main}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-          <View style={styles.avatar} accessibilityElementsHidden importantForAccessibility="no">
-            <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 26, lineHeight: 34 }} color={colors.white}>
-              {name.charAt(0).toUpperCase()}
-            </AppText>
+      <Screen
+        contentStyle={{
+          paddingTop: 4,
+          paddingHorizontal: 24,
+          paddingBottom: 24,
+        }}
+      >
+        <DetailHeader backLabel="Home" backHref="/" />
+        <View style={{ paddingTop: 22, gap: 24 }}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Edit profile"
+            onPress={() => {
+              setDraftName(name);
+              setSheet('edit');
+            }}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}
+          >
+            <View
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: 999,
+                backgroundColor: colors.iconSand,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <AppText
+                style={{ fontFamily: fonts.serifSemibold, fontSize: 26 }}
+              >
+                {name.charAt(0).toUpperCase()}
+              </AppText>
+            </View>
+            <View style={{ flex: 1, gap: 2 }}>
+              <AppText
+                accessibilityRole="header"
+                style={{
+                  fontFamily: fonts.serifSemibold,
+                  fontSize: 24,
+                  lineHeight: 31.2,
+                }}
+              >
+                {name}
+              </AppText>
+              <AppText
+                style={{
+                  fontSize: 15,
+                  lineHeight: 22.5,
+                  color: colors.textSecondary,
+                }}
+              >
+                {mandala === undefined
+                  ? 'Loading your Mandala…'
+                  : `${mandala?.sittingsDone ?? 0} sittings in your Mandala`}
+              </AppText>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <AppText style={styles.link}>Edit</AppText>
+              <Icon name="chevronRight" size={15} />
+            </View>
+          </Pressable>
+          <View>
+            <AppText style={styles.heading}>Reminders</AppText>
+            {NOTIFICATIONS.map((item, i) => {
+              const on = prefs[item.key];
+              const time =
+                item.key === 'practiceReminder'
+                  ? formatReminder(profile.reminderTime ?? '06:00')
+                  : item.timing;
+              return (
+                <View
+                  key={item.key}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 12,
+                    minHeight: 81,
+                    paddingVertical: 8,
+                    borderBottomWidth: i === 2 ? 0 : 1,
+                    borderBottomColor: colors.divider,
+                  }}
+                >
+                  <View style={{ flex: 1, gap: 2 }}>
+                    <AppText
+                      style={{
+                        fontFamily: fonts.sansMedium,
+                        fontSize: 16,
+                        lineHeight: 24,
+                      }}
+                    >
+                      {item.label}
+                    </AppText>
+                    {on && i < 2 ? (
+                      <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel={`Change time for ${item.label}`}
+                        hitSlop={6}
+                        onPress={() => setSheet(i === 0 ? 'time' : 'morning')}
+                        style={{
+                          alignSelf: 'flex-start',
+                          height: 32,
+                          justifyContent: 'center',
+                          marginTop: 4,
+                        }}
+                      >
+                        <View
+                          style={{
+                            height: 32,
+                            paddingHorizontal: 10,
+                            borderRadius: 999,
+                            borderWidth: 1,
+                            borderColor: colors.outline,
+                            backgroundColor: colors.white,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: 4,
+                          }}
+                        >
+                          <AppText
+                            style={{
+                              fontFamily: fonts.sansSemibold,
+                              fontSize: 13,
+                              lineHeight: 20,
+                            }}
+                          >
+                            {time}
+                          </AppText>
+                          <Icon
+                            name="chevronDown"
+                            size={12}
+                            strokeWidth={2.4}
+                          />
+                        </View>
+                      </Pressable>
+                    ) : (
+                      <AppText
+                        style={{
+                          fontSize: 14,
+                          lineHeight: 21,
+                          color: colors.textSecondary,
+                        }}
+                      >
+                        {on ? '' : 'Off · '}
+                        {time}
+                      </AppText>
+                    )}
+                  </View>
+                  <ToggleSwitch
+                    value={on}
+                    label={item.label}
+                    onValueChange={(v) => changePref(item.key, v)}
+                  />
+                </View>
+              );
+            })}
           </View>
-          <View style={{ gap: 2, flexShrink: 1 }}>
-            <AppText
-              accessibilityRole="header"
-              numberOfLines={1}
-              style={{ fontFamily: fonts.serifSemibold, fontSize: 26, lineHeight: 33 }}>
-              {name}
-            </AppText>
-            <AppText variant="meta">{[profile.phoneMasked, ageLabel].filter(Boolean).join(' · ')}</AppText>
+          <View>
+            <AppText style={styles.heading}>Settings</AppText>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Language"
+              onPress={() => setSheet('language')}
+              style={[
+                styles.settingsRow,
+                { borderBottomWidth: 1, borderBottomColor: colors.divider },
+              ]}
+            >
+              <AppText style={styles.setting}>Language</AppText>
+              <AppText style={{ fontSize: 15, color: colors.textSecondary }}>
+                English
+              </AppText>
+              <Icon name="chevronRight" size={18} color={colors.chevron} />
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Your data and account"
+              onPress={() => setSheet('account')}
+              style={styles.settingsRow}
+            >
+              <AppText style={styles.setting}>Your data and account</AppText>
+              <Icon name="chevronRight" size={18} color={colors.chevron} />
+            </Pressable>
           </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Sign out"
+            onPress={() =>
+              run(async () => {
+                await signOut();
+                router.replace('/welcome');
+              })
+            }
+            disabled={busy}
+            style={{
+              minHeight: 44,
+              alignSelf: 'flex-start',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+            }}
+          >
+            <Icon name="signOut" size={18} strokeWidth={1.8} />
+            <AppText style={{ ...styles.link, fontSize: 16 }}>Sign out</AppText>
+          </Pressable>
         </View>
-
-        <SettingsSection title="Practice">
-          <SettingsRow
-            label="Daily reminder"
-            value={formatReminder(profile.reminderTime)}
-            strongValue
-            onPress={() => setSheet('time')}
-          />
-          <SettingsRow
-            label="I am here as"
-            value={roles || 'Choose'}
-            last
-            onPress={() => setSheet('roles')}
-          />
-        </SettingsSection>
-
-        <SettingsSection title="Notifications">
-          {NOTIFICATIONS.map((n, i) => (
-            <SettingsRow
-              key={n.key}
-              label={n.label}
-              last={i === NOTIFICATIONS.length - 1}
-              onPress={() => changePref(n.key, !prefs[n.key])}
-              accessibilityLabel={`${n.label}, ${prefs[n.key] ? 'on' : 'off'}`}
-              right={<ToggleSwitch value={prefs[n.key]} label={n.label} onValueChange={(v) => changePref(n.key, v)} />}
-            />
-          ))}
-        </SettingsSection>
-
-        <SettingsSection title="App">
-          <SettingsRow label="Language" value={language} onPress={() => setSheet('language')} />
-          <SettingsRow
-            label="Download my data"
-            onPress={async () => {
-              try { await requestDataExport(); toast.show('Data export requested'); }
-              catch { toast.show('We could not export your data. Please try again.'); }
-            }}
-          />
-          <SettingsRow
-            label="Sign out"
-            onPress={async () => {
-              try { await signOut(); router.replace('/welcome'); }
-              catch { toast.show('We could not sign out. Please try again.'); }
-            }}
-          />
-          <SettingsRow label="Delete account" danger last onPress={() => setSheet('delete')} />
-        </SettingsSection>
-
-        {footer}
       </Screen>
-
       <TimePickerSheet
         visible={sheet === 'time'}
         value={profile.reminderTime}
         onClose={() => setSheet(null)}
         onSave={(reminderTime) => updateProfile({ reminderTime })}
       />
-      <OptionSheet
-        visible={sheet === 'roles'}
-        title="I am here as"
-        multi
-        options={(Object.keys(ROLE_LABELS) as Role[]).map((r) => ({ key: r, label: ROLE_LABELS[r] }))}
-        selected={profile.roles}
+      <BottomSheet
+        visible={sheet === 'morning'}
+        title="Morning teaching"
         onClose={() => setSheet(null)}
-        onSubmit={(keys) => updateProfile({ roles: keys as Role[] })}
-        hint="Choose all that apply."
-      />
+      >
+        <AppText>
+          Morning teachings arrive at 7:00 AM. You can turn this reminder on or
+          off in Profile.
+        </AppText>
+        <Button label="Done" variant="quiet" onPress={() => setSheet(null)} />
+      </BottomSheet>
+      <BottomSheet
+        visible={sheet === 'edit'}
+        title="Your name"
+        onClose={() => setSheet(null)}
+      >
+        <TextInput
+          accessibilityLabel="Your name"
+          value={draftName}
+          onChangeText={setDraftName}
+          maxLength={80}
+          style={{
+            borderWidth: 1,
+            borderColor: colors.divider,
+            borderRadius: 12,
+            padding: 14,
+            fontFamily: fonts.sans,
+            fontSize: 16,
+            color: colors.ink,
+          }}
+        />
+        <Button
+          label="Save"
+          disabled={!draftName.trim()}
+          loading={busy}
+          onPress={() =>
+            run(async () => {
+              await updateProfile({ displayName: draftName.trim() });
+              setSheet(null);
+            })
+          }
+        />
+      </BottomSheet>
       <OptionSheet
         visible={sheet === 'language'}
         title="Language"
-        options={LANGUAGES.map(l => ({ ...l, disabled: l.key !== 'en' }))}
-        hint="Hindi and Telugu are coming soon. English is available now."
+        options={[
+          { key: 'en', label: 'English' },
+          { key: 'te', label: 'తెలుగు · Coming soon', disabled: true },
+          { key: 'hi', label: 'हिन्दी · Coming soon', disabled: true },
+        ]}
         selected={[profile.language]}
         onClose={() => setSheet(null)}
-        onSubmit={([key]) => updateProfile({ language: key as Language })}
+        onSubmit={([language]) =>
+          updateProfile({ language: language as Language })
+        }
+        hint="Hindi and Telugu are coming soon. English is available now."
       />
-      <BottomSheet visible={sheet === 'delete'} onClose={() => (deleting ? undefined : setSheet(null))} title="Delete your account?">
-        <AppText style={{ fontSize: 15, lineHeight: 24 }}>
-          This removes your profile and practice record from the app. It cannot be undone.
+      <BottomSheet
+        visible={sheet === 'account'}
+        title="Your data and account"
+        onClose={() => setSheet(null)}
+      >
+        <Button
+          label="Download my data"
+          variant="quiet"
+          loading={busy}
+          onPress={() =>
+            run(async () => {
+              await requestDataExport();
+              toast.show('Data export requested');
+            })
+          }
+        />
+        <Button
+          label="Delete account"
+          variant="quiet"
+          onPress={() => setSheet('delete')}
+        />
+      </BottomSheet>
+      <BottomSheet
+        visible={sheet === 'delete'}
+        title="Delete your account?"
+        onClose={() => {
+          if (!busy) setSheet(null);
+        }}
+      >
+        <AppText>
+          This removes your profile and practice record from the app. It cannot
+          be undone.
         </AppText>
-        <View style={{ gap: 10, marginTop: 4 }}>
-          <Button
-            label="Delete account"
-            loading={deleting}
-            onPress={async () => {
-              setDeleting(true);
-              try {
-                await deleteAccount();
-                setSheet(null);
-                router.replace('/welcome');
-              } catch {
-                toast.show('We could not delete your account. Please try again.');
-              } finally {
-                setDeleting(false);
-              }
-            }}
-          />
-          <Button label="Keep my account" variant="quiet" onPress={() => setSheet(null)} disabled={deleting} />
-        </View>
+        <Button
+          label="Delete account"
+          loading={busy}
+          onPress={() =>
+            run(async () => {
+              await deleteAccount();
+              setSheet(null);
+              router.replace('/welcome');
+            })
+          }
+        />
+        <Button
+          label="Keep my account"
+          variant="quiet"
+          disabled={busy}
+          onPress={() => setSheet(null)}
+        />
       </BottomSheet>
       {toast.node}
     </View>
@@ -226,13 +414,25 @@ export default function ProfileScreen() {
 }
 
 const styles = {
-  main: { paddingTop: 4, paddingHorizontal: 20, paddingBottom: 24, gap: 22 },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: radii.pill,
-    backgroundColor: colors.actionRed,
+  heading: {
+    fontFamily: fonts.sansSemibold,
+    fontSize: 13,
+    lineHeight: 24,
+    letterSpacing: 1.04,
+    textTransform: 'uppercase' as const,
+    color: colors.textSecondary,
+  },
+  link: { fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23 },
+  settingsRow: {
+    flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    gap: 10,
+    minHeight: 56,
+  },
+  setting: {
+    flex: 1,
+    fontFamily: fonts.sansMedium,
+    fontSize: 16,
+    lineHeight: 24,
   },
 };
