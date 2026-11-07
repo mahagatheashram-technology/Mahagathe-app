@@ -13,6 +13,12 @@ It must run with **zero keys** (mock mode). Convex + Clerk switch on only when e
 
 ## Design source of truth
 
+**Current target: v12 (locked).** `docs/design/v12/mocks/*.dc.html` + `docs/design/v12/screenshots/*.png`,
+and the experience rules in `docs/PRD-v0.4-experience.md` (principles E-1…E-7, 4 tabs, Profile
+behind the avatar, circular 40-sitting Mandala). Where v12 and the older v3 notes below disagree, **v12 wins**.
+The v3 files below are kept for history.
+
+
 - `docs/design/mocks/*V3.dc.html` — the HTML mocks. All sizes/colours/spacing are inline styles: copy them exactly.
 - `docs/design/screenshots/*V3.png` — rendered at 2× (390pt wide). Compare your screen against these.
 - `docs/design/mocks/BrandV3.dc.html` — the system: brand red `#F60000` (logo/Mandala ring only),
