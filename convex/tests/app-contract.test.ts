@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { canUsePersonalFeatures } from '../../src/data/session';
 import { phoneWithCountryCode } from '../../src/data/phone';
 import { clearMockUserData, getState, setState } from '../../src/data/mockStore';
-import type { Profile } from '../../src/data/types';
+import { isMinor, type Profile } from '../../src/data/types';
 
 const profile: Profile = { id: 'me', displayName: '[Name]', phoneMasked: '', ageBand: '13-17', roles: [], language: 'en', reminderTime: null, guardianConsent: 'pending', enrolled: false };
 void test('authentication never bypasses setup or guardian consent', () => {
@@ -30,4 +30,10 @@ void test('phone normalization accepts Indian local or explicit E.164 and reject
   assert.equal(phoneWithCountryCode('98765 43210'), '+919876543210');
   assert.equal(phoneWithCountryCode('+1 (202) 555-0123'), '+12025550123');
   assert.throws(() => phoneWithCountryCode('+91 ••••• ••210'));
+});
+
+void test('an unspecified age completes setup without being treated as a minor', () => {
+  assert.equal(isMinor('unspecified'), false);
+  assert.equal(canUsePersonalFeatures('signedIn', { ...profile, ageBand: 'unspecified', guardianConsent: 'notRequired' }), true);
+  assert.equal(canUsePersonalFeatures('guest', { ...profile, ageBand: 'unspecified', guardianConsent: 'notRequired' }), false);
 });

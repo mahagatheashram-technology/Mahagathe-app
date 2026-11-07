@@ -24,7 +24,7 @@ export default function EventsScreen() {
 
   return (
     <Screen contentStyle={{ paddingHorizontal: 20, paddingBottom: 32, gap: 22 }}>
-      <DetailHeader />
+      <DetailHeader backLabel="Sangha" backHref="/(tabs)/sangha" />
       <View style={{ gap: 6 }}>
         <AppText accessibilityRole="header" style={{ fontFamily: fonts.serifSemibold, fontSize: 32, lineHeight: 41 }}>
           Events

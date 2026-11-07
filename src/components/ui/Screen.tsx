@@ -1,11 +1,12 @@
-import { useRouter } from 'expo-router';
+import { type Href, useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, View, type ScrollViewProps, type ViewStyle } from 'react-native';
 import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 
 import { AppText } from './AppText';
 import { Icon, type IconName } from './Icon';
-import { colors } from '@/theme/tokens';
+import { colors, fonts } from '@/theme/tokens';
+import { v12 } from '@/theme/v12';
 
 /**
  * Scrollable cream page. `edgeToEdgeTop` lets a red feature block run under the status bar
@@ -36,12 +37,23 @@ export function Screen({
     <ScrollView
       {...scrollProps}
       style={{ flex: 1 }}
-      contentContainerStyle={[{ flexGrow: 1 }, contentStyle, { paddingTop: top + (typeof contentStyle?.paddingTop === 'number' ? contentStyle.paddingTop : 0) }]}
+      contentContainerStyle={[
+        { flexGrow: 1 },
+        contentStyle,
+        { paddingTop: top + (typeof contentStyle?.paddingTop === 'number' ? contentStyle.paddingTop : 0) },
+      ]}
       showsVerticalScrollIndicator={false}>
       {children}
     </ScrollView>
   ) : (
-    <View style={[{ flex: 1 }, contentStyle, { paddingTop: top + (typeof contentStyle?.paddingTop === 'number' ? contentStyle.paddingTop : 0) }]}>{children}</View>
+    <View
+      style={[
+        { flex: 1 },
+        contentStyle,
+        { paddingTop: top + (typeof contentStyle?.paddingTop === 'number' ? contentStyle.paddingTop : 0) },
+      ]}>
+      {children}
+    </View>
   );
   return (
     <View style={{ flex: 1, backgroundColor: background }}>
@@ -51,11 +63,13 @@ export function Screen({
   );
 }
 
-/** Top row on detail screens: 44px back button · centered meta label · optional trailing action. */
+/** Destination-named back pill, optional meta label, and trailing action. */
 export function DetailHeader({
   label,
   onBack,
-  backIcon = 'back',
+  backIcon,
+  backLabel = 'Back',
+  backHref,
   trailing,
   tint = colors.ink,
   labelColor = colors.muted,
@@ -63,6 +77,8 @@ export function DetailHeader({
   label?: string;
   onBack?: () => void;
   backIcon?: IconName;
+  backLabel?: string;
+  backHref?: string;
   trailing?: ReactNode;
   tint?: string;
   labelColor?: string;
@@ -72,10 +88,22 @@ export function DetailHeader({
     <View style={styles.header}>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Back"
-        onPress={onBack ?? (() => (router.canGoBack() ? router.back() : router.replace('/')))}
-        style={[styles.iconBtn, { marginLeft: -10 }]}>
-        <Icon name={backIcon} size={22} color={tint} />
+        accessibilityLabel={backLabel === 'Back' ? 'Back' : `Back to ${backLabel}`}
+        onPress={
+          onBack ??
+          (() =>
+            backHref
+              ? router.dismissTo(backHref as Href)
+              : router.canGoBack()
+                ? router.back()
+                : router.replace('/'))
+        }
+        hitSlop={2}
+        style={styles.backPill}>
+        <Icon name={backIcon ?? 'back'} size={18} color={tint} strokeWidth={2.4} />
+        <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23, color: tint }}>
+          {backLabel}
+        </AppText>
       </Pressable>
       {label ? (
         <AppText variant="meta" color={labelColor}>
@@ -84,12 +112,22 @@ export function DetailHeader({
       ) : (
         <View />
       )}
-      <View style={[styles.iconBtn, { marginRight: -10 }]}>{trailing}</View>
+      <View style={{ alignItems: 'flex-end', justifyContent: 'center', minHeight: 44 }}>{trailing}</View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  iconBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  backPill: {
+    height: 40,
+    borderRadius: 999,
+    backgroundColor: v12.sand,
+    marginLeft: -4,
+    paddingLeft: 10,
+    paddingRight: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  header: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
 });

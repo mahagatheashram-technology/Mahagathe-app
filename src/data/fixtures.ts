@@ -27,7 +27,7 @@ export const vakyams: Vakyam[] = [
     id: 'vk-001',
     text: 'Steadiness in practice gives clarity in life.',
     meaning:
-      'When you return to your practice every day, even briefly, the mind slowly settles. A settled mind sees choices in work and family more clearly.',
+      'Return to your practice every day, even briefly. Slowly the mind settles, and a settled mind sees choices in work and family more clearly.',
     theme: 'inner-life',
     verbatim: true,
     attribution: GURU,
@@ -139,14 +139,14 @@ export const episodes: Episode[] = ADI_TITLES.map((title, i) => ({
   paragraphs:
     i === 0
       ? [
-          'In the forest of Naimiṣa, the sage Śaunaka and his companions had gathered for a sacrifice that would last twelve years. One morning a traveller walked into their clearing: Ugraśravas, the son of Lomaharṣaṇa, a bard who had learned the old stories by heart.',
-          'The sages welcomed him and gave him a seat. When he had rested, they asked him where he had come from. He told them he had just heard a great telling — the story of the Bhāratas, first sung by Vyāsa — at the serpent sacrifice of King Janamejaya.',
+          'In the forest of Naimiṣa, the sage Śaunaka and his companions had gathered for a sacrifice that would last twelve years. One morning a traveller walked into their clearing: Ugraśravas, a bard who had learned the old stories by heart.',
+          'The sages welcomed him and gave him a seat. When he had rested, they asked where he had come from. He told them he had just heard a great telling — the story of the Bhāratas, first sung by Vyāsa.',
           '“Tell it to us,” they said, “just as you heard it.” And so the story begins with a listener asking, and a teller willing to give.',
         ]
       : ['[Episode text, written by Mahagathe from the BORI critical edition, pending review.]'],
   reflection:
     i === 0
-      ? 'The sages listen before they speak. When did you last listen to someone fully, without planning your reply?'
+      ? 'The sages listen before they speak. When did you last listen to someone fully?'
       : '[Reflection prompt pending review.]',
   questions:
     i === 0
@@ -184,7 +184,7 @@ export const parampara: Parampara = {
     name: GURU,
     title: 'Seventieth Mahādhibhū',
     lineage: '70th Mahādhibhū · Rudra Sampradāya',
-    bio: 'Of the Rudra Sampradāya of the Mahāpāśupata mata. Every teaching in this app comes from this living lineage, with its source shown.',
+    bio: 'Gurudev carries a living Shaiva lineage, handed from teacher to student for seventy generations. Every teaching here comes from it.',
   },
   lineage: [
     { label: 'Founding ācārya', name: '[Name, as approved]' },

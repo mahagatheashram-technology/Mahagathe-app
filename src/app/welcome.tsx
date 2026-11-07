@@ -1,106 +1,95 @@
 import { Redirect, useRouter } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
-import { AppText, Button, Icon, RedFeature } from '@/components/ui';
+import { AppText, Button, LineOrnament, Screen } from '@/components/ui';
 import { Emblem } from '@/components/ui/Emblem';
-import { MOCK_STATUS_BAR, useStatusBarInset, useScreenInsets } from '@/components/ui/useStatusBarInset';
 import { useProfile, useSession } from '@/data';
 import { LanguagePill } from '@/features/onboarding/LanguagePill';
 import { colors, fonts } from '@/theme/tokens';
+import { v12 } from '@/theme/v12';
 
 export default function WelcomeScreen() {
   const router = useRouter();
-  const insets = useScreenInsets();
-  const top = useStatusBarInset();
   const { status, continueAsGuest } = useSession();
   const profile = useProfile();
-
-  // A signed-in user with a finished profile has no business here (e.g. after Back from Setup).
   if (status === 'signedIn' && profile?.displayName && profile.ageBand) return <Redirect href="/(tabs)" />;
 
   const explore = () => {
     continueAsGuest();
-    // Guests prompted from inside the app arrive here on top of the tabs: go back to them.
     if (router.canGoBack()) router.dismissTo('/(tabs)');
     else router.replace('/(tabs)');
   };
 
   return (
-    <RedFeature
-      style={{
-        ...styles.root,
-        paddingTop: top + (60 - MOCK_STATUS_BAR),
-        paddingBottom: Math.max(40, insets.bottom),
-      }}>
-      <View style={styles.langRow}>
+    <Screen contentStyle={{ paddingTop: 4, paddingBottom: 64 }}>
+      <View style={{ alignItems: 'flex-end', paddingHorizontal: 24 }}>
         <LanguagePill />
       </View>
-
       <View style={styles.center}>
-        <View style={styles.badge}>
-          <Emblem width={98} />
+        <View style={styles.ornament}>
+          <View style={StyleSheet.absoluteFill}>
+            <LineOrnament size={210} />
+          </View>
+          <View style={styles.badge}>
+            <Emblem width={70} />
+          </View>
         </View>
-        <View style={styles.titleBlock}>
+        <View style={{ alignItems: 'center', gap: 8 }}>
           <AppText accessibilityRole="header" style={styles.title}>
             Mahagathe
           </AppText>
           <AppText style={styles.motto}>सत्यं वद · धर्मं चर</AppText>
         </View>
-        <AppText style={styles.tagline}>Daily guidance and practice from a living lineage.</AppText>
+        <AppText style={styles.tagline}>Daily practice and wisdom from a living lineage.</AppText>
       </View>
-
-      <View style={styles.actions}>
+      <View style={{ paddingHorizontal: 24, gap: 6 }}>
         <Button
-          label="Continue with phone number"
-          variant="onFeature"
-          icon={<Icon name="phone" size={20} color={colors.actionRed} />}
-          iconGap={10}
-          onPress={() => router.push('/sign-in')}
+          label="Begin your practice"
+          onPress={() => router.push(status === 'signedIn' ? '/setup' : '/sign-in')}
         />
-        <Button label="Explore as a guest" variant="ghostOnFeature" onPress={explore} />
-        <AppText style={styles.note}>
-          Guests can read Guru Vākyams and Wisdom. Sign in to practise, register for events and give.
-        </AppText>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Look around first"
+          onPress={explore}
+          style={{ alignSelf: 'center', minHeight: 44, justifyContent: 'center' }}>
+          <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23, color: v12.muted }}>
+            Look around first
+          </AppText>
+        </Pressable>
       </View>
-    </RedFeature>
+    </Screen>
   );
 }
-
 const styles = StyleSheet.create({
-  root: { flex: 1, paddingHorizontal: 28 },
-  langRow: { flexDirection: 'row', justifyContent: 'flex-end' },
-  center: { flexGrow: 1, flexShrink: 1, alignItems: 'center', justifyContent: 'center', gap: 22 },
-  badge: {
-    width: 176,
-    height: 176,
-    borderRadius: 999,
-    backgroundColor: colors.cream,
+  center: {
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: colors.shadowNeutral,
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
+    gap: 22,
+    paddingHorizontal: 32,
+    paddingBottom: 8,
+  },
+  ornament: { width: 210, height: 210, alignItems: 'center', justifyContent: 'center' },
+  badge: {
+    width: 124,
+    height: 124,
+    borderRadius: 999,
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: colors.shadow,
+    shadowOpacity: 0.1,
+    shadowRadius: 34,
     shadowOffset: { width: 0, height: 12 },
-    elevation: 12,
+    elevation: 4,
   },
-  titleBlock: { alignItems: 'center', gap: 6 },
-  title: { fontFamily: fonts.serifSemibold, fontSize: 40, lineHeight: 51, color: colors.white, textAlign: 'center' },
-  motto: { fontFamily: fonts.devaRegular, fontSize: 18, lineHeight: 28, color: colors.onFeatureMuted, textAlign: 'center' },
-  tagline: {
-    fontFamily: fonts.serif,
-    fontSize: 18,
-    lineHeight: 27,
-    color: colors.white,
-    textAlign: 'center',
-    maxWidth: 290,
-  },
-  actions: { gap: 12 },
-  note: {
-    marginTop: 6,
-    fontFamily: fonts.sans,
-    fontSize: 12,
-    lineHeight: 19.2,
-    color: colors.onFeatureMuted,
+  title: { fontFamily: fonts.serifSemibold, fontSize: 38, lineHeight: 49, textAlign: 'center' },
+  motto: {
+    fontFamily: fonts.deva,
+    fontSize: 17,
+    lineHeight: 26,
+    color: v12.label,
     textAlign: 'center',
   },
+  tagline: { fontFamily: fonts.serif, fontSize: 19, lineHeight: 29.45, textAlign: 'center', maxWidth: 290 },
 });
