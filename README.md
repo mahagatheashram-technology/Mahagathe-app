@@ -17,6 +17,17 @@ npx expo start        # scan the QR code with Expo Go (iOS / Android)
 With no environment keys the app runs in **mock mode** with sample content.
 To use the real backend, copy `.env.example` to `.env.local` and fill in the Convex and Clerk keys.
 
+## Share a preview over a tunnel
+
+```bash
+npm run tunnel        # expo start --tunnel; anyone with Expo Go (SDK 58) can open the exp:// link
+```
+
+The dev server must stay running on your machine while others use the link.
+**Mode follows `.env.local`:** Expo SDK 58 bundles `.env*` files directly, so a checkout *with*
+`.env.local` runs live (Clerk + Convex) and one *without* it runs in mock mode. To share the
+mock prototype, run the tunnel from a clean worktree that has no `.env.local`.
+
 ## Backend setup
 
 Use Node.js 22.13+ (22.x), 24.3+ (24.x), or 26+ for Expo SDK 58. This backend was
