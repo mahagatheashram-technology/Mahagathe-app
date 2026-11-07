@@ -76,6 +76,7 @@ export function Button({
             style={{
               fontFamily: variant === 'ghostOnFeature' ? fonts.sansMedium : fonts.sansSemibold,
               fontSize: fontSize ?? fontSizes[size],
+              lineHeight: (fontSize ?? fontSizes[size]) === 16 ? 24 : (fontSize ?? fontSizes[size]) === 15 ? 23 : 19.5,
               color: v.text,
             }}>
             {label}

@@ -104,5 +104,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   times: { flexDirection: 'row', justifyContent: 'space-between' },
-  time: { fontSize: 12, lineHeight: 18, fontFamily: fonts.sansMedium, color: colors.playerMuted },
+  time: { fontSize: 12, lineHeight: 17.5, fontFamily: fonts.sansMedium, color: colors.playerMuted },
 });

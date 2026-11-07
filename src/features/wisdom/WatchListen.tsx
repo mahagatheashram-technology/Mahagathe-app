@@ -50,6 +50,6 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  title: { fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 22 },
-  sub: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 18, color: colors.muted },
+  title: { fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23 },
+  sub: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 17.5, color: colors.muted },
 });

@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   },
   titleBlock: { alignItems: 'center', gap: 6 },
   title: { fontFamily: fonts.serifSemibold, fontSize: 40, lineHeight: 51, color: colors.white, textAlign: 'center' },
-  motto: { fontFamily: fonts.deva, fontSize: 18, lineHeight: 30, color: colors.onFeatureMuted, textAlign: 'center' },
+  motto: { fontFamily: fonts.devaRegular, fontSize: 18, lineHeight: 28, color: colors.onFeatureMuted, textAlign: 'center' },
   tagline: {
     fontFamily: fonts.serif,
     fontSize: 18,

@@ -32,7 +32,7 @@ export default function VibhagaScreen() {
       <Screen contentStyle={{ paddingHorizontal: 20, gap: 16 }}>
         <DetailHeader />
         <Card style={{ padding: 20, gap: 4 }}>
-          <AppText variant="label">This page is not available</AppText>
+          <AppText variant="label">{vibhaga === undefined ? 'Loading vibhaga…' : 'This page is not available'}</AppText>
           <AppText variant="meta">Go back to Sangha to see the vibhagas of the Trust.</AppText>
         </Card>
       </Screen>

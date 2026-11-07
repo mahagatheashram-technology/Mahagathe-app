@@ -62,7 +62,7 @@ export function PracticeCard({
           </View>
         ) : practice === null ? (
           <View style={{ gap: 4 }}>
-            <AppText variant="eyebrow" style={{ letterSpacing: 1.44, lineHeight: 18 }}>
+            <AppText variant="eyebrow" style={{ letterSpacing: 1.44, lineHeight: 17.5 }}>
               Your practice today
             </AppText>
             <AppText variant="meta">Your practice will appear here once it is ready.</AppText>
@@ -70,7 +70,7 @@ export function PracticeCard({
         ) : (
           <View style={styles.practiceRow}>
             <View style={{ flex: 1, gap: 4 }}>
-              <AppText variant="eyebrow" style={{ letterSpacing: 1.44, lineHeight: 18 }}>
+              <AppText variant="eyebrow" style={{ letterSpacing: 1.44, lineHeight: 17.5 }}>
                 Your practice today
               </AppText>
               <AppText style={styles.practiceTitle}>{practice.title}</AppText>
@@ -102,7 +102,7 @@ export function PracticeCard({
               <AppText variant="label" style={{ lineHeight: 21 }}>
                 40-Day Mandala · Day {mandala.currentDay}
               </AppText>
-              <AppText variant="caption" style={{ lineHeight: 18 }}>
+              <AppText variant="caption" style={{ lineHeight: 17.5 }}>
                 {mandala.daysSat} days sat
                 {group ? ` · ${group.todayCount} sitting with you today` : ''}
               </AppText>
@@ -117,7 +117,7 @@ export function PracticeCard({
 
 const styles = StyleSheet.create({
   practiceRow: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  practiceTitle: { fontFamily: fonts.serifSemibold, fontSize: 23, lineHeight: 29.44, color: colors.ink },
+  practiceTitle: { fontFamily: fonts.serifSemibold, fontSize: 23, lineHeight: 29.5, color: colors.ink },
   play: {
     width: 68,
     height: 68,

@@ -60,9 +60,9 @@ export default function DonateScreen() {
     }
   };
 
-  // Summary + Pay stay pinned at the bottom (the mock pins them with a flex spacer).
+  // Match the mock’s document flow: the whole form scrolls, with a flex spacer before payment.
   const footer = (
-    <View style={{ paddingHorizontal: 20, paddingBottom: 16, paddingTop: 10 }}>
+    <View>
       <View style={{ gap: 10 }}>
         <AppText accessibilityLiveRegion="polite" style={{ textAlign: 'center', fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 21 }}>
           You are giving{' '}
@@ -79,8 +79,7 @@ export default function DonateScreen() {
 
   return (
     <Screen
-      contentStyle={{ paddingHorizontal: 20, paddingBottom: 22, gap: 22 }}
-      footer={shownOutcome ? undefined : footer}>
+      contentStyle={{ paddingHorizontal: 20, paddingBottom: 32, gap: 22 }}>
       <DetailHeader />
 
       {shownOutcome ? (
@@ -124,6 +123,8 @@ export default function DonateScreen() {
               Indian rupees only for now. The Trust can accept gifts from abroad once its FCRA registration is in place.
             </AppText>
           </View>
+          <View style={{ flexGrow: 1 }} />
+          {footer}
         </>
       )}
     </Screen>

@@ -69,6 +69,6 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   iconTile: tileStyles.iconTile,
-  label: { fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 22 },
-  count: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 18, color: colors.muted },
+  label: { fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23 },
+  count: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 17.5, color: colors.muted },
 });

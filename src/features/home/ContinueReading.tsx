@@ -17,7 +17,7 @@ export function ContinueReading({ reading }: { reading: ReadingProgress | null |
   if (reading === null) return null;
   return (
     <SandBand style={{ paddingVertical: 26, paddingHorizontal: 20, gap: 14 }} accessibilityLabel="Continue reading">
-      <AppText variant="section" accessibilityRole="header" style={{ lineHeight: 26.88 }}>
+      <AppText variant="section" accessibilityRole="header" style={{ lineHeight: 27 }}>
         Continue reading
       </AppText>
       {reading === undefined ? (
@@ -37,17 +37,17 @@ export function ContinueReading({ reading }: { reading: ReadingProgress | null |
           style={styles.card}>
           <SeasonCover devanagari={reading.episode.seasonDevanagari} roman={reading.episode.seasonRoman} />
           <View style={{ flex: 1, minWidth: 0, justifyContent: 'center', gap: 6 }}>
-            <AppText variant="caption" style={{ lineHeight: 18 }}>
+            <AppText variant="caption" style={{ lineHeight: 17.5 }}>
               Mahabharata · {reading.episode.seasonTitle} · E{reading.episode.number}
             </AppText>
-            <AppText variant="cardTitle" style={{ lineHeight: 23.04 }}>
+            <AppText variant="cardTitle" style={{ lineHeight: 23 }}>
               {reading.episode.title}
             </AppText>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <View style={styles.track}>
                 <View style={[styles.fill, { width: `${Math.round(reading.progress * 100)}%` }]} />
               </View>
-              <AppText variant="caption" style={{ lineHeight: 18 }}>
+              <AppText variant="caption" style={{ lineHeight: 17.5 }}>
                 {reading.minutesLeft} min left
               </AppText>
             </View>

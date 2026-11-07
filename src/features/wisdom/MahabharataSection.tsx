@@ -77,7 +77,7 @@ export function MahabharataSection() {
 
 const styles = StyleSheet.create({
   band: { paddingTop: 28, paddingBottom: 28, paddingLeft: 20, gap: 16 },
-  h2: { fontFamily: fonts.serifSemibold, fontSize: 24, lineHeight: 31, color: colors.ink },
+  h2: { fontFamily: fonts.serifSemibold, fontSize: 24, lineHeight: 30.5, color: colors.ink },
   sub: { fontFamily: fonts.sansMedium, fontSize: 13, lineHeight: 19.5, color: colors.muted },
   card: {
     flexDirection: 'row',
@@ -88,8 +88,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   cardBody: { flex: 1, minWidth: 0, justifyContent: 'space-between', gap: 10 },
-  cardMeta: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 18, color: colors.muted },
-  cardTitle: { fontFamily: fonts.serifSemibold, fontSize: 21, lineHeight: 25, color: colors.ink },
+  cardMeta: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 17.5, color: colors.muted },
+  cardTitle: { fontFamily: fonts.serifSemibold, fontSize: 21, lineHeight: 25.2, color: colors.ink },
   blurb: { fontFamily: fonts.sans, fontSize: 13, lineHeight: 19.5, color: colors.muted },
   cta: {
     alignSelf: 'flex-start',
@@ -101,6 +101,6 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: colors.actionRed,
   },
-  ctaLabel: { fontFamily: fonts.sansSemibold, fontSize: 13, lineHeight: 19, color: colors.white },
+  ctaLabel: { fontFamily: fonts.sansSemibold, fontSize: 13, lineHeight: 19.5, color: colors.white },
   nextLabel: { fontFamily: fonts.sansSemibold, fontSize: 13, lineHeight: 19.5, color: colors.ink },
 });

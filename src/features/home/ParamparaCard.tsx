@@ -27,7 +27,7 @@ export function ParamparaCard() {
           <Emblem width={30} />
         </View>
         <View style={{ flex: 1, gap: 2 }}>
-          <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 18, lineHeight: 23.04 }}>The Paramparā</AppText>
+          <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 18, lineHeight: 23 }}>The Paramparā</AppText>
           <AppText variant="caption" style={{ lineHeight: 18 }}>
             A living lineage of seventy Mahādhibhūs
           </AppText>

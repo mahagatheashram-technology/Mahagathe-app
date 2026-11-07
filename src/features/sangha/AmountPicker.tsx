@@ -46,6 +46,7 @@ export function AmountPicker({
                 style={{
                   fontFamily: selected ? fonts.sansSemibold : fonts.sansMedium,
                   fontSize: 15,
+                  lineHeight: 23,
                   color: selected ? colors.white : colors.ink,
                 }}>
                 {formatRupees(n)}
@@ -59,14 +60,14 @@ export function AmountPicker({
           flexDirection: 'row',
           alignItems: 'center',
           gap: 8,
-          height: 50,
+          height: 52,
           paddingHorizontal: 16,
           borderRadius: 14,
           backgroundColor: colors.white,
           borderWidth: invalid ? 1.5 : 1,
           borderColor: invalid ? colors.actionRed : colors.border,
         }}>
-        <AppText style={{ fontFamily: fonts.sansMedium, fontSize: 15, color: colors.muted }}>₹</AppText>
+        <AppText style={{ fontFamily: fonts.sansMedium, fontSize: 15, lineHeight: 23, color: colors.muted }}>₹</AppText>
         <TextInput
           value={custom}
           onChangeText={(t) => onCustom(t.replace(/\D/g, '').slice(0, 7))}

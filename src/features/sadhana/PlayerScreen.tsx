@@ -40,7 +40,7 @@ export default function PlayerScreen() {
       colors={gradients.player}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
-      style={[styles.root, { paddingTop: insets.top + 4, paddingBottom: Math.max(insets.bottom, 24) + 16 }]}>
+      style={[styles.root, { paddingTop: insets.top, paddingBottom: Math.max(insets.bottom, 24) + 16 }]}>
       <View style={styles.header}>
         <Pressable
           accessibilityRole="button"
@@ -323,8 +323,8 @@ const styles = StyleSheet.create({
   centerText: { fontSize: 15, color: colors.playerBody, textAlign: 'center' },
   hero: { alignItems: 'center', gap: 18, paddingTop: 4 },
   ringOuter: {
-    width: 112,
-    height: 112,
+    width: 114,
+    height: 114,
     borderRadius: radii.pill,
     borderWidth: 1,
     borderColor: colors.playerRingOuter,
@@ -332,8 +332,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   ringInner: {
-    width: 84,
-    height: 84,
+    width: 86,
+    height: 86,
     borderRadius: radii.pill,
     borderWidth: 1,
     borderColor: colors.playerRingInner,

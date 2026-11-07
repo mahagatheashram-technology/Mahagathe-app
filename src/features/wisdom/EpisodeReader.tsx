@@ -168,7 +168,7 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
               {episode.title}
             </AppText>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              <Chip label={`BORI · ${episode.boriRange}`} icon="book" style={{ height: 32 }} />
+              <Chip label={`BORI · ${episode.boriRange}`} icon="book" />
               <View style={styles.readChip}>
                 <AppText style={styles.readChipLabel}>{episode.readMinutes} min read</AppText>
               </View>
@@ -295,8 +295,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  qaTitle: { fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 22, color: colors.ink },
-  qaSub: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 18, color: colors.muted },
-  provenance: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 19, color: colors.muted },
+  qaTitle: { fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23, color: colors.ink },
+  qaSub: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 17.5, color: colors.muted },
+  provenance: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 19.2, color: colors.muted },
   emptyTitle: { fontFamily: fonts.serifSemibold, fontSize: 20, lineHeight: 26, textAlign: 'center' },
 });

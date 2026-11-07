@@ -103,11 +103,11 @@ export default function VakyamScreen() {
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <ApprovedPhotoPlaceholder />
           <View style={{ flex: 1, gap: 2 }}>
-            <AppText variant="eyebrow" style={{ letterSpacing: 1.68, lineHeight: 18 }}>
+            <AppText variant="eyebrow" style={{ letterSpacing: 1.68, lineHeight: 17.5 }}>
               Guru Vākyam · {THEME_LABELS[vakyam.theme]}
             </AppText>
             {vakyam.attribution ? (
-              <AppText variant="label" style={{ fontFamily: fonts.sansMedium, fontSize: 13, lineHeight: 20 }}>
+              <AppText variant="label" style={{ fontFamily: fonts.sansMedium, fontSize: 13, lineHeight: 19.5 }}>
                 {vakyam.attribution}
               </AppText>
             ) : null}
@@ -124,7 +124,7 @@ export default function VakyamScreen() {
       </View>
 
       <View style={styles.simple}>
-        <AppText variant="overline" style={{ lineHeight: 20 }}>
+        <AppText variant="overline" style={{ lineHeight: 19.5 }}>
           In simple words
         </AppText>
         <AppText variant="bodyLarge" style={{ lineHeight: 27.2 }}>

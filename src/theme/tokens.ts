@@ -97,6 +97,7 @@ export const fonts = {
   sans: 'Poppins_400Regular',
   sansMedium: 'Poppins_500Medium',
   sansSemibold: 'Poppins_600SemiBold',
+  devaRegular: 'NotoSerifDevanagari_400Regular',
   deva: 'NotoSerifDevanagari_500Medium',
   devaSemibold: 'NotoSerifDevanagari_600SemiBold',
 } as const;

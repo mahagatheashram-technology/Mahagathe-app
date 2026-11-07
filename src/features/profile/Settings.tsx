@@ -8,7 +8,7 @@ import { colors, fonts } from '@/theme/tokens';
 export function SettingsSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <View style={{ gap: 8 }}>
-      <AppText variant="overline" style={{ fontSize: 12, lineHeight: 18, letterSpacing: 1.44, marginBottom: 4, marginLeft: 4 }} accessibilityRole="header">
+      <AppText variant="overline" style={{ fontSize: 12, lineHeight: 17.5, letterSpacing: 1.44, marginBottom: 4, marginLeft: 4 }} accessibilityRole="header">
         {title}
       </AppText>
       <View style={styles.card}>{children}</View>
@@ -43,7 +43,7 @@ export function SettingsRow({
           flex: 1,
           fontFamily: danger ? fonts.sansSemibold : fonts.sansMedium,
           fontSize: 15,
-          lineHeight: 22,
+          lineHeight: 23,
           color: danger ? colors.actionRed : colors.ink,
         }}>
         {label}
@@ -52,7 +52,7 @@ export function SettingsRow({
         <AppText
           style={
             strongValue
-              ? { fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 22 }
+              ? { fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23 }
               : { fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 21, color: colors.muted }
           }
           numberOfLines={1}>

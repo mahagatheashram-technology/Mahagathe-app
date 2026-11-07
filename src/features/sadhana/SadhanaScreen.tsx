@@ -51,7 +51,7 @@ export function SadhanaScreen() {
         <View style={{ gap: 4 }}>
           <AppText
             accessibilityRole="header"
-            style={{ fontFamily: fonts.serifSemibold, fontSize: 32, lineHeight: 38 }}>
+            style={{ fontFamily: fonts.serifSemibold, fontSize: 32, lineHeight: 41 }}>
             Sādhanā
           </AppText>
           <AppText variant="meta" style={{ fontSize: 14, lineHeight: 21 }}>
@@ -61,16 +61,16 @@ export function SadhanaScreen() {
 
         <RedFeature style={styles.feature} accessibilityLabel="Today's practice">
           <View style={styles.rowBetween}>
-            <AppText variant="eyebrow" color={colors.onFeatureMuted}>
+            <AppText variant="eyebrow" color={colors.onFeatureMuted} style={{ lineHeight: 17.5 }}>
               Today · free for everyone
             </AppText>
-            <AppText variant="caption" color={colors.onFeatureMuted}>
+            <AppText variant="caption" color={colors.onFeatureMuted} style={{ lineHeight: 17.5 }}>
               {minutes} min
             </AppText>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
             <View style={{ flex: 1, gap: 6 }}>
-              <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 24, lineHeight: 30 }} color={colors.white}>
+              <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 24, lineHeight: 30.5 }} color={colors.white}>
                 {today.title}
               </AppText>
               <AppText variant="meta" color={colors.onFeatureMuted} style={{ lineHeight: 19.5 }}>
@@ -93,8 +93,8 @@ export function SadhanaScreen() {
           onPress={() => router.push('/mandala')}>
           <Card style={styles.mandalaCard}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 19, lineHeight: 26 }}>40-Day Mandala</AppText>
-              <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 13, lineHeight: 19 }} color={colors.actionRed}>
+              <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 19, lineHeight: 24 }}>40-Day Mandala</AppText>
+              <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 13, lineHeight: 19.5 }} color={colors.actionRed}>
                 {mandala ? `Day ${mandala.currentDay}` : 'Not started'}
               </AppText>
             </View>
@@ -108,7 +108,7 @@ export function SadhanaScreen() {
             ) : (
               <MandalaStrip days={Array.from({ length: 40 }, () => 'future' as const)} />
             )}
-            <AppText variant="meta">
+            <AppText variant="meta" style={{ lineHeight: 19.5 }}>
               {mandala
                 ? `${sat} days sat${group ? ` · ${group.todayCount} sādhakas have sat today` : ''}`
                 : 'Begin a 40-day Mandala when you are ready.'}
@@ -139,13 +139,13 @@ export function SadhanaScreen() {
               onPress={p.locked ? () => setEnrol({ open: true, title: p.title }) : openPractice(p.id)}
               style={[styles.listRow, i < enrolledList.length - 1 && styles.rowDivider]}>
               <AppText
-                style={{ fontFamily: fonts.serifSemibold, fontSize: 18, lineHeight: 24, width: 18 }}
+                style={{ fontFamily: fonts.serifSemibold, fontSize: 18, lineHeight: 23, width: 18 }}
                 color={colors.actionRed}>
                 {i + 1}
               </AppText>
               <View style={{ flex: 1 }}>
-                <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 22 }}>{p.title}</AppText>
-                <AppText variant="caption">{p.subtitle}</AppText>
+                <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23 }}>{p.title}</AppText>
+                <AppText variant="caption" style={{ lineHeight: 17.5 }}>{p.subtitle}</AppText>
               </View>
               {p.locked ? (
                 <Icon name="lock" size={18} color={colors.muted} />
@@ -165,8 +165,8 @@ export function SadhanaScreen() {
             <Icon name="file" size={20} color={colors.actionRed} />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 22 }}>Dhyānbāri resources</AppText>
-            <AppText variant="caption">Notes and files from your teachers</AppText>
+            <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23 }}>Dhyānbāri resources</AppText>
+            <AppText variant="caption" style={{ lineHeight: 17.5 }}>Notes and files from your teachers</AppText>
           </View>
           <Icon name={enrolled ? 'chevronRight' : 'lock'} size={18} color={colors.muted} />
         </Pressable>
@@ -197,8 +197,8 @@ export function SadhanaScreen() {
           onPress={gate(() => setPickerOpen(true))}
           style={styles.reminder}>
           <Icon name="clock" size={20} color={colors.actionRed} />
-          <AppText style={{ flex: 1, fontFamily: fonts.sansMedium, fontSize: 15, lineHeight: 22 }}>Daily reminder</AppText>
-          <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 22 }}>
+          <AppText style={{ flex: 1, fontFamily: fonts.sansMedium, fontSize: 15, lineHeight: 23 }}>Daily reminder</AppText>
+          <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23 }}>
             {formatReminder(profile?.reminderTime)}
           </AppText>
         </Pressable>
@@ -216,7 +216,7 @@ export function SadhanaScreen() {
 }
 
 const styles = StyleSheet.create({
-  top: { paddingHorizontal: 20, paddingBottom: 24, gap: 18 },
+  top: { paddingTop: 4, paddingHorizontal: 20, paddingBottom: 24, gap: 18 },
   rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   feature: { gap: 18, padding: 22, borderRadius: 24 },
   playCircle: {

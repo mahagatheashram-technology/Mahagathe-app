@@ -9,6 +9,7 @@ import { colors, fonts } from '@/theme/tokens';
  */
 const PALETTE = [colors.maroon, colors.coverPlum, colors.coverMoss, colors.coverBrown, colors.coverRose];
 /** Small-cover Devanagari sizes from the mock (longer names are set smaller to fit 88pt). */
+const SMALL_DEVA_LINE: Record<number, number> = { 27: 42, 18: 28, 25: 38.5 };
 const SMALL_DEVA_SIZE: Record<number, number> = { 2: 27, 3: 18, 4: 25, 5: 25 };
 
 type Props = {
@@ -29,7 +30,7 @@ export function SeasonCover({ number, roman, devanagari, name, variant = 'lead',
     <View accessible accessibilityLabel={`Parva ${roman}, ${name}`} style={[{ width: 78, height: 108, borderRadius: 10, backgroundColor: colors.maroon, alignItems: 'center', justifyContent: 'center', gap: 4 }, style]}>
       <View pointerEvents="none" style={{ position: 'absolute', top: 4, left: 4, right: 4, bottom: 4, borderRadius: 6, borderWidth: 1, borderColor: colors.coverGoldLineMid }} />
       <AppText style={{ fontFamily: fonts.devaSemibold, fontSize: 26, lineHeight: 31, color: colors.coverText }}>{devanagari}</AppText>
-      <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 9, lineHeight: 14, letterSpacing: 1.44, color: colors.gold }}>PARVA {roman}</AppText>
+      <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 9, lineHeight: 13.5, letterSpacing: 1.44, color: colors.gold }}>PARVA {roman}</AppText>
     </View>
   );
   const lead = variant === 'lead';
@@ -70,7 +71,7 @@ export function SeasonCover({ number, roman, devanagari, name, variant = 'lead',
         style={{
           fontFamily: fonts.sansSemibold,
           fontSize: lead ? 10 : 9,
-          lineHeight: lead ? 15 : 14,
+          lineHeight: lead ? 15 : 13.5,
           letterSpacing: lead ? 1.8 : 1.44,
           color: colors.gold,
         }}>
@@ -80,7 +81,7 @@ export function SeasonCover({ number, roman, devanagari, name, variant = 'lead',
         style={{
           fontFamily: fonts.devaSemibold,
           fontSize: devaSize,
-          lineHeight: Math.round(devaSize * (lead ? 1.1 : 1.5)),
+          lineHeight: lead ? devaSize * 1.1 : (SMALL_DEVA_LINE[devaSize] ?? devaSize * 1.56),
           color: colors.coverText,
         }}>
         {devanagari}

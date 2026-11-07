@@ -96,7 +96,7 @@ export default function ParamparaScreen() {
             backgroundColor: colors.sand,
           }}>
           <Icon name="shieldCheck" size={13} color={colors.actionRed} strokeWidth={2.2} />
-          <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 12, lineHeight: 18 }}>Approved by the content authority</AppText>
+          <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 12, lineHeight: 17.5 }}>Approved by the content authority</AppText>
         </View>
       </View>
 
@@ -124,8 +124,8 @@ function Node({ label, name, present, last }: { label: string; name: string; pre
         )}
       </View>
       <View style={{ flex: 1, paddingBottom: last || present ? 0 : 22 }}>
-        <AppText style={{ fontFamily: present ? fonts.sansSemibold : fonts.sansMedium, fontSize: 12, lineHeight: 18, color: present ? colors.actionRed : colors.muted }}>{label}</AppText>
-        <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 22.5 }}>{name}</AppText>
+        <AppText style={{ fontFamily: present ? fonts.sansSemibold : fonts.sansMedium, fontSize: 12, lineHeight: 17.5, color: present ? colors.actionRed : colors.muted }}>{label}</AppText>
+        <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23 }}>{name}</AppText>
       </View>
     </View>
   );

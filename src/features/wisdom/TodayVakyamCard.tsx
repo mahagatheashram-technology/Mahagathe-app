@@ -37,14 +37,14 @@ const styles = StyleSheet.create({
   eyebrow: {
     fontFamily: fonts.sansSemibold,
     fontSize: 12,
-    lineHeight: 18,
+    lineHeight: 17.5,
     letterSpacing: 1.68,
     textTransform: 'uppercase',
     color: colors.onFeatureMuted,
   },
   quote: { fontFamily: fonts.serif, fontSize: 24, lineHeight: 33.12, color: colors.white },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  meta: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 18, color: colors.onFeatureMuted },
+  meta: { fontFamily: fonts.sansMedium, fontSize: 12, lineHeight: 17.5, color: colors.onFeatureMuted },
   read: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -54,5 +54,5 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: colors.white,
   },
-  readLabel: { fontFamily: fonts.sansSemibold, fontSize: 13, lineHeight: 19, color: colors.actionRed },
+  readLabel: { fontFamily: fonts.sansSemibold, fontSize: 13, lineHeight: 19.5, color: colors.actionRed },
 });

@@ -12,9 +12,10 @@ export function LanguagePill() {
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={`Change language, current ${currentName}. Hindi and Telugu coming soon`}
+      hitSlop={2}
       onPress={() => Alert.alert('Languages', 'Hindi and Telugu are coming soon. English is available now.')}
       style={({ pressed }) => ({
-        minHeight: 44,
+        height: 40,
         paddingHorizontal: 16,
         borderWidth: 1,
         borderColor: colors.onFeaturePillBorder,
@@ -23,7 +24,7 @@ export function LanguagePill() {
         justifyContent: 'center',
         opacity: pressed ? 0.8 : 1,
       })}>
-      <AppText style={{ fontSize: 13, lineHeight: 20, color: colors.white, fontFamily: fonts.sansMedium }}>
+      <AppText style={{ fontSize: 13, lineHeight: 19.5, color: colors.white, fontFamily: fonts.sansMedium }}>
         {LANGUAGES.map((l, i) => (
           <Text key={l.value}>
             {i > 0 ? ' · ' : ''}

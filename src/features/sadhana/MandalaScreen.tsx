@@ -33,7 +33,7 @@ export default function MandalaScreen() {
   const back = () => (router.canGoBack() ? router.back() : router.replace('/sadhana'));
 
   const header = (children: React.ReactNode, showRules = true) => (
-    <RedFeature style={{ ...styles.header, paddingTop: insets.top + 4 }} accessibilityLabel="Your Mandala">
+    <RedFeature style={{ ...styles.header, paddingTop: insets.top }} accessibilityLabel="Your Mandala">
       <View style={styles.rowBetween}>
         <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={back} style={styles.backBtn}>
           <Icon name="back" size={22} color={colors.white} />
@@ -44,7 +44,7 @@ export default function MandalaScreen() {
             accessibilityLabel="Mandala rules"
             onPress={() => setRulesOpen(true)}
             style={{ minHeight: 44, justifyContent: 'center' }}>
-            <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 13, lineHeight: 19 }} color={colors.white}>
+            <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 13, lineHeight: 19.5 }} color={colors.white}>
               Mandala rules
             </AppText>
           </Pressable>
@@ -68,13 +68,13 @@ export default function MandalaScreen() {
       <Screen edgeToEdgeTop>
         {header(
           <View style={{ gap: 4 }}>
-            <AppText variant="eyebrow" color={colors.onFeatureMuted}>
+            <AppText variant="eyebrow" color={colors.onFeatureMuted} style={{ lineHeight: 17.5 }}>
               40-Day Mandala
             </AppText>
             <AppText style={styles.bigTitle} color={colors.white}>
               Sit for 40 days
             </AppText>
-            <AppText variant="meta" color={colors.onFeatureMuted}>
+            <AppText variant="meta" color={colors.onFeatureMuted} style={{ lineHeight: 19.5 }}>
               Sign in to begin and keep your Mandala.
             </AppText>
           </View>,
@@ -104,13 +104,13 @@ export default function MandalaScreen() {
       <Screen edgeToEdgeTop>
         {header(
           <View style={{ gap: 4 }}>
-            <AppText variant="eyebrow" color={colors.onFeatureMuted}>
+            <AppText variant="eyebrow" color={colors.onFeatureMuted} style={{ lineHeight: 17.5 }}>
               40-Day Mandala
             </AppText>
             <AppText style={styles.bigTitle} color={colors.white}>
               Begin your Mandala
             </AppText>
-            <AppText variant="meta" color={colors.onFeatureMuted}>
+            <AppText variant="meta" color={colors.onFeatureMuted} style={{ lineHeight: 19.5 }}>
               Forty days, one sitting a day{practice ? ` · ${practice.title}` : ''}
             </AppText>
           </View>,
@@ -146,23 +146,23 @@ export default function MandalaScreen() {
       {header(
         <>
           <View style={{ gap: 4 }}>
-            <AppText variant="eyebrow" color={colors.onFeatureMuted}>
+            <AppText variant="eyebrow" color={colors.onFeatureMuted} style={{ lineHeight: 17.5 }}>
               40-Day Mandala
             </AppText>
             <AppText style={styles.bigTitle} color={colors.white} accessibilityRole="header">
               Day {mandala.currentDay} of {DAYS}
             </AppText>
-            <AppText variant="meta" color={colors.onFeatureMuted}>
+            <AppText variant="meta" color={colors.onFeatureMuted} style={{ lineHeight: 19.5 }}>
               Started {formatStartDate(mandala.startDate)} · {mandala.practiceTitle}
             </AppText>
           </View>
           <View style={{ flexDirection: 'row', gap: 10 }}>
             {stats.map((s) => (
               <View key={s.label} style={styles.stat} accessible accessibilityLabel={`${s.value} ${s.label}`}>
-                <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 24, lineHeight: 31 }} color={colors.white}>
+                <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 24, lineHeight: 30.5 }} color={colors.white}>
                   {s.value}
                 </AppText>
-                <AppText variant="caption" color={colors.onFeatureMuted}>
+                <AppText variant="caption" color={colors.onFeatureMuted} style={{ lineHeight: 17.5 }}>
                   {s.label}
                 </AppText>
               </View>
@@ -177,16 +177,16 @@ export default function MandalaScreen() {
       </View>
 
       <SandBand style={{ paddingVertical: 22, paddingHorizontal: 20, gap: 6 }} accessibilityLabel="Sitting together">
-        <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 13, lineHeight: 19 }}>Sitting together</AppText>
+        <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 13, lineHeight: 19.5 }}>Sitting together</AppText>
         <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 10 }}>
-          <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 34, lineHeight: 42 }} color={colors.actionRed}>
+          <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 34, lineHeight: 43.5 }} color={colors.actionRed}>
             {group ? formatCount(group.todayCount) : '–'}
           </AppText>
           <AppText variant="meta" color={colors.ink} style={{ fontSize: 14, lineHeight: 21 }}>
             sādhakas have sat today
           </AppText>
         </View>
-        <AppText variant="meta">
+        <AppText variant="meta" style={{ lineHeight: 19.5 }}>
           {group ? formatCount(group.cycleSittings) : '–'} sittings in this Mandala cycle. No names, no ranks.
         </AppText>
       </SandBand>
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
   header: { paddingHorizontal: 20, paddingBottom: 26, gap: 16 },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   backBtn: { width: 44, height: 44, marginLeft: -10, alignItems: 'center', justifyContent: 'center' },
-  bigTitle: { fontFamily: fonts.serifSemibold, fontSize: 34, lineHeight: 41 },
+  bigTitle: { fontFamily: fonts.serifSemibold, fontSize: 34, lineHeight: 43.5 },
   stat: { flex: 1, padding: 12, borderRadius: radii.lg, backgroundColor: colors.onFeatureTile },
   footer: { paddingTop: 20, paddingHorizontal: 20, paddingBottom: 32, gap: 16 },
   done: {
