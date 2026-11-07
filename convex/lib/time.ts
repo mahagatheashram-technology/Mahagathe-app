@@ -8,5 +8,8 @@ export async function observeClock(ctx: Pick<QueryCtx, "db">): Promise<number> {
     .query("serverClock")
     .withIndex("by_key", (q) => q.eq("key", "clock"))
     .unique();
-  return clock?.updatedAt ?? 0;
+  // Reading the clock document subscribes the query to the IST-midnight tick; the value
+  // itself is only a floor. Use the server's real time so an unseeded deployment (no clock
+  // row yet) never computes dates as 1970.
+  return Math.max(clock?.updatedAt ?? 0, Date.now());
 }
