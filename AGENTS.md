@@ -7,7 +7,7 @@ Auth: Clerk (phone OTP). DB/backend: Convex. Same stack as the sibling Saptagita
 
 ## Goal of the current milestone
 
-An **Expo Go–viewable mock** that matches the v3 mocks **pixel-for-pixel** and has their
+An **Expo Go–viewable mock** that matches the **v12** mocks (`docs/design/v12/`) closely and has their
 functionality working (navigation, register, Mandala completion, donate flow, profile toggles…).
 It must run with **zero keys** (mock mode). Convex + Clerk switch on only when env keys exist.
 
