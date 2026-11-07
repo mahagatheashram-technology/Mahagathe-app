@@ -1,5 +1,5 @@
 import Svg, { Circle, Ellipse } from 'react-native-svg';
-import { v12 } from '@/theme/v12';
+import { colors } from '@/theme/tokens';
 
 /** The sixteen-petal gold line ornament from the locked Welcome and Paramparā mocks. */
 export function LineOrnament({ size, opacity = 0.7 }: { size: number; opacity?: number }) {
@@ -9,7 +9,7 @@ export function LineOrnament({ size, opacity = 0.7 }: { size: number; opacity?: 
       height={size}
       viewBox="0 0 200 200"
       fill="none"
-      stroke={v12.ornament}
+      stroke={colors.ornament}
       strokeWidth={0.8}
       opacity={opacity}
       accessibilityElementsHidden

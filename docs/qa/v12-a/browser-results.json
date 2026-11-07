@@ -1,0 +1,16 @@
+{
+  "device": {
+    "width": 390,
+    "height": 844,
+    "dpr": 2
+  },
+  "passed": [
+    "Phone OTP and setup; four tabs in Home, Practice, Wisdom, Sangha order",
+    "Practice and Mandala 40-dot ring, sitting-based CTA, rules sheet",
+    "Player opens paused and never autostarts",
+    "Home avatar opens pushed Profile without a tab bar",
+    "Reminder toggle, saved 7:00 AM time, Off · 7:00 AM display",
+    "Silent mock timer play/pause, keyboard seek, completion, idempotent marked state, count updates to 11",
+    "Sign out and guest gates for Profile and Practice"
+  ]
+}

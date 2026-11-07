@@ -1,9 +1,9 @@
 import { ConvexError } from "convex/values";
 import type { AgeBand, MandalaDayState } from "../../src/data/types";
 
-/** D-23 provisional rules: server IST days; missed days do not reset the cycle. */
+/** D-23 provisional rules: forty sittings, at most one per server IST day, no expiry. */
 export const MANDALA_TIMEZONE = "Asia/Kolkata";
-export const MANDALA_RULES_VERSION = "provisional-ist-v1";
+export const MANDALA_RULES_VERSION = "provisional-sittings-ist-v2";
 export const MANDALA_LENGTH = 40;
 
 export function dayKey(timestamp: number, tz = MANDALA_TIMEZONE): string {
@@ -86,17 +86,31 @@ export function dayOffset(start: string, day: string): number {
   );
 }
 
-export function completionDecision(
+/** The single policy boundary for D-23. All callers pass authoritative IST day keys.
+ * Duplicate audit rows never increase progress; calendar gaps never expire it.
+ */
+export function mandalaRule(
   start: string,
-  day: string,
-  exists: boolean,
-): "existing" | "insert" {
-  // Check retry first so the last-day completion remains idempotent after closing a cycle.
-  if (exists) return "existing";
-  const offset = dayOffset(start, day);
-  if (offset < 0 || offset >= MANDALA_LENGTH)
-    throw new ConvexError("This Mandala is outside its 40-day cycle.");
-  return "insert";
+  today: string,
+  completions: readonly string[],
+  countedTodayElsewhere = false,
+) {
+  const completed = new Set(
+    completions.filter((day) => day >= start && day <= today),
+  );
+  const sittingsDone = Math.min(MANDALA_LENGTH, completed.size);
+  const todayComplete = completed.has(today);
+  const complete = sittingsDone === MANDALA_LENGTH;
+  const decision = todayComplete
+    ? "existing"
+    : today < start
+      ? "beforeStart"
+      : complete
+        ? "complete"
+        : countedTodayElsewhere
+          ? "dailyLimit"
+          : "insert";
+  return { sittingsDone, todayComplete, complete, decision } as const;
 }
 
 export function mandalaProgress(
@@ -105,6 +119,7 @@ export function mandalaProgress(
   completions: readonly string[],
 ) {
   const completed = new Set(completions);
+  const progress = mandalaRule(start, today, completions);
   const offset = dayOffset(start, today);
   const days: MandalaDayState[] = Array.from(
     { length: MANDALA_LENGTH },
@@ -123,9 +138,10 @@ export function mandalaProgress(
   return {
     currentDay: Math.min(MANDALA_LENGTH, Math.max(1, offset + 1)),
     days,
-    daysSat: days.filter((d) => d === "sat").length,
+    daysSat: progress.sittingsDone,
+    sittingsDone: progress.sittingsDone,
     streak,
-    todayComplete: completed.has(today),
+    todayComplete: progress.todayComplete,
   };
 }
 

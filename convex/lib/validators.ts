@@ -291,6 +291,8 @@ export const mandalaResult = v.object({
       v.literal("future"),
     ),
   ),
+  sittingsDone: v.number(),
+  lastSittingAt: v.union(v.string(), v.null()),
   daysSat: v.number(),
   streak: v.number(),
   todayComplete: v.boolean(),

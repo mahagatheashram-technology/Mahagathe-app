@@ -15,6 +15,20 @@ export const colors = {
   /** Labels on the red feature block. */
   onFeatureMuted: '#FFE0C2',
 
+  label: '#6A4710',
+  tabInactive: '#5E5045',
+  headerTop: '#F7EDE1',
+  textSecondary: '#6B5A4B',
+  divider: '#EADFD2',
+  cardBorder: '#EFE5D9',
+  iconSand: '#F5EDE3',
+  chevron: '#8F7E70',
+  mandalaPending: '#9C8A7C',
+  ornament: '#B98A2E',
+  outline: '#D9CBBB',
+  /** Disabled primary button (Give before an amount is chosen). */
+  disabled: '#E6DACB',
+  disabledText: '#5E5045',
   cream: '#FFFBF5',
   sand: '#F0E8DE',
   white: '#FFFFFF',
@@ -62,20 +76,21 @@ export const colors = {
   scrim: 'rgba(42, 31, 26, 0.45)',
 
   /** Practice player (dark, calm). */
-  playerTop: '#4A0B0B',
-  playerBottom: '#220606',
-  playerMuted: '#FFC9B0',
-  playerBody: '#FFE3D6',
+  playerTop: '#3A1A16',
+  playerBottom: '#1C0D0A',
+  playerOrnament: '#FFC9B0',
+  playerMuted: '#FFD9C7',
+  playerBody: '#FFE9DF',
 
   shadow: '#4C1515',
 
   /** Switch track when off (Profile notifications). */
-  switchOff: '#D6C3AE',
+  switchOff: '#A8968A',
   /** Translucent white tile on the red feature block (Mandala stats). */
   onFeatureTile: 'rgba(255, 255, 255, 0.12)',
   /** Player surfaces: info card, scrubber track, the two rings around the drop. */
   playerCard: 'rgba(255, 255, 255, 0.07)',
-  playerTrack: 'rgba(255, 255, 255, 0.18)',
+  playerTrack: 'rgba(255, 255, 255, 0.28)',
   playerRingOuter: 'rgba(255, 201, 176, 0.35)',
   playerRingInner: 'rgba(255, 201, 176, 0.55)',
 } as const;
@@ -124,10 +139,10 @@ export const minTouch = 44;
 export const shadows = {
   card: {
     shadowColor: colors.shadow,
-    shadowOpacity: 0.16,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 6,
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
   playButton: {
     shadowColor: colors.actionRed,
@@ -136,4 +151,13 @@ export const shadows = {
     shadowOffset: { width: 0, height: 6 },
     elevation: 5,
   },
+} as const;
+
+/** v12 white card, including its quiet border and shadow. */
+export const cardStyle = {
+  backgroundColor: colors.white,
+  borderRadius: 24,
+  borderWidth: 1,
+  borderColor: colors.cardBorder,
+  ...shadows.card,
 } as const;

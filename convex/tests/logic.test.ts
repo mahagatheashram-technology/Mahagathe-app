@@ -9,7 +9,7 @@ import {
   canAccessPractice,
   normaliseForSearch,
   validateDonation,
-  completionDecision,
+  mandalaRule,
   mandalaProgress,
 } from "../lib/logic";
 
@@ -62,15 +62,51 @@ void test("T-11/G-08: reject foreign currency, invalid precision, overflow and n
   for (const currency of ["USD", "EUR", "inr", ""])
     assert.throws(() => validateDonation(101, currency), /FCRA/);
 });
-void test("T-05/S-09: completion decision preserves retries, rejects dates outside cycle", () => {
-  assert.equal(completionDecision("2026-11-06", "2026-11-06", false), "insert");
+void test("v12/D-23: one sitting per IST date, no expiry, and forty counted sittings", () => {
+  assert.equal(mandalaRule("2020-01-01", "2026-11-07", []).decision, "insert");
   assert.equal(
-    completionDecision("2026-11-06", "2026-11-06", true),
-    "existing",
+    mandalaRule("2026-11-07", "2026-11-06", []).decision,
+    "beforeStart",
   );
-  assert.throws(() => completionDecision("2026-11-06", "2026-11-05", false));
-  assert.throws(() => completionDecision("2026-11-06", "2026-12-16", false));
-  assert.equal(completionDecision("2026-11-06", "2026-12-15", false), "insert");
+  assert.equal(
+    mandalaRule("2020-01-01", "2026-11-07", [], true).decision,
+    "dailyLimit",
+  );
+  const duplicate = mandalaRule("2020-01-01", "2026-11-07", [
+    "2026-11-07",
+    "2026-11-07",
+  ]);
+  assert.equal(duplicate.sittingsDone, 1);
+  assert.equal(duplicate.decision, "existing");
+  const days = Array.from({ length: 40 }, (_, i) =>
+    new Date(Date.parse("2026-09-01") + i * 86400000)
+      .toISOString()
+      .slice(0, 10),
+  );
+  assert.equal(
+    mandalaRule("2020-01-01", "2026-11-07", days.slice(0, 39)).decision,
+    "insert",
+  );
+  assert.equal(
+    mandalaRule("2020-01-01", "2026-11-07", days).decision,
+    "complete",
+  );
+  assert.equal(mandalaRule("2020-01-01", days[39], days).decision, "existing");
+  assert.equal(
+    mandalaRule("2020-01-01", "2026-11-07", [...days, "2026-11-07"])
+      .sittingsDone,
+    40,
+  );
+});
+void test("v12: progress counts sittings beyond the first forty calendar dates", () => {
+  const progress = mandalaProgress("2020-01-01", "2026-11-07", [
+    "2026-10-01",
+    "2026-11-07",
+    "2026-11-07",
+  ]);
+  assert.equal(progress.sittingsDone, 2);
+  assert.equal(progress.daysSat, 2);
+  assert.equal(progress.todayComplete, true);
 });
 void test("S-10: 40-day grid and streak handle missed days and duplicate inputs", () => {
   const result = mandalaProgress("2026-11-01", "2026-11-04", [

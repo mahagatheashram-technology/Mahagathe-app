@@ -7,7 +7,6 @@ import { AppText, EventCard, Icon, ListRow, Screen } from '@/components/ui';
 import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 import { photos, useEvents } from '@/data';
 import { colors, fonts } from '@/theme/tokens';
-import { v12 } from '@/theme/v12';
 import { BottomSheet } from './BottomSheet';
 import { useEventToggle } from './useEventToggle';
 
@@ -33,14 +32,14 @@ export function SanghaScreen() {
   return (
     <Screen edgeToEdgeTop>
       <LinearGradient
-        colors={[v12.headerTop, colors.cream]}
+        colors={[colors.headerTop, colors.cream]}
         style={{ paddingTop: insets.top + 32, paddingHorizontal: 24, paddingBottom: 24 }}>
         <AppText
           accessibilityRole="header"
           style={{ fontFamily: fonts.serifSemibold, fontSize: 32, lineHeight: 41, marginBottom: 6 }}>
           Sangha
         </AppText>
-        <AppText style={{ fontSize: 15, lineHeight: 23, color: v12.muted }}>
+        <AppText style={{ fontSize: 15, lineHeight: 23, color: colors.textSecondary }}>
           Gather, serve and give together.
         </AppText>
       </LinearGradient>
@@ -51,7 +50,7 @@ export function SanghaScreen() {
             fontSize: 12,
             lineHeight: 18,
             letterSpacing: 1.68,
-            color: v12.label,
+            color: colors.label,
             textTransform: 'uppercase',
           }}>
           Next gathering
@@ -65,7 +64,7 @@ export function SanghaScreen() {
               overflow: 'hidden',
               borderRadius: 24,
               borderWidth: 1,
-              borderColor: v12.cardBorder,
+              borderColor: colors.cardBorder,
               backgroundColor: colors.white,
               shadowColor: colors.shadow,
               shadowOpacity: 0.06,
@@ -82,18 +81,18 @@ export function SanghaScreen() {
                 contentPosition={{ left: '50%', top: '30%' }}
               />
             ) : (
-              <View style={{ height: 140, backgroundColor: v12.sand }} />
+              <View style={{ height: 140, backgroundColor: colors.iconSand }} />
             )}
             <View style={{ paddingHorizontal: 16, paddingTop: 14, paddingBottom: 12, gap: 2 }}>
               <AppText
-                style={{ fontFamily: fonts.sansSemibold, fontSize: 14, lineHeight: 21, color: v12.label }}>
+                style={{ fontFamily: fonts.sansSemibold, fontSize: 14, lineHeight: 21, color: colors.label }}>
                 {date} · {featured.timeLabel.toLowerCase()}
               </AppText>
               <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 19, lineHeight: 25 }}>
                 {featured.title}
               </AppText>
               <AppText
-                style={{ fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 21, color: v12.muted }}>
+                style={{ fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 21, color: colors.textSecondary }}>
                 {featured.place} · {featured.eligibility.toLowerCase()}
               </AppText>
               <View
@@ -101,7 +100,7 @@ export function SanghaScreen() {
                   marginTop: 8,
                   paddingTop: 10,
                   borderTopWidth: 1,
-                  borderTopColor: v12.divider,
+                  borderTopColor: colors.divider,
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',

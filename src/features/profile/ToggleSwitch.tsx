@@ -18,7 +18,11 @@ export function ToggleSwitch({
 }) {
   const [x] = useState(() => new Animated.Value(value ? 1 : 0));
   useEffect(() => {
-    Animated.timing(x, { toValue: value ? 1 : 0, duration: 140, useNativeDriver: Platform.OS !== 'web' }).start();
+    Animated.timing(x, {
+      toValue: value ? 1 : 0,
+      duration: 140,
+      useNativeDriver: Platform.OS !== 'web',
+    }).start();
   }, [value, x]);
 
   return (
@@ -26,24 +30,33 @@ export function ToggleSwitch({
       accessibilityRole="switch"
       accessibilityLabel={label}
       aria-checked={value}
-      hitSlop={8}
+      accessibilityState={{ checked: value }}
+      hitSlop={{ top: 7, bottom: 7, left: 0, right: 0 }}
       onPress={() => onValueChange(!value)}
       style={{
-        width: 48,
-        height: 28,
+        width: 50,
+        height: 30,
         borderRadius: radii.pill,
         backgroundColor: value ? colors.actionRed : colors.switchOff,
-      }}>
+      }}
+    >
       <Animated.View
         style={{
           position: 'absolute',
           top: 3,
           left: 3,
-          width: 22,
-          height: 22,
+          width: 24,
+          height: 24,
           borderRadius: radii.pill,
           backgroundColor: colors.white,
-          transform: [{ translateX: x.interpolate({ inputRange: [0, 1], outputRange: [0, 20] }) }],
+          transform: [
+            {
+              translateX: x.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 20],
+              }),
+            },
+          ],
         }}
       />
     </Pressable>

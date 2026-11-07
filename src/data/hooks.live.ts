@@ -74,7 +74,7 @@ export function usePracticeAudio() {
 export function useMandala() {
   const { canUsePersonalFeatures: allowed } = useSession();
   const value = useQuery(api.mandala.active, allowed ? {} : 'skip');
-  return allowed ? value : null;
+  return useMemo(() => !allowed ? null : value == null ? value : ({ ...value, sittingsDone: value.sittingsDone, lastSittingAt: value.lastSittingAt }), [allowed, value]);
 }
 export function useGroupCount() { return useQuery(api.mandala.groupCount, {}); }
 export function useCompleteMandalaDay() {

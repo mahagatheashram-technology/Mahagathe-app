@@ -10,3 +10,4 @@ export * from './BottomSheet';
 export * from './Event';
 export * from './ListRow';
 export * from './LineOrnament';
+export * from './MandalaRing';

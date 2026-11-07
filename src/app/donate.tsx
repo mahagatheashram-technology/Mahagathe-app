@@ -14,8 +14,7 @@ import { AmountPicker } from '@/features/sangha/AmountPicker';
 import { DonationOutcome } from '@/features/sangha/DonationOutcome';
 import { PurposeList } from '@/features/sangha/PurposeList';
 import { formatRupees } from '@/features/sangha/format';
-import { fonts } from '@/theme/tokens';
-import { v12 } from '@/theme/v12';
+import { colors, fonts } from '@/theme/tokens';
 
 /** v12 giving: a compact purpose picker, explicit amount selection, and the existing payment outcome. */
 export default function DonateScreen() {
@@ -108,7 +107,7 @@ export default function DonateScreen() {
               style={{ fontFamily: fonts.serifSemibold, fontSize: 30, lineHeight: 39 }}>
               Give dāna
             </AppText>
-            <AppText style={{ fontSize: 15, lineHeight: 23, color: v12.muted }}>
+            <AppText style={{ fontSize: 15, lineHeight: 23, color: colors.textSecondary }}>
               To the Mahagathe Foundation Trust.
             </AppText>
           </View>
@@ -123,10 +122,10 @@ export default function DonateScreen() {
               paddingVertical: 14,
               paddingHorizontal: 16,
               borderRadius: 16,
-              backgroundColor: v12.sand,
+              backgroundColor: colors.iconSand,
             }}>
             <View style={{ flex: 1, gap: 1 }}>
-              <AppText style={{ fontSize: 13, lineHeight: 20, color: v12.muted }}>For</AppText>
+              <AppText style={{ fontSize: 13, lineHeight: 20, color: colors.textSecondary }}>For</AppText>
               <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 16, lineHeight: 24 }}>
                 {purposeName}
               </AppText>
@@ -171,7 +170,7 @@ export default function DonateScreen() {
                 style={{
                   height: 54,
                   borderRadius: 999,
-                  backgroundColor: v12.disabled,
+                  backgroundColor: colors.disabled,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
@@ -180,15 +179,15 @@ export default function DonateScreen() {
                     fontFamily: fonts.sansSemibold,
                     fontSize: 16,
                     lineHeight: 24,
-                    color: v12.disabledText,
+                    color: colors.disabledText,
                   }}>
                   Choose an amount to continue
                 </AppText>
               </Pressable>
             )}
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-              <Icon name="shieldCheck" size={14} color={v12.label} />
-              <AppText style={{ fontSize: 13, lineHeight: 20, color: v12.muted }}>
+              <Icon name="shieldCheck" size={14} color={colors.label} />
+              <AppText style={{ fontSize: 13, lineHeight: 20, color: colors.textSecondary }}>
                 Secure UPI payment · receipt by SMS
               </AppText>
             </View>

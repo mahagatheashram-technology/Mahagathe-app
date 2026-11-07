@@ -29,7 +29,7 @@ export function VakyamHero({ vakyam, now }: { vakyam: Vakyam | null | undefined;
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Notifications"
-          onPress={() => router.push('/(tabs)/profile')}
+          onPress={() => router.push('/profile')}
           style={({ pressed }) => [styles.bell, pressed && { opacity: 0.8 }]}>
           <Icon name="bell" size={20} color={colors.white} />
         </Pressable>

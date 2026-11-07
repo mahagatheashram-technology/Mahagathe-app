@@ -7,7 +7,6 @@ import { AppText, BottomSheet, Button, DetailHeader, Icon, Screen } from '@/comp
 import { THEME_LABELS, usePractices, useSavedVakyam, useSession, useVakyam } from '@/data';
 import { ReportSheet } from '@/features/home/ReportSheet';
 import { colors, fonts } from '@/theme/tokens';
-import { v12 } from '@/theme/v12';
 
 export function VakyamScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -99,7 +98,7 @@ export function VakyamScreen() {
               lineHeight: 18,
               letterSpacing: 1.44,
               textTransform: 'uppercase',
-              color: v12.label,
+              color: colors.label,
             }}>
             Today’s teaching · {THEME_LABELS[vakyam.theme]}
           </AppText>
@@ -108,10 +107,10 @@ export function VakyamScreen() {
             style={{ fontFamily: fonts.serifMedium, fontSize: 29, lineHeight: 40.02 }}>
             “{vakyam.text}”
           </AppText>
-          <AppText style={{ fontSize: 14, lineHeight: 21, color: v12.muted }}>
+          <AppText style={{ fontSize: 14, lineHeight: 21, color: colors.textSecondary }}>
             {vakyam.verbatim ? 'Gurudev’s own words' : 'Paraphrase'}
           </AppText>
-          <View style={{ paddingTop: 22, borderTopWidth: 1, borderTopColor: v12.divider, gap: 8 }}>
+          <View style={{ paddingTop: 22, borderTopWidth: 1, borderTopColor: colors.divider, gap: 8 }}>
             <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23 }}>
               In simple words
             </AppText>
@@ -132,7 +131,7 @@ export function VakyamScreen() {
                 accessibilityLabel="Share teaching"
                 onPress={share}
                 style={{ minHeight: 44, justifyContent: 'center' }}>
-                <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, color: v12.muted }}>
+                <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, color: colors.textSecondary }}>
                   Share
                 </AppText>
               </Pressable>
@@ -141,7 +140,7 @@ export function VakyamScreen() {
                 accessibilityLabel="Source"
                 onPress={() => setSourceOpen(true)}
                 style={{ minHeight: 44, justifyContent: 'center' }}>
-                <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, color: v12.muted }}>
+                <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, color: colors.textSecondary }}>
                   Source
                 </AppText>
               </Pressable>
@@ -163,7 +162,7 @@ export function VakyamScreen() {
                 if (canUsePersonalFeatures) setReporting(true);
                 else gate();
               }}>
-              <AppText color={v12.muted}>Report a wrong source or text</AppText>
+              <AppText color={colors.textSecondary}>Report a wrong source or text</AppText>
             </Pressable>
           </BottomSheet>
           <ReportSheet contentId={vakyam.id} visible={reporting} onClose={() => setReporting(false)} />
