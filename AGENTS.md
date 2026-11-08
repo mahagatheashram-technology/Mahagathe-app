@@ -7,17 +7,18 @@ Auth: Clerk (phone OTP). DB/backend: Convex. Same stack as the sibling Saptagita
 
 ## Goal of the current milestone
 
-An **Expo Go–viewable mock** that matches the **v12** mocks (`docs/design/v12/`) closely and has their
-functionality working (navigation, register, Mandala completion, donate flow, profile toggles…).
-It must run with **zero keys** (mock mode). Convex + Clerk switch on only when env keys exist.
+Build **v14**: an Expo Go–viewable app matching `docs/design/v14/` closely, with its functionality
+working (navigation, Yakṣa's question, Gunometer, Mandala completion, search, series, donate flow,
+profile toggles…). It must run with **zero keys** (mock mode). Convex + Clerk switch on only when env keys exist.
 
 ## Design source of truth
 
-**Current target: v12 (locked).** `docs/design/v12/mocks/*.dc.html` + `docs/design/v12/screenshots/*.png`,
-and the experience rules in `docs/PRD-v0.4-experience.md` (principles E-1…E-7, 4 tabs, Profile
-behind the avatar, circular 40-sitting Mandala). Where v12 and the older v3 notes below disagree, **v12 wins**.
-The v3 files below are kept for history.
-
+**Current target: v14 (locked).** `docs/design/v14/screenshots/*.png` (2×, 390pt) +
+`docs/design/v14/mocks/*.html` (inline styles: copy them), and the rules in **`docs/PRD-v0.5-v14.md`**
+(naming rules N-1…N-5, the four places, screens and routes, data contract additions).
+Where v14 and older docs disagree, **v14 wins**. Naming is binding: never "Gurudev" (use "Mahamuni";
+"Most Venerable Mahamuni" on first introduction), never "Mahagate" (use "Mahagathe Ashram").
+v12 (`docs/design/v12/`, PRD v0.4) and the v3 notes below are kept for history only.
 
 - `docs/design/mocks/*V3.dc.html` — the HTML mocks. All sizes/colours/spacing are inline styles: copy them exactly.
 - `docs/design/screenshots/*V3.png` — rendered at 2× (390pt wide). Compare your screen against these.
