@@ -152,6 +152,8 @@ export type EventItem = {
   placesLeft: number | null;
   imageKey?: PhotoKey;
   vibhagaId?: Id;
+  /** The program (Pathway) this gathering belongs to, e.g. 'yuva'. Optional: most events have none. */
+  pathwayId?: Id;
   registered: boolean;
 };
 

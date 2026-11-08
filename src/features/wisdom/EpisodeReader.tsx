@@ -16,15 +16,66 @@ import { TEXT_SIZES, useTextSize } from './textSize';
 import { TextSizeSheet } from './TextSizeSheet';
 import { BackPill, LeafBand, PrimaryButton, ProgressSegments, TextLink } from '@/components/ui';
 import { LibraryHeading, LibraryPage, LibraryText } from './Library';
-import { useEpisode, useReadingPosition, useSaveReadingPosition } from '@/data';
+import {
+  useEpisode,
+  useReadingPosition,
+  useSaveReadingPosition,
+  useSeries,
+  useSeriesAccess,
+} from '@/data';
 import { v14Colors as colors, fonts } from '@/theme/tokens';
 
 const SAVE_EVERY_MS = 800;
 /** Treat a saved position this close to the end as "finished": reopen at the top. */
 const FINISHED = 0.98;
 
-/** v14 reader. Mounted with key={episodeId} so each episode gets fresh scroll/restore state. */
+/**
+ * v14 reader. Mounted with key={episodeId} so each episode gets fresh scroll/restore state.
+ * Gated the same way as the series page: a part that is locked (and not free) needs series access.
+ */
 export function EpisodeReader({ episodeId }: { episodeId: string }) {
+  const router = useRouter();
+  const insets = useScreenInsets();
+  const episode = useEpisode(episodeId);
+  const allSeries = useSeries();
+  const inPart = (p: { episodeIds?: string[]; seasonId?: string }) =>
+    !!p.episodeIds?.includes(episodeId) || (!!episode && p.seasonId === episode.seasonId);
+  const series = allSeries?.find((s) => s.parts.some(inPart));
+  const part = series?.parts.find(inPart);
+  const access = useSeriesAccess(series?.id ?? '');
+  const seriesId = series?.id ?? 'mahabharata';
+  if (episode && (allSeries === undefined || access === undefined))
+    return (
+      <LibraryPage contentStyle={{ paddingTop: insets.top + 2, paddingHorizontal: 16 }}>
+        <LibraryText style={{ marginTop: 32 }}>Loading…</LibraryText>
+      </LibraryPage>
+    );
+  if (episode && part?.locked && !part.free && !access)
+    return (
+      <LibraryPage contentStyle={{ paddingTop: insets.top + 2, paddingHorizontal: 16 }}>
+        <BackPill
+          destination={series?.title ?? 'Wisdom'}
+          onPress={() => router.dismissTo(`/series/${seriesId}`)}
+        />
+        <View style={{ marginTop: 32, paddingHorizontal: 8 }} accessibilityRole="summary">
+          <LibraryHeading size={26}>This episode is not open yet</LibraryHeading>
+          <LibraryText style={{ marginTop: 10, color: colors.text2 }}>
+            {part.when
+              ? `It opens in ${part.when}.`
+              : 'It needs access to the full series.'}
+          </LibraryText>
+          <TextLink
+            label={`Back to ${series?.title ?? 'the series'}`}
+            onPress={() => router.dismissTo(`/series/${seriesId}`)}
+            style={{ marginTop: 14 }}
+          />
+        </View>
+      </LibraryPage>
+    );
+  return <EpisodeBody episodeId={episodeId} seriesId={seriesId} />;
+}
+
+function EpisodeBody({ episodeId, seriesId }: { episodeId: string; seriesId: string }) {
   const router = useRouter();
   const insets = useScreenInsets();
   const episode = useEpisode(episodeId);
@@ -159,10 +210,27 @@ export function EpisodeReader({ episodeId }: { episodeId: string }) {
             </Pressable>
           </View>
           <View style={{ paddingTop: 14, paddingHorizontal: 8 }}>
-            <LibraryText style={{ fontSize: 15, lineHeight: 23.25, color: colors.darkLeaf }}>
-              Episode {episode.number} of {episode.totalInSeason}, about {episode.readMinutes}{' '}
-              minutes
-            </LibraryText>
+            <View
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                columnGap: 12,
+              }}
+            >
+              <LibraryText
+                style={{ flexShrink: 1, fontSize: 15, lineHeight: 23.25, color: colors.darkLeaf }}
+              >
+                Episode {episode.number} of {episode.totalInSeason}, about {episode.readMinutes}{' '}
+                minutes
+              </LibraryText>
+              <TextLink
+                label="All episodes"
+                accessibilityHint="Opens the series page"
+                onPress={() => router.dismissTo(`/series/${seriesId}`)}
+              />
+            </View>
             <LibraryHeading size={33} style={{ marginTop: 4, marginBottom: 12, lineHeight: 37.95 }}>
               {episode.title}
             </LibraryHeading>

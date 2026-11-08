@@ -151,6 +151,7 @@ export const run = internalMutation({
           imageKey: item.imageKey,
           enrollmentRequired: item.id === "ev-sunday-sitting",
           programId: "samatha",
+          pathwayId: item.pathwayId,
         }),
       );
       const event = await bySlug(ctx, "events", item.id);

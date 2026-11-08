@@ -530,12 +530,12 @@ export function useCreateDonation() {
   }, []);
 }
 
-export const externalLinks = { ...fx.links, saptagita: 'saptagita://' };
+export const externalLinks: import('./types').ExternalLinks = { ...fx.links, ...fx.libraryLinks };
 
 export function usePracticeAudio() {
   return useCallback(async (id: string) => { requirePersonalAccess(); const p = fx.practices.find(p => p.id === id); if (p?.access === 'enrolled' && !getState().practiceUnlocks.dhyanbhaari) throw new Error('Attend the Dhyanbhaari class first.'); return p?.audioUrl ?? null; }, []);
 }
-export function useExternalLinks(): import('./types').ExternalLinks { return { ...externalLinks, ...fx.libraryLinks }; }
+export function useExternalLinks(): import('./types').ExternalLinks { return externalLinks; }
 export function useOpenWhatsApp() { return useCallback(async () => { await Linking.openURL(fx.links.whatsapp); }, []); }
 
 export function useCurrentTime() { return useClock(); }

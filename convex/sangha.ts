@@ -53,6 +53,7 @@ export const events = query({
                 : Math.max(0, row.capacity - registrations.length),
             imageKey: row.imageKey,
             vibhagaId: vibhaga?.slug,
+            pathwayId: row.pathwayId,
             registered: registrations.some((r) => r.userId === user?._id),
           };
         }),
