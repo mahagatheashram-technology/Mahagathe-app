@@ -69,7 +69,7 @@ export function SanghaScreen() {
               backgroundColor: colors.white,
               alignItems: 'center',
               justifyContent: 'center',
-              shadowColor: '#501A0A',
+              shadowColor: colors.lateriteShadow,
               shadowOpacity: 0.25,
               shadowRadius: 18,
               shadowOffset: { width: 0, height: 6 },

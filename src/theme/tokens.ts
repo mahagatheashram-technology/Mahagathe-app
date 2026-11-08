@@ -10,7 +10,7 @@ export const colors = {
   seriesMahabharata: '#9C3D22', seriesRamayana: '#4C6639', seriesPashupata: '#5E5A57', seriesIks: '#9A6B12',
   sattva: '#FFFDF6', sattvaEdge: '#C9AE78', rajas: '#B5341F', tamas: '#2A1E14',
   reviewText: '#7A5200', reviewBackground: '#FFF4D6', reviewDarkBackground: 'rgba(242,181,68,.10)',
-  v14TabInactive: '#75685E', wisdomTab: '#8A6A2E',
+  v14TabInactive: '#75685E', wisdomTab: '#8A6A2E', lateriteShadow: '#501A0A',
   leafRule: 'rgba(120,90,40,.07)', segmentOff: 'rgba(42,30,20,.18)',
   pillLight: 'rgba(42,30,20,.06)', pillDark: 'rgba(255,255,255,.1)',
   darkLine: 'rgba(255,255,255,.1)', photoStripe: 'rgba(255,255,255,.06)', photoText: '#F6DCCF',
