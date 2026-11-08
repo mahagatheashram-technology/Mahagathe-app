@@ -1,0 +1,15 @@
+PASS: Player never autostarts (3 seconds of mock time stays at 0:00).
+PASS: Play advances timer; Pause stops it.
+PASS: Scrubber supports keyboard seeking in 15-second increments.
+PASS: Finishing and marking adds exactly one lamp, and disables duplicate marking.
+PASS: Mandala reflects 11 lamps after completion and enforces the daily limit.
+PASS: Reminder toggle writes the existing notification preferences in both directions.
+PASS: Reminder time picker saves 7:30 AM through useUpdateProfile.
+PASS: See classes opens the existing Events calendar.
+PASS: Attendance flag via the existing mock toggle changes Dhyanbhaari from locked to playable.
+PASS: Unlocked Dhyanbhaari plays the labelled silent mock timer; no recording is claimed.
+PASS: Guest Practice shows zero personal lamps and Begin sitting routes to Welcome.
+PASS: Guest Mandala Begin also routes to Welcome.
+PASS: A guest deep-link to Player shows sign-in, without playback controls.
+Page errors: []
+External requests blocked in all QA contexts.

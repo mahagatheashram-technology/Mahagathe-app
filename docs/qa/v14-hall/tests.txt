@@ -1,0 +1,286 @@
+
+> mahagathe@1.0.0 test
+> node --import tsx --test convex/tests/*.test.ts
+
+TAP version 13
+# Subtest: authentication never bypasses setup or guardian consent
+ok 1 - authentication never bypasses setup or guardian consent
+  ---
+  duration_ms: 0.395333
+  type: 'test'
+  ...
+# Subtest: sign-out clears account activity before another mock account signs in
+ok 2 - sign-out clears account activity before another mock account signs in
+  ---
+  duration_ms: 0.443375
+  type: 'test'
+  ...
+# Subtest: phone normalization accepts Indian local or explicit E.164 and rejects masked values
+ok 3 - phone normalization accepts Indian local or explicit E.164 and rejects masked values
+  ---
+  duration_ms: 0.270833
+  type: 'test'
+  ...
+# Subtest: an unspecified age completes setup without being treated as a minor
+ok 4 - an unspecified age completes setup without being treated as a minor
+  ---
+  duration_ms: 0.055791
+  type: 'test'
+  ...
+# (node:82995) ExperimentalWarning: The MockTimers API is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: seed is idempotent, retains placeholders, and public APIs cover all fixture content
+ok 5 - seed is idempotent, retains placeholders, and public APIs cover all fixture content
+  ---
+  duration_ms: 75.05925
+  type: 'test'
+  ...
+# Subtest: T-01/T-03/T-04: guest reads work; private writes and restricted media are refused
+ok 6 - T-01/T-03/T-04: guest reads work; private writes and restricted media are refused
+  ---
+  duration_ms: 16.368834
+  type: 'test'
+  ...
+# Subtest: T-02/P-04: pending minors store no personal fields and cannot self-grant consent
+ok 7 - T-02/P-04: pending minors store no personal fields and cannot self-grant consent
+  ---
+  duration_ms: 14.578291
+  type: 'test'
+  ...
+# Subtest: S-04/T-04: protected storage URL, guides, and profile enrollment respect grants, revocation, and expiry
+ok 8 - S-04/T-04: protected storage URL, guides, and profile enrollment respect grants, revocation, and expiry
+  ---
+  duration_ms: 18.614792
+  type: 'test'
+  ...
+# Subtest: T-05/T-06/T-07/S-09: retries create one completion, audit, and anonymous group increment
+ok 9 - T-05/T-06/T-07/S-09: retries create one completion, audit, and anonymous group increment
+  ---
+  duration_ms: 16.6465
+  type: 'test'
+  ...
+# Subtest: T-12: event capacity, repeat registration, cancellation and owner visibility
+ok 10 - T-12: event capacity, repeat registration, cancellation and owner visibility
+  ---
+  duration_ms: 12.171083
+  type: 'test'
+  ...
+# Subtest: G-06: volunteer application needs consent and is retry-safe
+ok 11 - G-06: volunteer application needs consent and is retry-safe
+  ---
+  duration_ms: 6.534084
+  type: 'test'
+  ...
+# Subtest: T-11/G-08: pending INR donations, safe retries, verified internal result, and owner reads
+ok 12 - T-11/G-08: pending INR donations, safe retries, verified internal result, and owner reads
+  ---
+  duration_ms: 10.197167
+  type: 'test'
+  ...
+# Subtest: T-08/T-09/T-10/C-1: source checks, independent review, publication, withdrawal and approved rollback
+ok 13 - T-08/T-09/T-10/C-1: source checks, independent review, publication, withdrawal and approved rollback
+  ---
+  duration_ms: 20.647458
+  type: 'test'
+  ...
+# Subtest: T-10: future and expired published records never leak in queries
+ok 14 - T-10: future and expired published records never leak in queries
+  ---
+  duration_ms: 7.337042
+  type: 'test'
+  ...
+# Subtest: W-08/P-06/P-08: reading never regresses; preferences, export and deletion are private
+ok 15 - W-08/P-06/P-08: reading never regresses; preferences, export and deletion are private
+  ---
+  duration_ms: 13.015083
+  type: 'test'
+  ...
+# Subtest: T-06: completions on either side of IST midnight receive separate server days and audit records
+ok 16 - T-06: completions on either side of IST midnight receive separate server days and audit records
+  ---
+  duration_ms: 13.305709
+  type: 'test'
+  ...
+# Subtest: T-07: 100 users contribute to a group count with no public identifiers
+ok 17 - T-07: 100 users contribute to a group count with no public identifiers
+  ---
+  duration_ms: 175.302583
+  type: 'test'
+  ...
+# Subtest: T-05/T-12: concurrent completion retries and last-place registrations remain atomic
+ok 18 - T-05/T-12: concurrent completion retries and last-place registrations remain atomic
+  ---
+  duration_ms: 8.088084
+  type: 'test'
+  ...
+# Subtest: A-04/T-10: lifecycle boundary jobs reject early/stale runs and never resurrect withdrawn content
+ok 19 - A-04/T-10: lifecycle boundary jobs reject early/stale runs and never resurrect withdrawn content
+  ---
+  duration_ms: 13.992042
+  type: 'test'
+  ...
+# Subtest: A-07: assigned hub heads may edit only their own hub and cannot reassign ownership
+ok 20 - A-07: assigned hub heads may edit only their own hub and cannot reassign ownership
+  ---
+  duration_ms: 8.426792
+  type: 'test'
+  ...
+# Subtest: T-02: correcting an adult profile to a minor purges previously stored personal activity
+ok 21 - T-02: correcting an adult profile to a minor purges previously stored personal activity
+  ---
+  duration_ms: 7.197125
+  type: 'test'
+  ...
+# Subtest: W-14: search includes published BORI episodes and excludes drafts and withdrawn seasons
+ok 22 - W-14: search includes published BORI episodes and excludes drafts and withdrawn seasons
+  ---
+  duration_ms: 8.011459
+  type: 'test'
+  ...
+# Subtest: W-08: reading position starts at zero, is private and never regresses
+ok 23 - W-08: reading position starts at zero, is private and never regresses
+  ---
+  duration_ms: 7.675
+  type: 'test'
+  ...
+# Subtest: P-04: consent requests keep minimal details, retry once, prohibit age bypass, and require trusted verification
+ok 24 - P-04: consent requests keep minimal details, retry once, prohibit age bypass, and require trusted verification
+  ---
+  duration_ms: 7.859666
+  type: 'test'
+  ...
+# Subtest: T-09: revisions and approved rollback retain public content and original author until publication
+ok 25 - T-09: revisions and approved rollback retain public content and original author until publication
+  ---
+  duration_ms: 16.503084
+  type: 'test'
+  ...
+# Subtest: daily clock refreshes at IST midnight and event cutoff hides past events
+ok 26 - daily clock refreshes at IST midnight and event cutoff hides past events
+  ---
+  duration_ms: 6.339334
+  type: 'test'
+  ...
+# Subtest: v12: unspecified age is stored without requiring guardian consent
+ok 27 - v12: unspecified age is stored without requiring guardian consent
+  ---
+  duration_ms: 7.302041
+  type: 'test'
+  ...
+# Subtest: v12: sitting progress survives calendar gaps and reports its last completion
+ok 28 - v12: sitting progress survives calendar gaps and reports its last completion
+  ---
+  duration_ms: 7.993833
+  type: 'test'
+  ...
+# Subtest: v12: the fortieth sitting completes a Mandala without permitting a forty-first
+ok 29 - v12: the fortieth sitting completes a Mandala without permitting a forty-first
+  ---
+  duration_ms: 15.728792
+  type: 'test'
+  ...
+# Subtest: v14: daily Yakṣa exposes the review flag and persists one answer per account/IST day
+ok 30 - v14: daily Yakṣa exposes the review flag and persists one answer per account/IST day
+  ---
+  duration_ms: 10.380792
+  type: 'test'
+  ...
+# Subtest: v14: Gunometer is consent-gated, server scored, latest-only and erased with the account
+ok 31 - v14: Gunometer is consent-gated, server scored, latest-only and erased with the account
+  ---
+  duration_ms: 13.135666
+  type: 'test'
+  ...
+# Subtest: v14: exactly two practices and attendance/access flags are private and independent
+ok 32 - v14: exactly two practices and attendance/access flags are private and independent
+  ---
+  duration_ms: 10.52775
+  type: 'test'
+  ...
+# Subtest: v14: series links, featured programs, seva mapping and grouped catalogue mirror fixtures
+ok 33 - v14: series links, featured programs, seva mapping and grouped catalogue mirror fixtures
+  ---
+  duration_ms: 23.426666
+  type: 'test'
+  ...
+# Subtest: upstream scoring: midpoint is balanced, percentages total 100, quality flags remain
+ok 34 - upstream scoring: midpoint is balanced, percentages total 100, quality flags remain
+  ---
+  duration_ms: 1.827084
+  type: 'test'
+  ...
+# Subtest: reverse scored responses and weighted mappings produce the upstream sattva profile
+ok 35 - reverse scored responses and weighted mappings produce the upstream sattva profile
+  ---
+  duration_ms: 0.389584
+  type: 'test'
+  ...
+# Subtest: catalogue sorts dates descending within month groups
+ok 36 - catalogue sorts dates descending within month groups
+  ---
+  duration_ms: 28.157666
+  type: 'test'
+  ...
+# Subtest: T-06: IST day changes at 18:30 UTC, independent of caller timezone
+ok 37 - T-06: IST day changes at 18:30 UTC, independent of caller timezone
+  ---
+  duration_ms: 1.148708
+  type: 'test'
+  ...
+# Subtest: T-02: both minor bands and unknown ages gate personal data
+ok 38 - T-02: both minor bands and unknown ages gate personal data
+  ---
+  duration_ms: 0.096708
+  type: 'test'
+  ...
+# Subtest: T-09/A-03: approval requires a different, identified author
+ok 39 - T-09/A-03: approval requires a different, identified author
+  ---
+  duration_ms: 0.055959
+  type: 'test'
+  ...
+# Subtest: S-04: only free resources bypass enrollment
+ok 40 - S-04: only free resources bypass enrollment
+  ---
+  duration_ms: 0.048
+  type: 'test'
+  ...
+# Subtest: W-14: IAST search ignores accents and letter case
+ok 41 - W-14: IAST search ignores accents and letter case
+  ---
+  duration_ms: 1.679875
+  type: 'test'
+  ...
+# Subtest: T-11/G-08: reject foreign currency, invalid precision, overflow and nonpositive donations
+ok 42 - T-11/G-08: reject foreign currency, invalid precision, overflow and nonpositive donations
+  ---
+  duration_ms: 0.406417
+  type: 'test'
+  ...
+# Subtest: v12/D-23: one sitting per IST date, no expiry, and forty counted sittings
+ok 43 - v12/D-23: one sitting per IST date, no expiry, and forty counted sittings
+  ---
+  duration_ms: 0.267917
+  type: 'test'
+  ...
+# Subtest: v12: progress counts sittings beyond the first forty calendar dates
+ok 44 - v12: progress counts sittings beyond the first forty calendar dates
+  ---
+  duration_ms: 0.171625
+  type: 'test'
+  ...
+# Subtest: S-10: 40-day grid and streak handle missed days and duplicate inputs
+ok 45 - S-10: 40-day grid and streak handle missed days and duplicate inputs
+  ---
+  duration_ms: 0.580209
+  type: 'test'
+  ...
+1..45
+# tests 45
+# suites 0
+# pass 45
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 837.185416
