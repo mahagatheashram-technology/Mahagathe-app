@@ -92,11 +92,11 @@ export default function ProfileScreen() {
       />
       <BottomSheet
         visible={sheet === 'morning'}
-        title="Morning teaching"
+        title="Mahamuni’s word"
         onClose={() => setSheet(null)}
       >
         <AppText>
-          Morning teachings arrive at 7:00 AM. You can turn this reminder on or
+          Mahamuni’s word arrives at 7:00 AM. You can turn this reminder on or
           off in Profile.
         </AppText>
         <Button label="Done" variant="quiet" onPress={() => setSheet(null)} />

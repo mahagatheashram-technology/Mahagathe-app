@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 import { AppText, Icon, Leaf, OutlineButton, ProgressSegments, ReviewTag, Screen } from '@/components/ui';
 import { useScreenInsets } from '@/components/ui/useStatusBarInset';
-import { useGunaPrompt, useSaveGunaResult, useSession } from '@/data';
+import { useGunaPrompt, useGunaResult, useSaveGunaResult, useSession } from '@/data';
 import { v14Colors as colors, fonts } from '@/theme/tokens';
 import { completeGunaQuiz } from './completeQuiz';
 import { coreQuestions, likertOptions } from './lib/questions';
@@ -13,6 +13,7 @@ export default function GunaQuizScreen() {
   const session = useSession();
   const save = useSaveGunaResult();
   const prompt = useGunaPrompt();
+  const existing = useGunaResult();
   const insets = useScreenInsets();
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
@@ -54,10 +55,10 @@ export default function GunaQuizScreen() {
     <Screen background="transparent" contentStyle={{ paddingTop: 2, paddingHorizontal: 20, paddingBottom: Math.max(insets.bottom, 34) }}>
       {session.status === 'loading' ? <ActivityIndicator accessibilityLabel="Loading your account" color={colors.ink} /> : <>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <Pressable accessibilityRole="button" accessibilityLabel={index ? 'Previous question' : 'Back to Gunometer introduction'} disabled={busy} onPress={() => {
+          <Pressable accessibilityRole="button" accessibilityLabel={index ? 'Previous question' : existing ? 'Back to your result' : 'Back to Gunometer introduction'} disabled={busy} onPress={() => {
             if (advance.current) clearTimeout(advance.current);
             advance.current = null; lock.current = false;
-            if (index) setIndex(i => i - 1); else router.replace('/gunometer/intro');
+            if (index) setIndex(i => i - 1); else router.replace(existing ? '/gunometer' : '/gunometer/intro');
           }} style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.pillLight, alignItems: 'center', justifyContent: 'center' }}><Icon name="back" size={20} color={colors.ink} strokeWidth={2.2} /></Pressable>
           <ProgressSegments done={index} total={coreQuestions.length} current={index} color={colors.laterite} accessibilityLabel={`${index} of ${coreQuestions.length} questions answered`} style={{ flex: 1 }} />
           <AppText accessibilityLiveRegion="polite" style={{ fontFamily: fonts.uiSemibold, fontSize: 14, lineHeight: 21.7, color: colors.darkLeaf }}>{index + 1} of {coreQuestions.length}</AppText>
