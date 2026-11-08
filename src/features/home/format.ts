@@ -1,14 +1,7 @@
-const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
-
-/** "Friday, 6 November" */
-export function formatLongDate(d: Date) {
-  const india = new Date(d.getTime() + IST_OFFSET_MS);
-  return `${WEEKDAYS[india.getUTCDay()]}, ${india.getUTCDate()} ${MONTHS[india.getUTCMonth()]}`;
-}
 
 /** An ISO calendar date ("2026-11-06") as a local date, with no timezone shift. */
 export function parseCalendarDate(iso: string) {

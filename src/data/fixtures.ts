@@ -167,7 +167,7 @@ export const episodes: Episode[] = ADI_TITLES.map((title, i) => ({
 const day = (d: string) => new Date(d).toISOString();
 export const events: EventItem[] = [
   { id: 'ev-sunday-sitting', title: 'Sunday group sitting', startsAt: day('2026-11-08T01:00:00Z'), place: 'Online', timeLabel: '6:30 AM IST', eligibility: 'Enrolled sādhakas', placesLeft: null, registered: false },
-  { id: 'ev-yuva-class', title: 'Yuva Chetana class', startsAt: day('2026-11-14T10:30:00Z'), place: 'Mahagathe Ashram', timeLabel: '4 PM', eligibility: 'Ages 13–24', placesLeft: 22, registered: true },
+  { id: 'ev-yuva-class', title: 'Yuva Chetana class', startsAt: day('2026-11-14T10:30:00Z'), place: 'Mahagathe Ashram', timeLabel: '4 PM', eligibility: 'Ages 13–24', placesLeft: 22, pathwayId: 'yuva', registered: true },
   { id: 'ev-abhyudaya', title: 'Abhyudaya 2026', startsAt: day('2026-12-20T03:30:00Z'), place: 'Mahagathe Ashram', timeLabel: 'All day', eligibility: 'Open to all', placesLeft: 140, imageKey: 'abhyudaya', registered: false },
 ];
 

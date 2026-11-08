@@ -28,7 +28,12 @@ export function ParamparaScreen() {
         }
       >
         <View style={{ position: 'absolute', top: insets.top + 2, left: 16 }}>
-          <BackPill dark destination="Wisdom" onPress={() => router.dismissTo('/(tabs)/wisdom')} />
+          <BackPill
+            dark
+            destination="Wisdom"
+            onPress={() => router.dismissTo('/(tabs)/wisdom')}
+            style={{ backgroundColor: c.pillOnPhoto }}
+          />
         </View>
       </PortraitHeader>
       {content ? (

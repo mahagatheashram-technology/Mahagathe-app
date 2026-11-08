@@ -46,8 +46,11 @@ export default function PathwayScreen() {
     );
   }
 
-  // Events carry no program id: match by the program's name in the title ("Yuva Chetana class").
-  const nextClass = (events ?? []).find((e) => e.title.toLowerCase().includes(pathway.name.toLowerCase())) ?? null;
+  // Match by pathwayId first; fall back to the program's name in the title ("Yuva Chetana class").
+  const nextClass =
+    (events ?? []).find((e) => e.pathwayId === pathway.id) ??
+    (events ?? []).find((e) => e.title.toLowerCase().includes(pathway.name.toLowerCase())) ??
+    null;
   const d = nextClass ? istDate(nextClass.startsAt) : null;
   const headline = pathway.featured && pathway.ageRange ? `${pathway.tagline}. For ages ${pathway.ageRange}.` : `${pathway.tagline}.`;
 

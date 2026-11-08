@@ -16,6 +16,8 @@ export const colors = {
   v14TabInactive: '#75685E', wisdomTab: '#8A6A2E', lateriteShadow: '#501A0A',
   leafRule: 'rgba(120,90,40,.07)', segmentOff: 'rgba(42,30,20,.18)',
   pillLight: 'rgba(42,30,20,.06)', pillDark: 'rgba(255,255,255,.1)',
+  /** Back pill over a photograph (Lineage header). */
+  pillOnPhoto: 'rgba(0,0,0,.28)',
   darkLine: 'rgba(255,255,255,.1)', photoStripe: 'rgba(255,255,255,.06)', photoText: '#F6DCCF',
   cord: 'rgba(255,236,200,.55)', knot: '#EBD9B4', motif: 'rgba(255,255,255,.85)', motifDot: '#E0463A',
   portraitScrimTop: 'rgba(0,0,0,.28)', portraitScrimBottom: 'rgba(20,10,4,.78)',

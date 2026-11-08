@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { useRouter } from 'expo-router';
-import { Linking, Platform, View } from 'react-native';
+import { View } from 'react-native';
 import {
   Icon,
   Leaf,
@@ -22,6 +21,7 @@ import {
   useVakyamThemes,
 } from '@/data';
 import { fonts, v14Colors as c } from '@/theme/tokens';
+import { useOpenSaptagita } from './useSaptagita';
 import {
   Attribution,
   LibraryHeader,
@@ -54,7 +54,7 @@ export function WisdomScreen() {
   const session = useSession();
   const practices = usePractices();
   const practice = practices?.find((p) => p.access === 'free');
-  const [linkError, setLinkError] = useState(false);
+  const saptagita = useOpenSaptagita(links);
   const sit = () =>
     router.push(
       !session.canUsePersonalFeatures
@@ -65,22 +65,6 @@ export function WisdomScreen() {
           ? `/player/${practice.id}`
           : '/(tabs)/practice',
     );
-  const openSaptagita = async () => {
-    if (!links?.saptagita) return;
-    try {
-      if (Platform.OS === 'web') await Linking.openURL(links.saptagitaWeb);
-      else {
-        try {
-          await Linking.openURL(links.saptagita);
-        } catch {
-          await Linking.openURL(links.saptagitaWeb);
-        }
-      }
-      setLinkError(false);
-    } catch {
-      setLinkError(true);
-    }
-  };
   return (
     <LibraryPage>
       <LibraryHeader back={false} style={{ paddingHorizontal: 20, paddingBottom: 24 }}>
@@ -254,7 +238,7 @@ export function WisdomScreen() {
         </View>
         <LibraryRow
           label="Saptagita. Also from Mahagathe. Opens the Saptagita app"
-          onPress={openSaptagita}
+          onPress={saptagita.open}
           style={{
             marginTop: 26,
             flexDirection: 'row',
@@ -293,9 +277,9 @@ export function WisdomScreen() {
           </View>
           <Icon name="chevronRight" size={20} color={c.text2} />
         </LibraryRow>
-        {linkError && (
-          <LibraryText accessibilityLiveRegion="polite">
-            Install Saptagita to open the app, then try again.
+        {saptagita.message && (
+          <LibraryText accessibilityLiveRegion="polite" style={{ marginTop: 10 }}>
+            {saptagita.message}
           </LibraryText>
         )}
       </View>

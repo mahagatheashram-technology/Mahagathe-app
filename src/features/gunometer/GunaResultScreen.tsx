@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useRef, useState, type ComponentRef } from 'react';
-import { ActivityIndicator, Linking, Modal, Platform, Pressable, Share, View } from 'react-native';
+import { ActivityIndicator, Modal, Platform, Pressable, Share, View } from 'react-native';
 import { captureRef, releaseCapture } from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
 import { AppText, BackPill, GunaBar, GunaRope, Icon, LeafBand, OutlineButton, ReviewTag, Screen } from '@/components/ui';
@@ -8,6 +8,7 @@ import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 import { useExternalLinks, useGunaResult, useSession } from '@/data';
 import { v14Colors as colors, fonts } from '@/theme/tokens';
 import GunaInviteScreen from './GunaInviteScreen';
+import { useOpenSaptagita } from '@/features/wisdom/useSaptagita';
 import { gunaContent } from './lib/recommendations';
 import { gunaDate, gunaNames, gunaSections, gunaSummary } from './presentation';
 import { GunaShareCard } from './GunaShareCard';
@@ -17,6 +18,7 @@ export default function GunaResultScreen() {
   const result = useGunaResult();
   const session = useSession();
   const links = useExternalLinks();
+  const saptagita = useOpenSaptagita(links);
   const insets = useScreenInsets();
   const [expanded, setExpanded] = useState<string[]>([]);
   const [shareOpen, setShareOpen] = useState(false);
@@ -72,9 +74,10 @@ export default function GunaResultScreen() {
           </View>;
         })}
       </View>
-      <Pressable accessibilityRole="link" accessibilityLabel="The three gunas in the Gita, open Saptagita" disabled={links === undefined} onPress={async () => { try { if (links?.saptagita) await Linking.openURL(links.saptagita); else setError('The Saptagita link is not available yet.'); } catch { setError('Install the Saptagita app to read chapter 14.'); } }} style={{ marginTop: 16, marginHorizontal: 16, paddingVertical: 14, paddingHorizontal: 16, borderRadius: 16, backgroundColor: colors.lateriteSoft, flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+      <Pressable accessibilityRole="link" accessibilityLabel="The three gunas in the Gita, open Saptagita" disabled={links === undefined} onPress={saptagita.open} style={{ marginTop: 16, marginHorizontal: 16, paddingVertical: 14, paddingHorizontal: 16, borderRadius: 16, backgroundColor: colors.lateriteSoft, flexDirection: 'row', alignItems: 'center', gap: 14 }}>
         <View style={{ width: 44, height: 44, backgroundColor: colors.actionRed, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }}><AppText style={{ fontFamily: fonts.displaySemibold, fontSize: 22, color: colors.white }}>७</AppText></View><View style={{ flex: 1 }}><AppText style={{ fontFamily: fonts.displaySemibold, fontSize: 17, lineHeight: 26.35, color: colors.ink }}>The three gunas in the Gita</AppText><AppText style={{ fontSize: 14, lineHeight: 21.7, color: colors.text2 }}>Gita, chapter 14, in the Saptagita app</AppText></View>
       </Pressable>
+      {saptagita.message && <AppText accessibilityLiveRegion="polite" style={{ marginTop: 10, marginHorizontal: 24, fontSize: 14, lineHeight: 21.7, color: colors.text2 }}>{saptagita.message}</AppText>}
       <View style={{ paddingTop: 22, paddingHorizontal: 16, alignItems: 'center', gap: 10 }}>
         <OutlineButton label="Take it again" onPress={() => router.push('/gunometer/quiz')} style={{ width: '100%' }} />
         <AppText style={{ fontSize: 14, lineHeight: 21.7, color: colors.text2 }}>Your new result replaces this one.</AppText>

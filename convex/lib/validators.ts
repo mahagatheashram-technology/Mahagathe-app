@@ -158,6 +158,8 @@ export const episodeFields = {
 };
 export const eventFields = {
   vibhagaId: v.optional(v.id("vibhagas")),
+  /** Slug of the program (pathways table) this event belongs to. */
+  pathwayId: v.optional(v.string()),
   title: v.string(),
   startsAt: v.number(),
   place: v.string(),
@@ -347,6 +349,7 @@ export const eventResult = v.object({
   placesLeft: v.union(v.number(), v.null()),
   imageKey: v.optional(photo),
   vibhagaId: v.optional(v.string()),
+  pathwayId: v.optional(v.string()),
   registered: v.boolean(),
 });
 export const donationResult = v.object({

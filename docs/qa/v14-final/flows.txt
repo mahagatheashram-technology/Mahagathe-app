@@ -1,0 +1,20 @@
+PASS Home → Begin sitting opens the player
+PASS Player: play, run to end, completion screen offers Mark
+PASS Mark today’s sitting → marked, Mandala shows 11 lit
+ text: undefined
+PASS Yakṣa: incorrect answer reveals mark, answer, reference, share, "New question tomorrow"
+PASS Yakṣa answer persists after sign-out/in (same phone)
+PASS Yakṣa: "Just show me" reveals answer
+PASS Wisdom → search field → results
+PASS Search → series episode result opens the episode
+PASS Episode: visible "All episodes" link goes to the series page
+PASS Series page → Continue opens an episode
+PASS Wisdom → IKS locked session opens the access sheet
+PASS Saptagita row: web shows inline fallback/opens store without crash
+PASS Sangha → program page → toggle registration
+FAIL Sangha → Register for Abhyudaya :: no confirmation: [Ashram or Abhyudaya anniversary photo to come]|Sangha|Dec|20|Sunday|The next gathering|Abhyudaya 2026|All day at Mahagathe Ashram. Open to everyone; 140 places left.|Going|Coming up|Full calendar|Sat|14|Yuva Chetana class|4 PM at the ashram, ages 13–24|Programs|Ways to learn and grow with the ashra
+PASS Donate: pick ₹1,001 → Give with UPI → outcome
+PASS Profile toggles: Mahamuni’s word switch flips
+ guest landing: http://localhost:8731/welcome
+PASS Guest: Practice tab prompts sign-in (route to /welcome)
+ERRS []

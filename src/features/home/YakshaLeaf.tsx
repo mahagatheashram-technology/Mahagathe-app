@@ -131,7 +131,9 @@ export function YakshaLeaf() {
             accessibilityRole="link"
             accessibilityLabel="Just show me"
             onPress={() => reveal(null)}
-            style={{ marginTop: 1.6, marginBottom: -10.4, minHeight: 44, justifyContent: 'center', alignSelf: 'flex-start' }}>
+            // 23.25pt line + 10.4pt slop top and bottom = a 44pt target without changing the mock's spacing.
+            hitSlop={{ top: 10.4, bottom: 10.4, left: 8, right: 8 }}
+            style={{ marginTop: 12, alignSelf: 'flex-start' }}>
             <AppText style={{ fontFamily: fonts.uiSemibold, fontSize: 15, lineHeight: 23.25, color: colors.darkLeaf, textDecorationLine: 'underline' }}>
               Just show me
             </AppText>

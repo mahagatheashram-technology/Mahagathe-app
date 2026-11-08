@@ -26,6 +26,7 @@ v12 (`docs/design/v12/`, PRD v0.4) and the v3 notes below are kept for history o
   action red `#C20000` (buttons, links, active tab), feature gradient `#CC0000→#9A0A0A`
   (ONE red block per browsing screen), surfaces cream `#FFFBF5` / sand `#F0E8DE` / white card + `#E9DFD3` border.
   Lora = titles & teachings, Poppins = UI, Noto Serif Devanagari = scripture.
+  (Lora and Poppins are retired in v14: type is now Eczar + Mukta.)
 - The mocks link screens with `href="XxxV3.dc.html"` — those are the navigation flows to implement.
 - `<a href="#…">` anchors in mocks (calendar, vibhaga hubs, pathways, about, rules, Q&A, next episode)
   are screens/sheets not drawn yet: build them in the same visual language, calm style (no red block).
