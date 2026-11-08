@@ -3,7 +3,8 @@ import { AppText, Icon } from '@/components/ui';
 import { colors, fonts } from '@/theme/tokens';
 
 /** The quieter Welcome selector retains the existing language availability notice. */
-export function LanguagePill() {
+export function LanguagePill({ dark = false }: { dark?: boolean }) {
+  const color = dark ? colors.onDark2 : colors.textSecondary;
   return (
     <Pressable
       accessibilityRole="button"
@@ -17,11 +18,11 @@ export function LanguagePill() {
         gap: 6,
         opacity: pressed ? 0.7 : 1,
       })}>
-      <Icon name="globe" size={16} color={colors.textSecondary} strokeWidth={1.8} />
-      <AppText style={{ fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 21, color: colors.textSecondary }}>
+      <Icon name="globe" size={dark ? 18 : 16} color={color} strokeWidth={1.8} />
+      <AppText style={{ fontFamily: dark ? fonts.ui : fonts.sansMedium, fontSize: dark ? 15 : 14, lineHeight: 23, color }}>
         English
       </AppText>
-      <Icon name="chevronDown" size={14} color={colors.textSecondary} strokeWidth={2.2} />
+      <Icon name="chevronDown" size={dark ? 16 : 14} color={color} strokeWidth={2.2} />
     </Pressable>
   );
 }

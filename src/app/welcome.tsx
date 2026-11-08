@@ -1,11 +1,17 @@
 import { Redirect, useRouter } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { Pressable, View } from 'react-native';
 
-import { AppText, Button, LineOrnament, Screen } from '@/components/ui';
+import { AppText, LampRing, PrimaryButton, Screen } from '@/components/ui';
 import { Emblem } from '@/components/ui/Emblem';
 import { useProfile, useSession } from '@/data';
 import { LanguagePill } from '@/features/onboarding/LanguagePill';
 import { colors, fonts } from '@/theme/tokens';
+
+const RING = 290;
+/** V13Welcome: inset 50 inside the 290 ring, 6pt lamp halo around the white disc. */
+const DISC = RING - 100;
+const HALO = 6;
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -20,38 +26,90 @@ export default function WelcomeScreen() {
   };
 
   return (
-    <Screen contentStyle={{ paddingTop: 4, paddingBottom: 64 }}>
-      <View style={{ alignItems: 'flex-end', paddingHorizontal: 24 }}>
-        <LanguagePill />
+    <Screen background={colors.indigo} contentStyle={{ paddingBottom: 40 }}>
+      <StatusBar style="light" />
+      <View style={{ alignItems: 'flex-end', paddingHorizontal: 20 }}>
+        <LanguagePill dark />
       </View>
-      <View style={styles.center}>
-        <View style={styles.ornament}>
-          <View style={StyleSheet.absoluteFill}>
-            <LineOrnament size={210} />
-          </View>
-          <View style={styles.badge}>
-            <Emblem width={70} />
-          </View>
-        </View>
-        <View style={{ alignItems: 'center', gap: 8 }}>
-          <AppText accessibilityRole="header" style={styles.title}>
-            Mahagathe
-          </AppText>
-          <AppText style={styles.motto}>सत्यं वद · धर्मं चर</AppText>
-        </View>
-        <AppText style={styles.tagline}>Sit each day, read the words of the Most Venerable Mahamuni and follow the Mahabharata, with the sangha of Mahagathe Ashram.</AppText>
+      <View style={{ flexGrow: 1, alignItems: 'center', paddingTop: 24, paddingHorizontal: 28 }}>
+        <LampRing
+          done={1}
+          size={RING}
+          label="1 of 40 lamps lit"
+          center={
+            <View
+              style={{
+                width: DISC + HALO * 2,
+                height: DISC + HALO * 2,
+                borderRadius: (DISC + HALO * 2) / 2,
+                backgroundColor: colors.lampGlow,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <View
+                style={{
+                  width: DISC,
+                  height: DISC,
+                  borderRadius: DISC / 2,
+                  backgroundColor: colors.white,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <Emblem width={103} />
+              </View>
+            </View>
+          }
+        />
+        <AppText
+          accessibilityRole="header"
+          style={{
+            marginTop: 30,
+            fontFamily: fonts.displaySemibold,
+            fontSize: 44,
+            lineHeight: 46.2,
+            letterSpacing: -0.44,
+            color: colors.white,
+            textAlign: 'center',
+          }}>
+          Mahagathe
+        </AppText>
+        <AppText
+          style={{
+            marginTop: 8,
+            fontFamily: fonts.display,
+            fontSize: 21,
+            lineHeight: 32.5,
+            color: colors.lamp,
+            textAlign: 'center',
+          }}>
+          सत्यं वद धर्मं चर
+        </AppText>
+        <AppText
+          style={{
+            marginTop: 16,
+            maxWidth: 300,
+            fontFamily: fonts.ui,
+            fontSize: 17,
+            lineHeight: 25.5,
+            color: colors.onDark2,
+            textAlign: 'center',
+          }}>
+          Sit each day, read the words of the Most Venerable Mahamuni and follow the Mahabharata, with the sangha of
+          Mahagathe Ashram.
+        </AppText>
       </View>
-      <View style={{ paddingHorizontal: 24, gap: 6 }}>
-        <Button
+      <View style={{ paddingTop: 28, paddingHorizontal: 24, gap: 14, alignItems: 'center' }}>
+        <PrimaryButton
           label="Begin your practice"
           onPress={() => router.push(status === 'signedIn' ? '/setup' : '/sign-in')}
+          style={{ alignSelf: 'stretch' }}
         />
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Look around first"
           onPress={explore}
-          style={{ alignSelf: 'center', minHeight: 44, justifyContent: 'center' }}>
-          <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23, color: colors.textSecondary }}>
+          style={{ minHeight: 44, justifyContent: 'center' }}>
+          <AppText style={{ fontFamily: fonts.uiSemibold, fontSize: 16, lineHeight: 24.8, color: colors.white }}>
             Look around first
           </AppText>
         </Pressable>
@@ -59,36 +117,3 @@ export default function WelcomeScreen() {
     </Screen>
   );
 }
-const styles = StyleSheet.create({
-  center: {
-    flexGrow: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 22,
-    paddingHorizontal: 32,
-    paddingBottom: 8,
-  },
-  ornament: { width: 210, height: 210, alignItems: 'center', justifyContent: 'center' },
-  badge: {
-    width: 124,
-    height: 124,
-    borderRadius: 999,
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.shadow,
-    shadowOpacity: 0.1,
-    shadowRadius: 34,
-    shadowOffset: { width: 0, height: 12 },
-    elevation: 4,
-  },
-  title: { fontFamily: fonts.serifSemibold, fontSize: 38, lineHeight: 49, textAlign: 'center' },
-  motto: {
-    fontFamily: fonts.deva,
-    fontSize: 17,
-    lineHeight: 26,
-    color: colors.label,
-    textAlign: 'center',
-  },
-  tagline: { fontFamily: fonts.serif, fontSize: 19, lineHeight: 29.45, textAlign: 'center', maxWidth: 290 },
-});
