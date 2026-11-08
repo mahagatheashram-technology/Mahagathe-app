@@ -29,12 +29,12 @@ export const vakyams: Vakyam[] = [
     id: 'vk-001',
     text: 'Steadiness in practice gives clarity in life.',
     meaning:
-      'Return to your practice every day, even briefly. Slowly the mind settles, and a settled mind sees choices in work and family more clearly.',
+      'When you sit a little every day, the mind settles. A settled mind sees the day as it is, and choices become easier.',
     theme: 'inner-life',
     verbatim: true,
     attribution: MAHAMUNI,
     source: { title: 'Mahagathe Wisdom archive', detail: '[Talk title, date] · Reviewed [date] by the content authority' },
-    date: '2026-11-06',
+    date: '2026-11-07',
   },
   {
     id: 'vk-002',
@@ -44,7 +44,7 @@ export const vakyams: Vakyam[] = [
     verbatim: false,
     attribution: MAHAMUNI,
     source: { title: 'Mahagathe Wisdom archive', detail: '[Talk title, date] · Reviewed [date] by the content authority' },
-    date: '2026-11-05',
+    date: '2026-11-06',
   },
   {
     id: 'vk-003',
@@ -54,7 +54,7 @@ export const vakyams: Vakyam[] = [
     verbatim: true,
     attribution: MAHAMUNI,
     source: { title: 'Mahagathe Wisdom archive', detail: '[Talk title, date] · Reviewed [date] by the content authority' },
-    date: '2026-11-04',
+    date: '2026-11-05',
   },
   {
     id: 'vk-004',
@@ -64,7 +64,7 @@ export const vakyams: Vakyam[] = [
     verbatim: false,
     attribution: MAHAMUNI,
     source: { title: 'Mahagathe Wisdom archive', detail: '[Talk title, date] · Reviewed [date] by the content authority' },
-    date: '2026-11-03',
+    date: '2026-11-04',
   },
   { id: 'vk-005', text: '[A word on inner life, as approved]', meaning: '[Meaning, as approved]', theme: 'inner-life', verbatim: false, attribution: MAHAMUNI, source: { title: 'Mahagathe Wisdom archive', detail: '[Talk title, date] · Reviewed [date] by the content authority' }, date: '2026-10-31' },
   { id: 'vk-006', text: '[A word on work, as approved]', meaning: '[Meaning, as approved]', theme: 'work', verbatim: false, attribution: MAHAMUNI, source: { title: 'Mahagathe Wisdom archive', detail: '[Talk title, date] · Reviewed [date] by the content authority' }, date: '2026-10-30' },
@@ -136,7 +136,7 @@ export const episodes: Episode[] = ADI_TITLES.map((title, i) => ({
   readMinutes: 8,
   seasonTitle: 'Ādi Parva',
   totalInSeason: 10,
-  boriRange: i === 0 ? 'Ādi 1.1–15' : `Ādi [range]`,
+  boriRange: i === 0 ? 'Ādi 1.1–15' : i === 2 ? 'Ādi Parva 1.15–17' : `Ādi [range]`,
   paragraphs:
     i === 0
       ? [
@@ -144,11 +144,15 @@ export const episodes: Episode[] = ADI_TITLES.map((title, i) => ({
           'The sages welcomed him and gave him a seat. When he had rested, they asked where he had come from. He told them he had just heard a great telling — the story of the Bhāratas, first sung by Vyāsa.',
           '“Tell it to us,” they said, “just as you heard it.” And so the story begins with a listener asking, and a teller willing to give.',
         ]
-      : ['[Episode text, written by Mahagathe from the BORI critical edition, pending review.]'],
+      : i === 2 ? [
+          'The gods were weary, and the demons were strong. So Viṣṇu gave them a counsel that neither side expected: work together, and churn the ocean of milk for the nectar of immortality.',
+          'They took Mount Mandara for a churning rod and the serpent Vāsuki for a rope. The demons seized the head, the gods the tail, and the great ocean began to turn.',
+          '[Episode text continues, as approved]',
+        ] : ['[Episode text, written by Mahagathe from the BORI critical edition, pending review.]'],
   reflection:
     i === 0
       ? 'The sages listen before they speak. When did you last listen to someone fully?'
-      : '[Reflection prompt pending review.]',
+      : i === 2 ? 'Gods and demons could only win the nectar together. Where in your life does it take both sides?' : '[Reflection prompt pending review.]',
   questions:
     i === 0
       ? [
@@ -185,10 +189,11 @@ export const parampara: Parampara = {
     name: MAHAMUNI,
     title: 'Seventieth Mahādhibhū',
     lineage: '70th Mahādhibhū · Rudra Sampradāya',
-    bio: 'Most Venerable Mahamuni carries a living Shaiva lineage, handed from teacher to student for seventy generations. Every teaching here comes from it.',
+    bio: '[A short introduction to Mahamuni, as approved.] Every teaching in this app comes from this lineage, handed from teacher to student for seventy generations.',
   },
   lineage: [
     { label: 'Founding ācārya', name: '[Name, as approved]' },
+    { label: '68th Mahādhibhū', name: '[Name, as approved]' },
     { label: '69th Mahādhibhū', name: '[Name, as approved]' },
     { label: '70th Mahādhibhū · present', name: MAHAMUNI, present: true },
   ],
@@ -230,8 +235,24 @@ export const yakshaQuestions: Omit<YakshaQuestion, 'dayKey'>[] = [{
   meaning: 'Nothing outruns a thought. Today, notice where yours runs before you follow it. [draft, to approve]', approved: false,
 }];
 export const series: Series[] = [
-  { id: 'mahabharata', titleDev: 'महाभारत', title: 'The Mahabharata', color: '#9C3D22', motif: 'wheel', description: '[Series description, as approved]', status: 'reading', parts: seasons.map(s => ({ number: s.number, title: s.title, seasonId: s.id, episodeIds: episodes.filter(e => e.seasonId === s.id).map(e => e.id), locked: s.status !== 'published' })) },
-  { id: 'ramayana', titleDev: 'रामायण', title: 'The Rāmāyaṇa', color: '#4C6639', motif: 'bow', description: '[Series description, as approved]', status: 'upcoming', parts: ['Bāla','Ayodhyā','Āraṇya','Kiṣkindhā','Sundara','Yuddha','Uttara'].map((name, i) => ({ number: i + 1, title: `${name} Kāṇḍa`, when: '[Date, as announced]', locked: true })) },
+  { id: 'mahabharata', titleDev: 'महाभारत', title: 'The Mahabharata', color: '#9C3D22', motif: 'wheel', description: '[Series description, as approved]', status: 'reading', parts: seasons.map(s => ({ number: s.number, title: s.title, seasonId: s.id, when: s.number === 2 ? 'December' : s.number > 2 ? '2027' : undefined, episodeIds: episodes.filter(e => e.seasonId === s.id).map(e => e.id), locked: s.status !== 'published' })) },
+  { id: 'ramayana', titleDev: 'रामायण', title: 'The Rāmāyaṇa', color: '#4C6639', motif: 'bow', description: 'Vālmīki’s Rāmāyaṇa in seven kāṇḍas, retold one short episode at a time. [Description, as approved]', status: 'upcoming', parts: ['Bāla','Ayodhyā','Araṇya','Kiṣkindhā','Sundara','Yuddha','Uttara'].map((name, i) => ({ number: i + 1, title: `${name} Kāṇḍa`, when: ['January', 'February', 'Later in 2027'][i], locked: true })) },
   { id: 'pashupata', titleDev: 'पाशुपत', title: 'Pāśupata Śaivism', color: '#5E5A57', motif: 'ash', description: '[Series, as approved]', status: 'upcoming', parts: [{ number: 1, title: '[Part title, as approved]', locked: true }] },
   { id: 'iks', titleDev: 'भारतीय ज्ञान', title: 'Indian knowledge systems', color: '#9A6B12', motif: 'yantra', description: '[What the series covers, as approved.] The first session is free.', status: 'free-first', parts: Array.from({ length: 5 }, (_, i) => ({ number: i + 1, title: `[Session ${i + 1} title]`, free: i === 0, locked: i > 0 })) },
 ];
+
+// Client-only additions; kept separate from the legacy Convex links seed shape.
+export { libraryLinks } from './libraryLinks';
+
+/** Retrieval tags for the approved mock search example; never generated prose. */
+export const wisdomSearchKeywords: Record<string, string[]> = {
+  'adi-e7': ['steadiness', 'duty', 'work'],
+};
+
+/** Mock preview copy is separate from published Vākyams and the Convex seed. */
+export const vakyamRelatedPreviews: Record<string, NonNullable<Vakyam['related']>> = {
+  'vk-001': [
+    { text: '[An earlier word on inner life, as approved]', date: '2026-11-03' },
+    { text: '[Another earlier word, as approved]', date: '2026-10-28' },
+  ],
+};

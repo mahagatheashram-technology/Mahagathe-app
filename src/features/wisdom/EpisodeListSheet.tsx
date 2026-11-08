@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Sheet, SheetHeader } from './Sheet';
 import { AppText, Icon } from '@/components/ui';
 import { useSeasonEpisodes } from '@/data';
-import { colors, fonts, radii } from '@/theme/tokens';
+import { v14Colors as colors, fonts, radii } from '@/theme/tokens';
 
 /** "All episodes": the season's episode list. Picking one replaces the current reader. */
 export function EpisodeListSheet({
@@ -25,8 +25,16 @@ export function EpisodeListSheet({
   return (
     <Sheet visible={visible} onClose={onClose} label={`${seasonTitle}, all episodes`}>
       <SheetHeader eyebrow={seasonTitle} title="All episodes" onClose={onClose} />
-      <ScrollView style={{ flexGrow: 0 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
-        {episodes === undefined ? <AppText>Loading episodes…</AppText> : episodes.length === 0 ? <AppText>No episodes available yet.</AppText> : null}
+      <ScrollView
+        style={{ flexGrow: 0 }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ gap: 10 }}
+      >
+        {episodes === undefined ? (
+          <AppText>Loading episodes…</AppText>
+        ) : episodes.length === 0 ? (
+          <AppText>No episodes available yet.</AppText>
+        ) : null}
         {episodes?.map((e) => {
           const here = e.id === currentId;
           return (
@@ -40,7 +48,8 @@ export function EpisodeListSheet({
                 styles.row,
                 here && { borderColor: colors.actionRed, borderWidth: 1.5 },
                 pressed && { opacity: 0.85 },
-              ]}>
+              ]}
+            >
               <View style={styles.num}>
                 <AppText style={styles.numLabel}>{e.number}</AppText>
               </View>

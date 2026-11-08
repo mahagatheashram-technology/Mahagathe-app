@@ -63,6 +63,8 @@ export const THEME_LABELS: Record<VakyamTheme, string> = {
 
 export type Vakyam = {
   id: Id;
+  /** Related previews may await publication; omit id until the detail is approved. */
+  related?: { id?: Id; text: string; date: string }[];
   text: string;
   meaning: string; // "In simple words"
   theme: VakyamTheme;
@@ -195,5 +197,7 @@ export type Series = { id: Id; titleDev: string; title: string; color: string; m
 export type Program = Pathway & { titleDev: string; tagline: string; featured: boolean; ageRange?: string };
 export type VakyamMonth = { month: string; label: string; vakyams: Vakyam[] };
 
-/** Public app links; saptagita opens the sibling app's registered scheme. */
-export type ExternalLinks = { youtube: string; podcast: string; whatsapp: string; saptagita: string };
+/** Public app links; saptagita opens the sibling app's registered scheme, saptagitaWeb is the store fallback. */
+export type ExternalLinks = { youtube: string; podcast: string; whatsapp: string; saptagita: string; saptagitaWeb: string };
+/** Device-local interest flag; does not schedule push delivery. */
+export type SeriesNotification = { enabled: boolean | undefined; setEnabled: (enabled: boolean) => Promise<void> };

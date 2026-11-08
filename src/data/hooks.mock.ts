@@ -45,6 +45,7 @@ import { canUsePersonalFeatures } from './session';
 import { phoneWithCountryCode } from './phone';
 import { istDay, useClock } from './clock';
 import { Linking } from 'react-native';
+export { useLocalSeriesNotification as useSeriesNotification } from './seriesNotification';
 
 async function personalDelay(ms = 350) {
   const generation = getMockSessionGeneration();
@@ -197,7 +198,10 @@ export function useTodayVakyam(): Vakyam | undefined {
 }
 
 export function useVakyam(id: string | undefined): Vakyam | null | undefined {
-  return useMemo(() => fx.vakyams.find((v) => v.id === id) ?? null, [id]);
+  return useMemo(() => {
+    const vakyam = fx.vakyams.find(v => v.id === id);
+    return vakyam ? { ...vakyam, related: fx.vakyamRelatedPreviews[vakyam.id] ?? vakyam.related } : null;
+  }, [id]);
 }
 
 export function useVakyamThemes() {
@@ -242,13 +246,14 @@ export function useWisdomSearch(query: string): WisdomSearchResult | undefined {
     const q = query.trim();
     if (!q) return { vakyams: [], episodes: [] };
     return {
-      vakyams: fx.vakyams.filter((v) =>
+      vakyams: fx.vakyams.filter((v) => !v.text.startsWith('[') &&
         semanticScore(`${v.text} ${v.meaning} ${THEME_LABELS[v.theme]} vakyam mahamuni`, q) > 0,
       ).sort((a, b) => semanticScore(`${b.text} ${b.meaning}`, q) - semanticScore(`${a.text} ${a.meaning}`, q)),
       episodes: fx.episodes
-        .filter((e) =>
-          semanticScore(`${e.title} ${e.seasonTitle} ${e.boriRange} ${e.paragraphs.join(' ')} episode mahabharata`, q) > 0,
-        )
+        .map(e => ({ episode: e, score: semanticScore(`${e.title} ${e.seasonTitle} ${e.boriRange} ${e.paragraphs.join(' ')} ${(fx.wisdomSearchKeywords[e.id] ?? []).join(' ')} episode mahabharata`, q) }))
+        .filter((entry, _i, all) => entry.score > 0 && (q.split(/\s+/).length < 4 || entry.score === Math.max(...all.map(x => x.score))))
+        .sort((a, b) => b.score - a.score)
+        .map(({ episode }) => episode)
         .map(({ id, seasonId, number, title, readMinutes, seasonTitle, boriRange }) => ({
           id,
           seasonId,
@@ -530,7 +535,7 @@ export const externalLinks = { ...fx.links, saptagita: 'saptagita://' };
 export function usePracticeAudio() {
   return useCallback(async (id: string) => { requirePersonalAccess(); const p = fx.practices.find(p => p.id === id); if (p?.access === 'enrolled' && !getState().practiceUnlocks.dhyanbhaari) throw new Error('Attend the Dhyanbhaari class first.'); return p?.audioUrl ?? null; }, []);
 }
-export function useExternalLinks(): import('./types').ExternalLinks { return externalLinks; }
+export function useExternalLinks(): import('./types').ExternalLinks { return { ...externalLinks, ...fx.libraryLinks }; }
 export function useOpenWhatsApp() { return useCallback(async () => { await Linking.openURL(fx.links.whatsapp); }, []); }
 
 export function useCurrentTime() { return useClock(); }

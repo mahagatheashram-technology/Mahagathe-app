@@ -1,116 +1,123 @@
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { AppText, DetailHeader, LineOrnament, ListRow, Screen } from '@/components/ui';
-import { Emblem } from '@/components/ui/Emblem';
+import { useRouter } from 'expo-router';
+import { View } from 'react-native';
+import { BackPill, BottomSheet, PortraitHeader, ReviewTag, TextLink } from '@/components/ui';
+import { useScreenInsets } from '@/components/ui/useStatusBarInset';
 import { useParampara } from '@/data';
-import { colors, fonts } from '@/theme/tokens';
-import { BottomSheet } from './BottomSheet';
+import { fonts, v14Colors as c } from '@/theme/tokens';
+import { LibraryHeading, LibraryPage, LibraryText } from '@/features/wisdom/Library';
 
 export function ParamparaScreen() {
   const content = useParampara();
-  const [sheet, setSheet] = useState<'lineage' | 'milestones' | null>(null);
+  const router = useRouter();
+  const insets = useScreenInsets();
+  const [all, setAll] = useState(false);
+  const lineage = content?.lineage.slice().reverse();
   return (
-    <Screen contentStyle={{ paddingTop: 4, paddingHorizontal: 24, paddingBottom: 36 }}>
-      <DetailHeader backLabel="Wisdom" backHref="/(tabs)/wisdom" />
-      {!content ? (
-        <AppText style={{ marginTop: 22 }}>
-          {content === undefined ? 'Loading Paramparā…' : 'Paramparā will appear here once approved.'}
-        </AppText>
-      ) : (
+    <LibraryPage contentStyle={{ paddingBottom: 36 }}>
+      <PortraitHeader
+        titleSlot={
+          <>
+            <LibraryText style={{ color: c.photoText, fontSize: 15, lineHeight: 23.25 }}>
+              Seventieth Mahādhibhū of the Rudra Sampradāya
+            </LibraryText>
+            <LibraryHeading size={34} style={{ marginTop: 2, color: c.white, lineHeight: 37.4 }}>
+              Most Venerable Mahamuni
+            </LibraryHeading>
+          </>
+        }
+      >
+        <View style={{ position: 'absolute', top: insets.top + 2, left: 16 }}>
+          <BackPill dark destination="Wisdom" onPress={() => router.dismissTo('/(tabs)/wisdom')} />
+        </View>
+      </PortraitHeader>
+      {content ? (
         <>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 22 }}>
-            <View style={{ width: 92, height: 92, alignItems: 'center', justifyContent: 'center' }}>
-              <View style={StyleSheet.absoluteFill}>
-                <LineOrnament size={92} opacity={0.6} />
-              </View>
-              <View
-                style={{
-                  width: 58,
-                  height: 58,
-                  borderRadius: 999,
-                  backgroundColor: colors.white,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  shadowColor: colors.shadow,
-                  shadowOpacity: 0.08,
-                  shadowRadius: 12,
-                  shadowOffset: { width: 0, height: 4 },
-                }}>
-                <Emblem width={32} />
-              </View>
-            </View>
-            <View style={{ flex: 1, gap: 4 }}>
-              <AppText
-                style={{
-                  fontFamily: fonts.sansSemibold,
-                  fontSize: 12,
-                  lineHeight: 18,
-                  letterSpacing: 1.44,
-                  textTransform: 'uppercase',
-                  color: colors.label,
-                }}>
-                70th head of the lineage
-              </AppText>
-              <AppText
-                accessibilityRole="header"
-                style={{ fontFamily: fonts.serifSemibold, fontSize: 23, lineHeight: 28.75 }}>
-                Most Venerable Mahamuni
-              </AppText>
-            </View>
-          </View>
-          <AppText style={{ marginTop: 18, fontSize: 16, lineHeight: 25.6, color: colors.textSecondary }}>
+          <LibraryText
+            style={{ paddingTop: 22, paddingHorizontal: 24, fontSize: 17, lineHeight: 27.2 }}
+          >
             {content.guru.bio}
-          </AppText>
-          <View style={{ marginTop: 18 }}>
-            <ListRow
-              icon="lamp"
-              title="The full lineage"
-              subtitle="All seventy heads, in order"
-              onPress={() => setSheet('lineage')}
-            />
-            <ListRow
-              icon="drop"
-              title="Dīkṣā milestones"
-              subtitle="Initiations given through the years"
-              last
-              onPress={() => setSheet('milestones')}
-            />
-          </View>
-          <View style={{ marginTop: 18, padding: 22, borderRadius: 22, backgroundColor: colors.iconSand }}>
-            <AppText
-              style={{ fontFamily: fonts.serifItalic, fontSize: 19, lineHeight: 28.5, textAlign: 'center' }}>
-              “[A short teaching on the lineage, as approved.]”
-            </AppText>
-          </View>
-          <BottomSheet
-            visible={sheet !== null}
-            onClose={() => setSheet(null)}
-            title={sheet === 'lineage' ? 'The full lineage' : 'Dīkṣā milestones'}>
-            <View style={{ gap: 18 }}>
-              {sheet === 'lineage' ? (
-                <>
-                  {content.lineage.map((n) => (
-                    <View key={n.label} style={{ gap: 4 }}>
-                      <AppText color={colors.textSecondary}>{n.label}</AppText>
-                      <AppText variant="label">{n.name}</AppText>
-                    </View>
-                  ))}
-                  <AppText color={colors.textSecondary}>
-                    The full list will appear here once approved by the content authority.
-                  </AppText>
-                </>
-              ) : (
-                content.milestones.map((m, i) => (
-                  <View key={i} style={{ flexDirection: 'row', gap: 14 }}>
-                    <AppText variant="label">{m.year}</AppText>
-                    <AppText style={{ flex: 1 }}>{m.text}</AppText>
-                  </View>
-                ))
-              )}
+          </LibraryText>
+          <View style={{ paddingTop: 26, paddingHorizontal: 24 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'baseline',
+                justifyContent: 'space-between',
+              }}
+            >
+              <LibraryHeading>The Paramparā</LibraryHeading>
+              <TextLink label="All seventy" onPress={() => setAll(true)} />
             </View>
-          </BottomSheet>
+            <View style={{ marginTop: 6 }}>
+              {lineage?.map((person, i) => (
+                <View
+                  key={person.label}
+                  style={{
+                    flexDirection: 'row',
+                    gap: 14,
+                    alignItems: 'center',
+                    paddingVertical: 13,
+                    borderTopWidth: i ? 1 : 0,
+                    borderColor: c.line,
+                  }}
+                >
+                  <LibraryText
+                    style={{
+                      width: 34,
+                      fontFamily: fonts.displaySemibold,
+                      fontSize: 19,
+                      color: c.laterite,
+                    }}
+                  >
+                    {person.label.match(/^\d+/)?.[0] ?? '1'}
+                  </LibraryText>
+                  <View style={{ flex: 1 }}>
+                    <LibraryText
+                      style={{
+                        fontFamily: person.present ? fonts.displaySemibold : fonts.display,
+                        fontSize: 18,
+                        lineHeight: 27.9,
+                      }}
+                    >
+                      {person.present
+                        ? 'Mahamuni'
+                        : person.label.startsWith('Founding')
+                          ? '[The founding ācārya]'
+                          : person.name}
+                    </LibraryText>
+                    <LibraryText style={{ fontSize: 14, lineHeight: 21.7, color: c.text2 }}>
+                      {person.present ? 'The present Mahādhibhū' : '[Years]'}
+                    </LibraryText>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
         </>
+      ) : (
+        <LibraryText style={{ margin: 24 }}>
+          {content === undefined
+            ? 'Loading Paramparā…'
+            : 'The Paramparā will appear here once approved.'}
+        </LibraryText>
       )}
-    </Screen>
+      <BottomSheet
+        visible={all}
+        onClose={() => setAll(false)}
+        title="All seventy heads of the Paramparā"
+      >
+        <ReviewTag label="Paramparā names awaiting approval" />
+        <LibraryText>
+          The full list will appear here once approved by the content authority.
+        </LibraryText>
+        {lineage?.map((p) => (
+          <View key={p.label}>
+            <LibraryHeading size={18}>{p.label}</LibraryHeading>
+            <LibraryText>{p.name}</LibraryText>
+          </View>
+        ))}
+      </BottomSheet>
+    </LibraryPage>
   );
 }

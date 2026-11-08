@@ -9,7 +9,9 @@ import { api } from '../../convex/_generated/api';
 import { useLiveSession } from '../providers/LiveSessionProvider';
 import { useClock } from './clock';
 import { phoneWithCountryCode } from './phone';
-import type { Profile, VakyamTheme, VolunteerSignup } from './types';
+import { libraryLinks } from './libraryLinks';
+import type { Profile, Vakyam, VakyamTheme, VolunteerSignup } from './types';
+export { useLocalSeriesNotification as useSeriesNotification } from './seriesNotification';
 
 export const useSession = useLiveSession;
 export function useProfile() { return useLiveSession().profile; }
@@ -48,7 +50,7 @@ export function useAccountActions() {
   };
 }
 export function useTodayVakyam() { return useQuery(api.wisdom.today, {}); }
-export function useVakyam(id: string | undefined) { const result = useQuery(api.wisdom.byId, id ? { id } : 'skip'); return id ? result : null; }
+export function useVakyam(id: string | undefined): Vakyam | null | undefined { const result = useQuery(api.wisdom.byId, id ? { id } : 'skip'); return id ? result : null; }
 export function useVakyamThemes() { return useQuery(api.wisdom.themes, {}); }
 export function useVakyamsByTheme(theme: VakyamTheme) { return useQuery(api.wisdom.byTheme, { theme }); }
 export function useSavedVakyam(id: string) {
@@ -145,8 +147,7 @@ export function useCreateDonation() {
 }
 export function useExternalLinks(): import('./types').ExternalLinks | null | undefined {
   const links = useQuery(api.wisdom.externalLinks, {});
-  // The sibling app declares this scheme; published links may add a chapter deep link later.
-  return useMemo(() => links ? { ...links, saptagita: 'saptagita://' } : links, [links]);
+  return useMemo(() => links ? { ...links, ...libraryLinks } : links, [links]);
 }
 export function useOpenWhatsApp() {
   const links = useExternalLinks();

@@ -1,0 +1,1 @@
+No forbidden names, hard-coded hex values, or fontWeight in assigned screens.
