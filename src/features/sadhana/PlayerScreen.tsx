@@ -132,7 +132,7 @@ function Session({ title, durationSec, practiceId, mandala, noMandala, mockDurat
       <SittingLamp />
       {mandala && <AppText style={styles.sitting}>Sitting {sitting} of 40</AppText>}
       <AppText accessibilityRole="header" style={styles.title}>{title}</AppText>
-      <AppText style={styles.instruction}>{player.engine === 'timer' ? `Sit upright and let the eyes close.${mockDuration ? ' [Approved guide and audio to come.]' : ''} Silent sitting timer; the recording is not added yet.` : 'Sit upright, let the eyes close, and follow Mahamuni’s voice.'}</AppText>
+      <AppText style={styles.instruction}>{player.engine === 'audio' ? 'Sit upright, let the eyes close, and follow Mahamuni’s voice.' : !isLiveBackend ? `Sit upright and let the eyes close.${mockDuration ? ' [Approved guide and audio to come.]' : ''} Silent sitting timer; the recording is not added yet.` : 'Sit upright and let the eyes close.'}</AppText>
     </View>
     {player.finished && <View style={styles.completion} accessibilityLiveRegion="polite">
       <AppText style={styles.completionTitle}>Sitting complete</AppText>
