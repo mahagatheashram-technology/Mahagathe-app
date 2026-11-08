@@ -13,8 +13,8 @@ export function groupVakyams(items: Vakyam[]): VakyamMonth[] {
   return [...groups.values()];
 }
 /** Reject partial/unknown answers before saving; upstream scoring itself is unmodified. */
-export function gunaResultFromAnswers(answers: Record<string, number>, takenAt: number): GunaResult {
+export function gunaResultFromAnswers(answers: Record<string, number>, takenAt: number, completionTimeSeconds?: number): GunaResult {
   if (Object.keys(answers).length !== coreQuestions.length || coreQuestions.some(q => !Number.isInteger(answers[q.id]) || answers[q.id] < 1 || answers[q.id] > 5)) throw new Error(`Answer all ${coreQuestions.length} questions from 1 to 5.`);
-  const result = computeResult(answers);
+  const result = computeResult(answers, completionTimeSeconds);
   return { scores: result.scores0to100, percents: result.profilePercent, dominant: result.dominantGuna, secondary: result.secondaryGuna, profileType: result.profileType, answers, takenAt };
 }

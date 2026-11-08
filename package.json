@@ -59,7 +59,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --test convex/tests/*.test.ts",
+    "test": "node --import tsx --test convex/tests/*.test.ts src/features/gunometer/*.test.ts",
     "tunnel": "expo start --tunnel"
   },
   "private": true,

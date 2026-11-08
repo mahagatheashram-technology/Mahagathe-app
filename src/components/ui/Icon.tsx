@@ -8,6 +8,7 @@ import { colors, fonts } from '@/theme/tokens';
  */
 export type IconName =
   | 'lampi' | 'open-book' | 'leafi' | 'people' | 'save' | 'pin' | 'close' | 'waves' | 'down'
+  | 'retake'
   | 'lamp'
   | 'offering-hands'
   | 'globe'
@@ -74,6 +75,7 @@ export function Icon({ name, size = 24, color = colors.ink, strokeWidth = 2 }: P
 
 function render(name: IconName, p: Record<string, unknown>, color: string) {
   switch (name) {
+    case 'retake': return <><Path {...p} d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3" /><Path {...p} d="M18 3v4h-4M6 21v-4h4" /></>;
     case 'lampi':
     case 'lamp':
       return <><Path {...p} d="M12 3.5c1.4 1.8 2.3 3 2.3 4.4a2.3 2.3 0 0 1-4.6 0c0-1.4.9-2.6 2.3-4.4z" /><Path {...p} d="M4.5 13h15c0 3.2-3.4 5.5-7.5 5.5S4.5 16.2 4.5 13z" /></>;

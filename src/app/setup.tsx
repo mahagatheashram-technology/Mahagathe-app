@@ -1,7 +1,7 @@
 import { Redirect, useRouter } from 'expo-router';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { isMinor, useProfile, useRequestGuardianConsent, useSession, useUpdateProfile, type AgeBand } from '@/data';
+import { isMinor, useGunaPrompt, useProfile, useRequestGuardianConsent, useSession, useUpdateProfile, type AgeBand } from '@/data';
 import { GuardianAsk, GuardianWaiting } from '@/features/onboarding/GuardianConsent';
 import { SetupForm } from '@/features/onboarding/SetupForm';
 
@@ -9,8 +9,15 @@ type Step = 'form' | 'guardianAsk' | 'guardianWaiting';
 
 export default function SetupScreen() {
   const router = useRouter();
-  const { status, continueAsGuest } = useSession();
+  const { status, canUsePersonalFeatures, continueAsGuest } = useSession();
   const profile = useProfile();
+  const gunaPrompt = useGunaPrompt();
+  const routed = useRef(false);
+  useEffect(() => {
+    if (routed.current || !canUsePersonalFeatures || !profile?.displayName.trim() || !gunaPrompt) return;
+    routed.current = true;
+    router.replace(gunaPrompt.state === 'unseen' ? '/gunometer/intro' : '/(tabs)');
+  }, [canUsePersonalFeatures, profile?.displayName, gunaPrompt, router]);
   const updateProfile = useUpdateProfile();
   const requestConsent = useRequestGuardianConsent();
 
@@ -90,7 +97,7 @@ export default function SetupScreen() {
         setError(null);
         try {
           await updateProfile({ displayName: name, ageBand: picked });
-          router.replace('/(tabs)');
+          // The effect waits for setup and the account's persisted prompt state.
         } catch {
           setError('We could not save your profile. Please try again.');
         } finally {

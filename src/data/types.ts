@@ -194,3 +194,6 @@ export type SeriesPart = { number: number; title: string; when?: string; locked?
 export type Series = { id: Id; titleDev: string; title: string; color: string; motif: 'wheel' | 'bow' | 'ash' | 'yantra'; description: string; status: 'reading' | 'upcoming' | 'free-first'; parts: SeriesPart[] };
 export type Program = Pathway & { titleDev: string; tagline: string; featured: boolean; ageRange?: string };
 export type VakyamMonth = { month: string; label: string; vakyams: Vakyam[] };
+
+/** Public app links; saptagita opens the sibling app's registered scheme. */
+export type ExternalLinks = { youtube: string; podcast: string; whatsapp: string; saptagita: string };
