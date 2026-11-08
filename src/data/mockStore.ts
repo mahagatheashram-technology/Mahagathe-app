@@ -59,7 +59,7 @@ let state: MockState = {
   groupTodayCount: fx.groupCount.todayCount,
   groupCycleSittings: fx.groupCount.cycleSittings,
   savedVakyamIds: [],
-  readingPositions: { 'adi-e3': 0.42 },
+  readingPositions: { 'adi-e1': 1, 'adi-e2': 1, 'adi-e3': 0.42 },
   lastEpisodeId: 'adi-e3',
   donations: [],
 };

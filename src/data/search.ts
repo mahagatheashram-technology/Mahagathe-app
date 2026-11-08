@@ -33,6 +33,7 @@ export function semanticScore(text: string, query: string): number {
   if (!query.trim()) return 0;
   const folded = foldForSearch(text);
   if (matchesFolded(folded, query)) return 100;
-  const terms = foldForSearch(query).split(' ').filter(t => t.length > 2);
+  const stopWords = new Set(['the', 'and', 'when', 'how', 'what', 'with', 'for', 'from', 'that', 'this', 'can', 'does', 'are', 'you', 'your', 'is', 'to', 'of'].map(foldForSearch));
+  const terms = foldForSearch(query).split(' ').filter(t => t.length > 2 && !stopWords.has(t));
   return terms.reduce((score, t) => score + (matchesFolded(folded, t) ? 4 : synonyms.some(group => group.some(s => foldForSearch(s) === t) && group.some(s => matchesFolded(folded, s))) ? 1 : 0), 0);
 }

@@ -64,3 +64,4 @@ export const useSeriesAccess = live?.useSeriesAccess ?? mock.useSeriesAccess;
 export const usePracticeUnlocks = live?.usePracticeUnlocks ?? mock.usePracticeUnlocks;
 export const useSetMockPracticeUnlock = live?.useSetMockPracticeUnlock ?? mock.useSetMockPracticeUnlock;
 export const useVakyamCatalogue = live?.useVakyamCatalogue ?? mock.useVakyamCatalogue;
+export const useSeriesNotification = live?.useSeriesNotification ?? mock.useSeriesNotification;

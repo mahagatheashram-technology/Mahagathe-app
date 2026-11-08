@@ -1,0 +1,15 @@
+Theme filter: Work selected; only the two work Vākyams appear.
+Live search: sample question returns three Vākyams and the Bhīṣma episode.
+Search clear, empty-query prompt, and no-results state work.
+Upcoming-series interest survives reload and can be cancelled.
+IKS session 1 opens its recording placeholder; locked session 2 opens the access sheet, without a price.
+Guest reporting is gated by Welcome.
+Guest saving is gated by Welcome.
+Guest practice is gated by Welcome.
+Reader text-size control changes the reading font to 21pt.
+Unapproved episode questions show a review-marked placeholder.
+Lineage opens the full-list approval placeholder.
+Signed-in save toggles on and off after mock OTP and adult setup.
+Signed-in content report submits and confirms.
+Signed-in reader restores the saved scroll position after leaving and reopening.
+Next episode marks the current episode read and updates Mahabharata progress to 3 of 10.

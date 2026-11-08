@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { Sheet, SheetHeader } from './Sheet';
-import { AppText, Button, Icon } from '@/components/ui';
+import { AppText, Button, Icon, ReviewTag } from '@/components/ui';
 import type { Episode } from '@/data';
-import { colors, fonts, radii } from '@/theme/tokens';
+import { v14Colors as colors, fonts, radii } from '@/theme/tokens';
 
 type Question = Episode['questions'][number];
 
@@ -49,16 +49,26 @@ export function QuestionsSheet({
         onClose={onClose}
       />
       <ScrollView style={{ flexGrow: 0 }} showsVerticalScrollIndicator={false} bounces={false}>
-        {finished || !q ? (
+        {!q && !finished ? (
+          <View style={{ gap: 12 }}>
+            <AppText>Questions will appear here once approved by the content authority.</AppText>
+            <ReviewTag label="Episode questions awaiting approval" />
+          </View>
+        ) : finished || !q ? (
           <View style={{ gap: 16, paddingBottom: 8 }}>
             <View style={styles.doneIcon}>
               <Icon name="check" size={26} color={colors.actionRed} strokeWidth={2.2} />
             </View>
             <AppText variant="bodyLarge" style={{ lineHeight: 26 }}>
-              You went through all {questions.length} questions. There are no scores. Come back to them whenever you
-              like, or read the episode again.
+              You went through all {questions.length} questions. There are no scores. Come back to
+              them whenever you like, or read the episode again.
             </AppText>
-            <Button label="Back to the episode" size="md" style={{ height: 52 }} onPress={onClose} />
+            <Button
+              label="Back to the episode"
+              size="md"
+              style={{ height: 52 }}
+              onPress={onClose}
+            />
             <Button
               label="Go through them again"
               variant="quiet"
@@ -91,12 +101,15 @@ export function QuestionsSheet({
                       isPicked && { borderColor: colors.actionRed, borderWidth: 1.5 },
                       isAnswer && { backgroundColor: colors.sand },
                       pressed && { opacity: 0.85 },
-                    ]}>
+                    ]}
+                  >
                     <View style={{ flex: 1, gap: 1 }}>
                       <AppText style={styles.optionLabel}>{opt}</AppText>
                       {isAnswer ? <AppText style={styles.fromText}>From the text</AppText> : null}
                     </View>
-                    {isAnswer ? <Icon name="check" size={20} color={colors.actionRed} strokeWidth={2.2} /> : null}
+                    {isAnswer ? (
+                      <Icon name="check" size={20} color={colors.actionRed} strokeWidth={2.2} />
+                    ) : null}
                   </Pressable>
                 );
               })}
@@ -104,7 +117,10 @@ export function QuestionsSheet({
 
             {revealed ? (
               <View style={styles.feedback} accessibilityLiveRegion="polite">
-                <AppText variant="overline" color={colors.actionRed}>
+                <AppText
+                  style={{ fontFamily: fonts.uiSemibold, fontSize: 15 }}
+                  color={colors.laterite}
+                >
                   {hitAnswer ? 'Yes, that is it' : 'Not quite, and that is fine'}
                 </AppText>
                 <AppText style={styles.explanation}>{q.explanation}</AppText>
@@ -146,7 +162,12 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   optionLabel: { fontFamily: fonts.sansMedium, fontSize: 15, lineHeight: 22, color: colors.ink },
-  fromText: { fontFamily: fonts.sansSemibold, fontSize: 11, lineHeight: 16, color: colors.actionRed },
+  fromText: {
+    fontFamily: fonts.sansSemibold,
+    fontSize: 11,
+    lineHeight: 16,
+    color: colors.actionRed,
+  },
   feedback: { gap: 6, padding: 16, borderRadius: radii.lg, backgroundColor: colors.sand },
   explanation: { fontFamily: fonts.sansMedium, fontSize: 15, lineHeight: 24, color: colors.ink },
   doneIcon: {

@@ -1,0 +1,82 @@
+{
+  "metrics": [
+    {
+      "name": "Wisdom",
+      "width": 390,
+      "initialHeight": 844,
+      "fullHeight": 1904,
+      "scale": 2
+    },
+    {
+      "name": "Words",
+      "width": 390,
+      "initialHeight": 844,
+      "fullHeight": 1058,
+      "scale": 2
+    },
+    {
+      "name": "Search",
+      "width": 390,
+      "initialHeight": 844,
+      "fullHeight": 940,
+      "scale": 2
+    },
+    {
+      "name": "Series",
+      "width": 390,
+      "initialHeight": 844,
+      "fullHeight": 953,
+      "scale": 2
+    },
+    {
+      "name": "Pashupata",
+      "width": 390,
+      "initialHeight": 844,
+      "fullHeight": 844,
+      "scale": 2
+    },
+    {
+      "name": "Mahabharata",
+      "width": 390,
+      "initialHeight": 844,
+      "fullHeight": 1498,
+      "scale": 2
+    },
+    {
+      "name": "IKS",
+      "width": 390,
+      "initialHeight": 844,
+      "fullHeight": 1055,
+      "scale": 2
+    },
+    {
+      "name": "Episode",
+      "width": 390,
+      "initialHeight": 844,
+      "fullHeight": 1023,
+      "scale": 2
+    },
+    {
+      "name": "Vakyam",
+      "width": 390,
+      "initialHeight": 844,
+      "fullHeight": 940,
+      "scale": 2
+    },
+    {
+      "name": "Lineage",
+      "width": 390,
+      "initialHeight": 844,
+      "fullHeight": 1018,
+      "scale": 2
+    },
+    {
+      "name": "Theme-work",
+      "width": 390,
+      "initialHeight": 844,
+      "fullHeight": 844,
+      "scale": 2
+    }
+  ],
+  "errors": []
+}
