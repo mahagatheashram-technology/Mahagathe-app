@@ -1,65 +1,71 @@
+import { useRouter } from 'expo-router';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 
-import { AppText, Card, DetailHeader, EventList, EventRow, Icon, Screen, eventDateParts } from '@/components/ui';
+import { AppText, BackPill, Screen } from '@/components/ui';
 import { useEvents, type EventItem } from '@/data';
+import { istDate } from '@/features/sangha/format';
 import { useEventToggle } from '@/features/sangha/useEventToggle';
+import { Meta, SectionHeading, VillageEventRow, village } from '@/features/sangha/village';
 import { colors, fonts } from '@/theme/tokens';
 
-/** Events calendar (G-03): upcoming events grouped by month, in the calm Sangha row style. */
+/** The full calendar (G-03): upcoming gatherings grouped by month, in the village's calm list style. */
 export default function EventsScreen() {
+  const router = useRouter();
   const events = useEvents();
   const { toggle, busyId } = useEventToggle();
 
   const months = useMemo(() => {
     const groups: { key: string; label: string; items: EventItem[] }[] = [];
     for (const e of events ?? []) {
-      const p = eventDateParts(e.startsAt);
+      const p = istDate(e.startsAt);
       let g = groups.find((x) => x.key === p.monthKey);
-      if (!g) groups.push((g = { key: p.monthKey, label: `${p.monthName} ${p.year}`, items: [] }));
+      if (!g) groups.push((g = { key: p.monthKey, label: `${p.monthLong} ${p.year}`, items: [] }));
       g.items.push(e);
     }
     return groups;
   }, [events]);
 
   return (
-    <Screen contentStyle={{ paddingHorizontal: 20, paddingBottom: 32, gap: 22 }}>
-      <DetailHeader backLabel="Sangha" backHref="/(tabs)/sangha" />
-      <View style={{ gap: 6 }}>
-        <AppText accessibilityRole="header" style={{ fontFamily: fonts.serifSemibold, fontSize: 32, lineHeight: 41 }}>
-          Events
+    <Screen background={colors.limewash} contentStyle={{ paddingTop: 2, paddingBottom: 36 }}>
+      <View style={{ paddingHorizontal: 16 }}>
+        <BackPill destination="Sangha" onPress={() => router.dismissTo('/(tabs)/sangha')} />
+      </View>
+      <View style={{ paddingTop: 16, paddingHorizontal: 24 }}>
+        <AppText accessibilityRole="header" style={{ fontFamily: fonts.displaySemibold, fontSize: 33, lineHeight: 51, color: village.ink }}>
+          Calendar
         </AppText>
-        <AppText style={{ fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 22.4, color: colors.muted }}>
-          Gatherings of the Sangha. Register to keep your place. Times are in IST.
+        <AppText style={{ fontFamily: fonts.ui, fontSize: 15, lineHeight: 23.25, color: village.text2 }}>
+          Gatherings of the sangha. Register to keep your place. Times are in IST.
         </AppText>
       </View>
 
-      {events === undefined ? (
-        <AppText variant="meta">Loading events…</AppText>
-      ) : months.length === 0 ? (
-        <Card style={{ alignItems: 'center', gap: 10, padding: 28 }}>
-          <View style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: colors.tile, alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="calendar" size={22} color={colors.actionRed} />
+      <View style={{ paddingTop: 12, paddingHorizontal: 24 }}>
+        {events === undefined ? (
+          <Meta accessibilityLiveRegion="polite">Loading events…</Meta>
+        ) : months.length === 0 ? (
+          <View style={{ marginTop: 12, padding: 20, borderRadius: 16, backgroundColor: village.soft, gap: 2 }}>
+            <AppText style={{ fontFamily: fonts.displaySemibold, fontSize: 21, lineHeight: 32.55, color: village.ink }}>No upcoming events</AppText>
+            <Meta>New dates will appear here when they are announced.</Meta>
           </View>
-          <AppText style={{ fontFamily: fonts.serifSemibold, fontSize: 18, lineHeight: 24 }}>No upcoming events</AppText>
-          <AppText variant="meta" style={{ textAlign: 'center' }}>
-            New dates will appear here when they are announced.
-          </AppText>
-        </Card>
-      ) : (
-        months.map((m) => (
-          <View key={m.key} style={{ gap: 12 }}>
-            <AppText accessibilityRole="header" style={{ fontFamily: fonts.serifSemibold, fontSize: 22, lineHeight: 28 }}>
-              {m.label}
-            </AppText>
-            <EventList>
+        ) : (
+          months.map((m) => (
+            <View key={m.key} style={{ paddingTop: 22 }}>
+              <SectionHeading>{m.label}</SectionHeading>
               {m.items.map((e, i) => (
-                <EventRow key={e.id} event={e} showPlaces busy={busyId === e.id} last={i === m.items.length - 1} onToggle={() => toggle(e)} />
+                <VillageEventRow
+                  key={e.id}
+                  event={e}
+                  first={i === 0}
+                  showPlaces
+                  busy={busyId === e.id}
+                  onToggle={() => toggle(e)}
+                />
               ))}
-            </EventList>
-          </View>
-        ))
-      )}
+            </View>
+          ))
+        )}
+      </View>
     </Screen>
   );
 }

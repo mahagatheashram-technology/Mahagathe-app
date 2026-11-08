@@ -10,12 +10,14 @@ export const colors = {
   seriesMahabharata: '#9C3D22', seriesRamayana: '#4C6639', seriesPashupata: '#5E5A57', seriesIks: '#9A6B12',
   sattva: '#FFFDF6', sattvaEdge: '#C9AE78', rajas: '#B5341F', tamas: '#2A1E14',
   reviewText: '#7A5200', reviewBackground: '#FFF4D6', reviewDarkBackground: 'rgba(242,181,68,.10)',
-  v14TabInactive: '#75685E', wisdomTab: '#8A6A2E',
+  v14TabInactive: '#75685E', wisdomTab: '#8A6A2E', lateriteShadow: '#501A0A',
   leafRule: 'rgba(120,90,40,.07)', segmentOff: 'rgba(42,30,20,.18)',
   pillLight: 'rgba(42,30,20,.06)', pillDark: 'rgba(255,255,255,.1)',
   darkLine: 'rgba(255,255,255,.1)', photoStripe: 'rgba(255,255,255,.06)', photoText: '#F6DCCF',
   cord: 'rgba(255,236,200,.55)', knot: '#EBD9B4', motif: 'rgba(255,255,255,.85)', motifDot: '#E0463A',
   portraitScrimTop: 'rgba(0,0,0,.28)', portraitScrimBottom: 'rgba(20,10,4,.78)',
+  /** v14 Welcome/Home additions: lamp halo behind the emblem, band under a leaf, share-card backdrop. */
+  lampGlow: 'rgba(242,181,68,.18)', leafInset: 'rgba(255,253,246,.35)', shareBackdrop: '#2B2622',
 
   /** Brand colour (mahagathe.com). Logo moments and the Mandala ring only; too bright for text. */
   brandRed: '#F60000',
