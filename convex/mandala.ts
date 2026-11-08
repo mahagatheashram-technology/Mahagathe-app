@@ -3,7 +3,7 @@ import { v, ConvexError } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import type { QueryCtx } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
-import { getUser, requireConsentedUser, isEnrolled } from "./lib/auth";
+import { getUser, requireConsentedUser, hasPracticeUnlock } from "./lib/auth";
 import { needPublished, isPublished, sourceApproved } from "./lib/content";
 import {
   dayKey,
@@ -86,7 +86,7 @@ export const start = mutation({
     if (
       !canAccessPractice(
         practice.access,
-        await isEnrolled(ctx, user, practice.programId),
+        await hasPracticeUnlock(ctx, user, practice),
       )
     )
       throw new ConvexError("Enrollment is required.");
@@ -216,7 +216,7 @@ export const completeToday = mutation({
       !sourceApproved(await ctx.db.get(practice.sourceId)) ||
       !canAccessPractice(
         practice.access,
-        await isEnrolled(ctx, user, practice.programId),
+        await hasPracticeUnlock(ctx, user, practice),
       )
     ) {
       throw new ConvexError("Practice access is required.");

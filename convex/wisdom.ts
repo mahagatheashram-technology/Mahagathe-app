@@ -1,3 +1,4 @@
+import { groupVakyams } from "../src/data/v14";
 import { observeClock } from "./lib/time";
 import { v, ConvexError } from "convex/values";
 import { query, mutation } from "./_generated/server";
@@ -203,4 +204,16 @@ export const externalLinks = query({
   returns: v.union(V.settingsFields.links, v.null()),
   handler: async (ctx) =>
     (await publishedBySlug(ctx, "appSettings", "default"))?.links ?? null,
+});
+
+/** Vākyams grouped by IST publication month, newest first. */
+export const catalogue = query({
+  args: { theme: v.optional(V.theme) },
+  returns: v.array(v.object({ month: v.string(), label: v.string(), vakyams: v.array(V.vakyamResult) })),
+  handler: async (ctx, { theme }) => {
+    await observeClock(ctx);
+    const rows = theme ? await ctx.db.query('vakyams').withIndex('by_status_theme', q => q.eq('status', 'published').eq('theme', theme)).collect() : await ctx.db.query('vakyams').withIndex('by_status_date', q => q.eq('status', 'published')).order('desc').collect();
+    const items = await Promise.all(rows.filter(row => isPublished(row)).map(row => toVakyam(ctx, row)));
+    return groupVakyams(items.filter(row => row !== null));
+  },
 });

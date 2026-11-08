@@ -8,7 +8,10 @@ export async function erasePersonalActivity(
   ctx: MutationCtx,
   userId: Id<"users">,
 ): Promise<void> {
+  const profile = await ctx.db.query('profiles').withIndex('by_user', q => q.eq('userId', userId)).unique();
+  if (profile) await ctx.db.patch(profile._id, { gunaResult: undefined, gunaPrompt: undefined });
   const tables = [
+    "yakshaAnswers", "seriesAccess", "practiceUnlocks",
     "guardianConsentRequests",
     "guardianConsents",
     "notificationPrefs",

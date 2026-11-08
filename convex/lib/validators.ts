@@ -174,9 +174,11 @@ export const vibhagaFields = {
   tagline: v.string(),
   photo,
   about: v.string(),
+  vibhaga: v.optional(v.string()),
   headId: v.optional(v.id("users")),
 };
-export const pathwayFields = { name: v.string(), about: v.string() };
+export const pathwayFields = { name: v.string(), about: v.string(), titleDev: v.optional(v.string()), tagline: v.optional(v.string()), featured: v.optional(v.boolean()), ageRange: v.optional(v.string()) };
+export const programResult = v.object({ id: v.string(), name: v.string(), about: v.string(), titleDev: v.string(), tagline: v.string(), featured: v.boolean(), ageRange: v.optional(v.string()) });
 export const paramparaFields = {
   guru: v.object({
     name: v.string(),

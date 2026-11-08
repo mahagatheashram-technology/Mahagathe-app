@@ -54,7 +54,7 @@ export function ParamparaScreen() {
               <AppText
                 accessibilityRole="header"
                 style={{ fontFamily: fonts.serifSemibold, fontSize: 23, lineHeight: 28.75 }}>
-                {content.guru.name}
+                Most Venerable Mahamuni
               </AppText>
             </View>
           </View>

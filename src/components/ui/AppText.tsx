@@ -7,6 +7,10 @@ import { colors, fonts } from '@/theme/tokens';
  * only when the mock differs. Letter spacing in mocks is in em: 0.14em × 12px ≈ 1.7.
  */
 export const textVariants = StyleSheet.create({
+  v14Title: { fontFamily: fonts.displaySemibold, fontSize: 33, lineHeight: 39.6, color: colors.v14Ink },
+  v14Section: { fontFamily: fonts.displaySemibold, fontSize: 21, lineHeight: 27.3, color: colors.v14Ink },
+  v14Body: { fontFamily: fonts.ui, fontSize: 16, lineHeight: 24.8, color: colors.v14Ink },
+  reading: { fontFamily: fonts.display, fontSize: 18.5, lineHeight: 31.82, color: colors.v14Ink },
   /** Welcome wordmark: Lora 600 40 */
   display: { fontFamily: fonts.serifSemibold, fontSize: 40, lineHeight: 46, color: colors.ink },
   /** Screen titles: Lora 600 30 */

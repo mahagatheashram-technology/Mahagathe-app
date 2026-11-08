@@ -10,7 +10,9 @@ import type {
   GroupCount,
   MandalaDayState,
   Parampara,
-  Pathway,
+  Program,
+  Series,
+  YakshaQuestion,
   Practice,
   Season,
   SmallStep,
@@ -20,7 +22,7 @@ import type {
   ContactInfo,
 } from './types';
 
-const GURU = 'Ven. Mahāmuni Sritha Mahāgatha';
+const MAHAMUNI = 'Mahamuni';
 
 export const vakyams: Vakyam[] = [
   {
@@ -30,7 +32,7 @@ export const vakyams: Vakyam[] = [
       'Return to your practice every day, even briefly. Slowly the mind settles, and a settled mind sees choices in work and family more clearly.',
     theme: 'inner-life',
     verbatim: true,
-    attribution: GURU,
+    attribution: MAHAMUNI,
     source: { title: 'Mahagathe Wisdom archive', detail: '[Talk title, date] · Reviewed [date] by the content authority' },
     date: '2026-11-06',
   },
@@ -40,7 +42,7 @@ export const vakyams: Vakyam[] = [
     meaning: 'Treat each task, small or large, with care. Doing it well and without grudge is already practice.',
     theme: 'work',
     verbatim: false,
-    attribution: GURU,
+    attribution: MAHAMUNI,
     source: { title: 'Mahagathe Wisdom archive', detail: '[Talk title, date] · Reviewed [date] by the content authority' },
     date: '2026-11-05',
   },
@@ -50,7 +52,7 @@ export const vakyams: Vakyam[] = [
     meaning: 'Listening before reacting keeps a family close. Patience is a daily choice, not a mood.',
     theme: 'family',
     verbatim: true,
-    attribution: GURU,
+    attribution: MAHAMUNI,
     source: { title: 'Mahagathe Wisdom archive', detail: '[Talk title, date] · Reviewed [date] by the content authority' },
     date: '2026-11-04',
   },
@@ -60,10 +62,12 @@ export const vakyams: Vakyam[] = [
     meaning: 'Satyaṁ vada, dharmaṁ cara. Honest words and right conduct are the ground of every practice.',
     theme: 'conduct',
     verbatim: false,
-    attribution: GURU,
+    attribution: MAHAMUNI,
     source: { title: 'Mahagathe Wisdom archive', detail: '[Talk title, date] · Reviewed [date] by the content authority' },
     date: '2026-11-03',
   },
+  { id: 'vk-005', text: '[A word on inner life, as approved]', meaning: '[Meaning, as approved]', theme: 'inner-life', verbatim: false, attribution: MAHAMUNI, source: { title: 'Mahagathe Wisdom archive', detail: '[Talk title, date] · Reviewed [date] by the content authority' }, date: '2026-10-31' },
+  { id: 'vk-006', text: '[A word on work, as approved]', meaning: '[Meaning, as approved]', theme: 'work', verbatim: false, attribution: MAHAMUNI, source: { title: 'Mahagathe Wisdom archive', detail: '[Talk title, date] · Reviewed [date] by the content authority' }, date: '2026-10-30' },
 ];
 
 export const themeSummaries: ThemeSummary[] = [
@@ -76,7 +80,7 @@ export const themeSummaries: ThemeSummary[] = [
 export const practices: Practice[] = [
   {
     id: 'intro-samatha',
-    title: 'Introductory Samatha',
+    title: 'Samatha meditation',
     subtitle: 'Guided audio',
     description: 'A short guided sitting to settle the breath and the mind.',
     durationSec: 432,
@@ -89,10 +93,7 @@ export const practices: Practice[] = [
     ],
     order: 0,
   },
-  { id: 'attahasa', title: 'Attahasa', subtitle: 'Preparation · guide and audio', description: '', durationSec: 0, access: 'enrolled', preparation: [], order: 1 },
-  { id: 'nischara-dhyana', title: 'Nischara Dhyana', subtitle: 'Silent sitting · guide and audio', description: '', durationSec: 0, access: 'enrolled', preparation: [], order: 2 },
-  { id: 'samatha-kriya', title: 'Samatha Kriya', subtitle: 'Core practice · guide and audio', description: '', durationSec: 0, access: 'enrolled', preparation: [], order: 3 },
-  { id: 'mahagathe-mantra', title: 'Mahagathe Mantra', subtitle: 'Mantra · guide and audio', description: '', durationSec: 0, access: 'enrolled', preparation: [], order: 4 },
+  { id: 'dhyanbhaari', title: 'Dhyanbhaari', subtitle: 'Learned in person', description: '[Practice instructions, as approved]', durationSec: 0, access: 'enrolled', preparation: [], order: 1 },
 ];
 
 /** Mandala as drawn in MandalaV3: day 12, day 6 missed, days 1–5 & 7–11 sat. */
@@ -161,35 +162,35 @@ export const episodes: Episode[] = ADI_TITLES.map((title, i) => ({
 
 const day = (d: string) => new Date(d).toISOString();
 export const events: EventItem[] = [
-  { id: 'ev-sunday-sitting', title: 'Sunday group sitting', startsAt: day('2026-11-09T01:00:00Z'), place: 'Online', timeLabel: '6:30 AM IST', eligibility: 'Enrolled sādhakas', placesLeft: null, registered: false },
-  { id: 'ev-yuva-class', title: 'Yuva Chetana class', startsAt: day('2026-11-15T10:30:00Z'), place: 'Mahagate Ashram', timeLabel: '4 PM', eligibility: 'Ages 13–24', placesLeft: 22, registered: true },
-  { id: 'ev-abhyudaya', title: 'Abhyudaya 2026', startsAt: day('2026-12-20T03:30:00Z'), place: 'Mahagate Ashram', timeLabel: 'All day', eligibility: 'Open to all', placesLeft: 140, imageKey: 'abhyudaya', registered: false },
+  { id: 'ev-sunday-sitting', title: 'Sunday group sitting', startsAt: day('2026-11-08T01:00:00Z'), place: 'Online', timeLabel: '6:30 AM IST', eligibility: 'Enrolled sādhakas', placesLeft: null, registered: false },
+  { id: 'ev-yuva-class', title: 'Yuva Chetana class', startsAt: day('2026-11-14T10:30:00Z'), place: 'Mahagathe Ashram', timeLabel: '4 PM', eligibility: 'Ages 13–24', placesLeft: 22, registered: true },
+  { id: 'ev-abhyudaya', title: 'Abhyudaya 2026', startsAt: day('2026-12-20T03:30:00Z'), place: 'Mahagathe Ashram', timeLabel: 'All day', eligibility: 'Open to all', placesLeft: 140, imageKey: 'abhyudaya', registered: false },
 ];
 
 export const vibhagas: Vibhaga[] = [
-  { id: 'adhyaya', name: 'Adhyaya', tagline: 'Learning for children', photo: 'adhyaya', about: '[About Adhyaya, as approved by the vibhaga head]' },
-  { id: 'ayuri', name: 'Āyuri', tagline: 'Care for elders', photo: 'ayuri', about: '[About Āyuri, as approved by the vibhaga head]' },
-  { id: 'bhandara', name: 'Bhaṇḍāra', tagline: 'Food for all', photo: 'bhandara', about: '[About Bhaṇḍāra, as approved by the vibhaga head]' },
-  { id: 'samriddhi', name: 'Samṛddhi', tagline: 'Skills and livelihood', photo: 'samriddhi', about: '[About Samṛddhi, as approved by the vibhaga head]' },
+  { id: 'adhyaya', name: 'Adhyaya', tagline: 'Learning for children', photo: 'adhyaya', vibhaga: '[Vibhāga, to confirm]', about: '[About Adhyaya, as approved by the vibhaga head]' },
+  { id: 'ayuri', name: 'Āyuri', tagline: 'Care for elders', photo: 'ayuri', vibhaga: '[Vibhāga, to confirm]', about: '[About Āyuri, as approved by the vibhaga head]' },
+  { id: 'bhandara', name: 'Bhaṇḍāra', tagline: 'Food for all', photo: 'bhandara', vibhaga: '[Vibhāga, to confirm]', about: '[About Bhaṇḍāra, as approved by the vibhaga head]' },
+  { id: 'samriddhi', name: 'Samṛddhi', tagline: 'Skills and livelihood', photo: 'samriddhi', vibhaga: '[Vibhāga, to confirm]', about: '[About Samṛddhi, as approved by the vibhaga head]' },
 ];
 
-export const pathways: Pathway[] = [
-  { id: 'bala', name: 'Bala Chetana', about: '[Program page pending]' },
-  { id: 'yuva', name: 'Yuva Chetana', about: '[Program page pending]' },
-  { id: 'dhyanodaya', name: 'Dhyanodaya', about: '[Program page pending]' },
+export const pathways: Program[] = [
+  { id: 'yuva', name: 'Yuva Chetana', titleDev: 'युवा चेतना', tagline: 'Gen Z guides', featured: true, ageRange: '13–24', about: '[What Yuva Chetana is, in two or three sentences, as approved.]' },
+  { id: 'bala', name: 'Bala Chetana', titleDev: 'बाल चेतना', tagline: 'For children', featured: false, about: '[Program page pending]' },
+  { id: 'dhyanodaya', name: 'Dhyanodaya', titleDev: 'ध्यानोदय', tagline: 'Meditation classes', featured: false, about: '[Program page pending]' },
 ];
 
 export const parampara: Parampara = {
   guru: {
-    name: GURU,
+    name: MAHAMUNI,
     title: 'Seventieth Mahādhibhū',
     lineage: '70th Mahādhibhū · Rudra Sampradāya',
-    bio: 'Gurudev carries a living Shaiva lineage, handed from teacher to student for seventy generations. Every teaching here comes from it.',
+    bio: 'Most Venerable Mahamuni carries a living Shaiva lineage, handed from teacher to student for seventy generations. Every teaching here comes from it.',
   },
   lineage: [
     { label: 'Founding ācārya', name: '[Name, as approved]' },
     { label: '69th Mahādhibhū', name: '[Name, as approved]' },
-    { label: '70th Mahādhibhū · present', name: GURU, present: true },
+    { label: '70th Mahādhibhū · present', name: MAHAMUNI, present: true },
   ],
   milestones: [
     { year: '[Year]', text: '[Milestone, as approved]' },
@@ -221,3 +222,16 @@ export const links = {
   podcast: 'https://www.youtube.com/',
   whatsapp: 'https://wa.me/',
 };
+
+/** Single draft exception requested by v14; never presented as approved. */
+export const yakshaQuestions: Omit<YakshaQuestion, 'dayKey'>[] = [{
+  id: 'yaksha-wind', question: 'What is swifter than the wind?', answer: 'The mind', distractors: ['Time', 'A rumour'],
+  reference: 'Āraṇyaka Parva 3.297 [verse to confirm]',
+  meaning: 'Nothing outruns a thought. Today, notice where yours runs before you follow it. [draft, to approve]', approved: false,
+}];
+export const series: Series[] = [
+  { id: 'mahabharata', titleDev: 'महाभारत', title: 'The Mahabharata', color: '#9C3D22', motif: 'wheel', description: '[Series description, as approved]', status: 'reading', parts: seasons.map(s => ({ number: s.number, title: s.title, seasonId: s.id, episodeIds: episodes.filter(e => e.seasonId === s.id).map(e => e.id), locked: s.status !== 'published' })) },
+  { id: 'ramayana', titleDev: 'रामायण', title: 'The Rāmāyaṇa', color: '#4C6639', motif: 'bow', description: '[Series description, as approved]', status: 'upcoming', parts: ['Bāla','Ayodhyā','Āraṇya','Kiṣkindhā','Sundara','Yuddha','Uttara'].map((name, i) => ({ number: i + 1, title: `${name} Kāṇḍa`, when: '[Date, as announced]', locked: true })) },
+  { id: 'pashupata', titleDev: 'पाशुपत', title: 'Pāśupata Śaivism', color: '#5E5A57', motif: 'ash', description: '[Series, as approved]', status: 'upcoming', parts: [{ number: 1, title: '[Part title, as approved]', locked: true }] },
+  { id: 'iks', titleDev: 'भारतीय ज्ञान', title: 'Indian knowledge systems', color: '#9A6B12', motif: 'yantra', description: '[What the series covers, as approved.] The first session is free.', status: 'free-first', parts: Array.from({ length: 5 }, (_, i) => ({ number: i + 1, title: `[Session ${i + 1} title]`, free: i === 0, locked: i > 0 })) },
+];

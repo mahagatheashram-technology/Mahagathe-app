@@ -176,3 +176,46 @@ verifier/admin records evidence through the existing restricted consent APIs;
 children cannot grant consent or switch themselves to an adult age band. Delivery
 and evidence verification integrations are still required. Never treat the queued
 request as sent or approved.
+
+## v14 foundation contract
+
+The v14 additions live in `v14.ts` (daily Yakṣa, latest Gunometer and prompt,
+series and attendance/access flags), `wisdom.catalogue` (month-grouped Vākyams),
+and `embeddings.ts` (optional retrieval over approved published Vākyams).
+See `docs/qa/v14-foundation/HANDOFF.md` for every client hook signature.
+
+- `profiles.gunaResult` stores one result; `saveGunaResult` recomputes it from all
+  upstream answers with server time, and replaces the previous result. Prompt
+  states are `unseen|later|done`. These fields are erased when consent is removed.
+- `yakshaQuestions` holds the approved set. The explicit `yaksha-wind` demo is
+  available only as a marked draft when the approved set is empty. Answers are
+  indexed by account and IST day; the first reveal is retained. Guest answers
+  stay on the device, without anonymous server identifiers.
+- `practiceUnlocks.dhyanbhaari` controls the second practice independently of
+  enrollment. `internal.v14.setPracticeUnlock` is a trusted integration point;
+  no public unlock mechanism is invented. Catalogue, media and Mandala access
+  share this predicate. Sitting-count, calendar and completion rules are unchanged.
+- `seriesAccess` is per account and series. `internal.v14.setSeriesAccess` is a
+  trusted integration point. Session 1 of IKS is free; the contract marks later
+  sessions locked. No price, purchase provider or public grant endpoint is added.
+- Programs return the added Devanagari title, tagline, featured flag and optional
+  age range. Optional stored fields allow older CMS records to continue loading;
+  public adapters supply explicit placeholders when those fields are absent.
+- Notification defaults now enable registered gatherings. Explicit preferences
+  already stored by an account are preserved.
+- The 1536-dimensional `vakyams.by_embedding` index is filled at publication only
+  when server-side `EMBEDDINGS_API_KEY` exists. It uses `text-embedding-3-small`.
+  Demo rows and rows without independent approval/source clearance are excluded
+  from embeddings. Publication schedules internal actions only. The store step
+  checks text identity again so a delayed response cannot overwrite a revision.
+  Search merges exact retrieval with vector results, revalidates publication and
+  approval, and returns existing text only. No key, provider/network failure,
+  missing vectors or unavailable vector search falls back to `wisdom.search`.
+  No provider request was executed during foundation validation.
+
+Offline `npx convex codegen` returns `No CONVEX_DEPLOYMENT set` in this worktree.
+`_generated/api.d.ts` was updated following its existing module declaration
+pattern; `dataModel.d.ts` already derives every table and index from the schema,
+and `api.js` already uses dynamic function references. No deployment or `.env`
+file was created or changed. Run codegen against the configured deployment when
+one is supplied.

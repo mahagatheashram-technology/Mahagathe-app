@@ -82,7 +82,7 @@ export const run = internalMutation({
           access: item.access,
           preparation: item.preparation,
           order: item.order,
-          programId: "samatha",
+          programId: item.id === "dhyanbhaari" ? "dhyanbhaari" : "samatha",
           sourceId: teaching,
         }),
       );
@@ -132,6 +132,7 @@ export const run = internalMutation({
           name: item.name,
           tagline: item.tagline,
           photo: item.photo,
+          vibhaga: item.vibhaga,
           about: item.about,
         }),
       );
@@ -162,6 +163,7 @@ export const run = internalMutation({
           slug: item.id,
           name: item.name,
           about: item.about,
+          titleDev: item.titleDev, tagline: item.tagline, featured: item.featured, ageRange: item.ageRange,
         }),
       );
     }
@@ -198,6 +200,14 @@ export const run = internalMutation({
         demoThemeSummaries: fixtures.themeSummaries,
       }),
     );
+    for (const item of fixtures.yakshaQuestions) {
+      const old = await ctx.db.query('yakshaQuestions').withIndex('by_slug', q => q.eq('slug', item.id)).unique();
+      if (!old) { const { id, ...fields } = item; await ctx.db.insert('yakshaQuestions', { slug: id, ...fields, demo: true }); }
+    }
+    for (const item of fixtures.series) {
+      const old = await ctx.db.query('series').withIndex('by_slug', q => q.eq('slug', item.id)).unique();
+      if (!old) { const { id, ...fields } = item; await ctx.db.insert('series', { slug: id, ...fields }); }
+    }
     return null;
   },
 });

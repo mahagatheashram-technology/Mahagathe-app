@@ -1,0 +1,5 @@
+Source commit: 2f6b99d99df53073f1c920ad1e65a0d015ac2a1b
+questions.ts: source matches exactly after import localization
+scoring.ts: source matches exactly after import localization
+recommendations.ts: source matches exactly after import localization
+Upstream core question count: 24

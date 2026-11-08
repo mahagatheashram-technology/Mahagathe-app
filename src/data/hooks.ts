@@ -52,3 +52,15 @@ export const useOpenWhatsApp = live?.useOpenWhatsApp ?? mock.useOpenWhatsApp;
 export const useCurrentTime = live?.useCurrentTime ?? mock.useCurrentTime;
 
 export const useDonationResult = live?.useDonationResult ?? mock.useDonationResult;
+
+export const useTodayYaksha = live?.useTodayYaksha ?? mock.useTodayYaksha;
+export const useAnswerYaksha = live?.useAnswerYaksha ?? mock.useAnswerYaksha;
+export const useGunaResult = live?.useGunaResult ?? mock.useGunaResult;
+export const useSaveGunaResult = live?.useSaveGunaResult ?? mock.useSaveGunaResult;
+export const useGunaPrompt = live?.useGunaPrompt ?? mock.useGunaPrompt;
+export const useSeries = live?.useSeries ?? mock.useSeries;
+export const useSeriesById = live?.useSeriesById ?? mock.useSeriesById;
+export const useSeriesAccess = live?.useSeriesAccess ?? mock.useSeriesAccess;
+export const usePracticeUnlocks = live?.usePracticeUnlocks ?? mock.usePracticeUnlocks;
+export const useSetMockPracticeUnlock = live?.useSetMockPracticeUnlock ?? mock.useSetMockPracticeUnlock;
+export const useVakyamCatalogue = live?.useVakyamCatalogue ?? mock.useVakyamCatalogue;

@@ -1,8 +1,14 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 import * as V from "./lib/validators";
+import * as V14 from "./lib/v14Validators";
 
 export default defineSchema({
+  yakshaQuestions: defineTable({ slug: v.string(), ...V14.yakshaFields, demo: v.optional(v.boolean()) }).index('by_slug', ['slug']).index('by_approved', ['approved']),
+  yakshaAnswers: defineTable({ userId: v.id('users'), dayKey: v.string(), ...V14.yakshaState.fields }).index('by_user', ['userId']).index('by_user_day', ['userId', 'dayKey']),
+  series: defineTable({ slug: v.string(), ...V14.seriesFields }).index('by_slug', ['slug']),
+  seriesAccess: defineTable({ userId: v.id('users'), seriesId: v.id('series'), grantedAt: v.number() }).index('by_user', ['userId']).index('by_user_series', ['userId', 'seriesId']),
+  practiceUnlocks: defineTable({ userId: v.id('users'), dhyanbhaari: v.boolean() }).index('by_user', ['userId']),
   serverClock: defineTable({
     key: v.literal("clock"),
     updatedAt: v.number(),
@@ -24,6 +30,8 @@ export default defineSchema({
     roles: v.optional(v.array(V.role)),
     language: v.optional(V.language),
     reminderTime: v.optional(v.union(v.string(), v.null())),
+    gunaResult: v.optional(V14.gunaResult),
+    gunaPrompt: v.optional(V14.gunaPrompt),
     // enrolled is deliberately derived from active, unexpired enrollments.
   }).index("by_user", ["userId"]),
   guardianConsents: defineTable({
@@ -46,9 +54,10 @@ export default defineSchema({
   sources: defineTable({ ...V.editorialFields, ...V.sourceFields })
     .index("by_slug", ["slug"])
     .index("by_status", ["status"]),
-  vakyams: defineTable({ ...V.editorialFields, ...V.vakyamFields })
+  vakyams: defineTable({ ...V.editorialFields, ...V.vakyamFields, embedding: v.optional(v.array(v.number())), embeddingText: v.optional(v.string()) })
     .index("by_slug", ["slug"])
     .index("by_status", ["status"])
+    .vectorIndex("by_embedding", { vectorField: "embedding", dimensions: 1536, filterFields: ["status"] })
     .index("by_status_date", ["status", "publishDate"])
     .index("by_status_theme", ["status", "theme"])
     .index("by_source", ["sourceId"]),

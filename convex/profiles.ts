@@ -17,7 +17,7 @@ import * as V from "./lib/validators";
 const defaultPrefs = {
   practiceReminder: false,
   dailyVakyam: false,
-  registeredEvents: false,
+  registeredEvents: true,
 };
 
 export const me = query({
@@ -244,6 +244,7 @@ export const requestDataExport = query({
     const user = await requireUser(ctx);
     const tables = [
       "profiles",
+      "yakshaAnswers", "seriesAccess", "practiceUnlocks",
       "guardianConsentRequests",
       "guardianConsents",
       "notificationPrefs",

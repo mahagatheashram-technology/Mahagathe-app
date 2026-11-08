@@ -15,6 +15,8 @@ import * as fixtures from "../../src/data/fixtures";
 
 const modules = {
   "../_generated/server.ts": () => import("../_generated/server"),
+  "../v14.ts": () => import("../v14"),
+  "../embeddings.ts": () => import("../embeddings"),
   "../profiles.ts": () => import("../profiles"),
   "../wisdom.ts": () => import("../wisdom"),
   "../sadhana.ts": () => import("../sadhana"),
@@ -152,11 +154,11 @@ void test("T-01/T-03/T-04: guest reads work; private writes and restricted media
     /Sign in/,
   );
   assert.equal(
-    (await t.query(api.sadhana.practice, { id: "attahasa" }))?.locked,
+    (await t.query(api.sadhana.practice, { id: "dhyanbhaari" }))?.locked,
     true,
   );
   await assert.rejects(
-    t.mutation(api.sadhana.getPracticeAudioUrl, { id: "attahasa" }),
+    t.mutation(api.sadhana.getPracticeAudioUrl, { id: "dhyanbhaari" }),
     /Sign in/,
   );
   await assert.rejects(
@@ -249,9 +251,12 @@ void test("S-04/T-04: protected storage URL, guides, and profile enrollment resp
     ctx.storage.store(new Blob(["approved audio"])),
   );
   await t.run(async (ctx) => {
+    const original = await ctx.db.query('practices').withIndex('by_slug', q => q.eq('slug', 'dhyanbhaari')).unique();
+    const { _id, _creationTime, ...fields } = original!;
+    await ctx.db.insert('practices', { ...fields, slug: 'enrollment-test-practice', programId: 'samatha' });
     const practice = await ctx.db
       .query("practices")
-      .withIndex("by_slug", (q) => q.eq("slug", "attahasa"))
+      .withIndex("by_slug", (q) => q.eq("slug", "enrollment-test-practice"))
       .unique();
     await ctx.db.patch(practice!._id, {
       audioStorageId: storageId,
@@ -259,7 +264,7 @@ void test("S-04/T-04: protected storage URL, guides, and profile enrollment resp
       preparation: ["Private preparation"],
     });
   });
-  const locked = await client.query(api.sadhana.practice, { id: "attahasa" });
+  const locked = await client.query(api.sadhana.practice, { id: "enrollment-test-practice" });
   assert.equal(locked?.description, "");
   assert.deepEqual(locked?.preparation, []);
   assert.equal(JSON.stringify(locked).includes(storageId), false);
@@ -269,7 +274,7 @@ void test("S-04/T-04: protected storage URL, guides, and profile enrollment resp
     reason: "Different course",
   });
   await assert.rejects(
-    client.mutation(api.sadhana.getPracticeAudioUrl, { id: "attahasa" }),
+    client.mutation(api.sadhana.getPracticeAudioUrl, { id: "enrollment-test-practice" }),
     /Enrollment/,
   );
   await admin.mutation(api.cms.grantEnrollment, {
@@ -278,11 +283,11 @@ void test("S-04/T-04: protected storage URL, guides, and profile enrollment resp
     reason: "Teacher approval",
   });
   assert.equal(
-    (await client.query(api.sadhana.practice, { id: "attahasa" }))?.description,
+    (await client.query(api.sadhana.practice, { id: "enrollment-test-practice" }))?.description,
     "Restricted guide",
   );
   assert.ok(
-    await client.mutation(api.sadhana.getPracticeAudioUrl, { id: "attahasa" }),
+    await client.mutation(api.sadhana.getPracticeAudioUrl, { id: "enrollment-test-practice" }),
   );
   assert.equal((await client.query(api.profiles.me, {}))?.enrolled, true);
   await admin.mutation(api.cms.revokeEnrollment, {
@@ -291,7 +296,7 @@ void test("S-04/T-04: protected storage URL, guides, and profile enrollment resp
     reason: "Access ended",
   });
   await assert.rejects(
-    client.mutation(api.sadhana.getPracticeAudioUrl, { id: "attahasa" }),
+    client.mutation(api.sadhana.getPracticeAudioUrl, { id: "enrollment-test-practice" }),
     /Enrollment/,
   );
   await t.run(async (ctx) => {
@@ -637,14 +642,14 @@ void test("T-10: future and expired published records never leak in queries", as
   });
   assert.equal(await t.query(api.wisdom.byId, { id: "vk-001" }), null);
   assert.equal(
-    (await t.query(api.wisdom.byTheme, { theme: "inner-life" })).length,
-    0,
+    (await t.query(api.wisdom.byTheme, { theme: "inner-life" })).some(item => item.id === "vk-001"),
+    false,
   );
   assert.equal(
     (await t.query(api.wisdom.themes, {})).find(
       (row) => row.theme === "inner-life",
     )?.count,
-    0,
+    fixtures.vakyams.filter(item => item.theme === "inner-life" && item.id !== "vk-001").length,
   );
 });
 
@@ -1095,4 +1100,83 @@ void test("v12: the fortieth sitting completes a Mandala without permitting a fo
   await assert.rejects(client.mutation(api.mandala.completeToday, { mandalaId: id }), /remaining/);
   await client.mutation(api.mandala.completeToday, { mandalaId: nextId });
   assert.equal((await client.query(api.mandala.active, {}))?.sittingsDone, 1);
+});
+
+void test('v14: daily Yakṣa exposes the review flag and persists one answer per account/IST day', async () => {
+  const t = await setup();
+  const today = await t.query(api.v14.todayYaksha, {});
+  assert.equal(today?.question.question, 'What is swifter than the wind?');
+  assert.equal(today?.question.approved, false);
+  assert.match(today!.question.meaning, /draft, to approve/);
+  assert.equal(today?.question.dayKey, dayKey(Date.now()));
+  await assert.rejects(t.mutation(api.v14.answerYaksha, { choice: 'The mind' }), /Sign in/);
+  const { client } = await account(t, 'yaksha-reader');
+  await assert.rejects(client.mutation(api.v14.answerYaksha, { choice: 'Invalid choice' }), /Choose/);
+  await client.mutation(api.v14.answerYaksha, { choice: 'Time' });
+  await client.mutation(api.v14.answerYaksha, { choice: 'The mind' });
+  assert.deepEqual((await client.query(api.v14.todayYaksha, {}))?.state, { questionId: 'yaksha-wind', choice: 'Time', revealed: true, correct: false });
+  const second = await account(t, 'yaksha-show-me');
+  await second.client.mutation(api.v14.answerYaksha, { choice: null });
+  assert.equal((await second.client.query(api.v14.todayYaksha, {}))?.state.correct, null);
+  assert.equal((await t.query(api.v14.todayYaksha, {}))?.state.revealed, false);
+});
+
+void test('v14: Gunometer is consent-gated, server scored, latest-only and erased with the account', async () => {
+  const t = await setup();
+  const { coreQuestions } = await import('../../src/features/gunometer/lib/questions');
+  const { gunaResultFromAnswers } = await import('../../src/data/v14');
+  const result = gunaResultFromAnswers(Object.fromEntries(coreQuestions.map(q => [q.id, 3])), 1);
+  await assert.rejects(t.mutation(api.v14.saveGunaResult, { result }), /Sign in/);
+  const { client, id } = await account(t, 'guna-reader');
+  assert.equal(await client.query(api.v14.gunaPrompt, {}), 'unseen');
+  await client.mutation(api.v14.setGunaPrompt, { state: 'later' });
+  assert.equal(await client.query(api.v14.gunaPrompt, {}), 'later');
+  await client.mutation(api.v14.saveGunaResult, { result: { ...result, scores: { sattva: 999, rajas: 0, tamas: 0 } } });
+  assert.deepEqual((await client.query(api.v14.gunaResult, {}))?.scores, result.scores);
+  assert.equal(await client.query(api.v14.gunaPrompt, {}), 'done');
+  const replacement = gunaResultFromAnswers(Object.fromEntries(coreQuestions.map(q => [q.id, q.reverseScored ? 1 : 5])), 2);
+  await client.mutation(api.v14.saveGunaResult, { result: replacement });
+  assert.deepEqual((await client.query(api.v14.gunaResult, {}))?.answers, replacement.answers);
+  await assert.rejects(client.mutation(api.v14.saveGunaResult, { result: { ...result, answers: { Q01: 6 } } }), /Answer all/);
+  assert.equal(await t.query(api.v14.gunaResult, {}), null);
+  await t.mutation(internal.v14.setPracticeUnlock, { userId: id, unlocked: true });
+  await t.mutation(internal.v14.setSeriesAccess, { userId: id, seriesId: 'iks', access: true });
+  await client.mutation(api.v14.answerYaksha, { choice: null });
+  const exported = await client.query(api.profiles.requestDataExport, {});
+  assert.match(exported.json, /gunaResult/);
+  await client.mutation(api.profiles.deleteAccount, {});
+  await t.run(async ctx => { for (const table of ['profiles', 'practiceUnlocks', 'seriesAccess', 'yakshaAnswers'] as const) assert.equal((await ctx.db.query(table).collect()).length, 0); });
+});
+
+void test('v14: exactly two practices and attendance/access flags are private and independent', async () => {
+  const t = await setup(); const { client, id } = await account(t, 'attendee');
+  const list = await client.query(api.sadhana.practices, {});
+  assert.deepEqual(list.map(p => p.title), ['Samatha meditation', 'Dhyanbhaari']);
+  assert.equal(list[1].locked, true);
+  assert.deepEqual(await client.query(api.v14.practiceUnlocks, {}), { dhyanbhaari: false });
+  await t.mutation(internal.v14.setPracticeUnlock, { userId: id, unlocked: true });
+  assert.equal((await client.query(api.sadhana.practice, { id: 'dhyanbhaari' }))?.locked, false);
+  assert.equal((await t.query(api.sadhana.practice, { id: 'dhyanbhaari' }))?.locked, true);
+  assert.equal(await client.query(api.v14.seriesAccess, { seriesId: 'iks' }), false);
+  await t.mutation(internal.v14.setSeriesAccess, { userId: id, seriesId: 'iks', access: true });
+  assert.equal(await client.query(api.v14.seriesAccess, { seriesId: 'iks' }), true);
+  assert.equal(await t.query(api.v14.seriesAccess, { seriesId: 'iks' }), false);
+  await t.mutation(internal.v14.setPracticeUnlock, { userId: id, unlocked: false });
+  await assert.rejects(client.mutation(api.sadhana.getPracticeAudioUrl, { id: 'dhyanbhaari' }), /Enrollment/);
+  assert.equal((await client.query(api.profiles.notificationPrefs, {}))?.registeredEvents, true);
+});
+
+void test('v14: series links, featured programs, seva mapping and grouped catalogue mirror fixtures', async () => {
+  const t = await setup();
+  const all = await t.query(api.v14.series, {});
+  assert.deepEqual(all.map(s => s.id), fixtures.series.map(s => s.id));
+  assert.deepEqual((await t.query(api.v14.seriesById, { id: 'mahabharata' }))?.parts[0].episodeIds, fixtures.episodes.map(e => e.id));
+  assert.equal((await t.query(api.v14.seriesById, { id: 'iks' }))?.parts[0].free, true);
+  assert.equal(await t.query(api.v14.seriesById, { id: 'missing' }), null);
+  const programs = await t.query(api.sangha.pathways, {});
+  assert.equal(programs[0].name, 'Yuva Chetana'); assert.equal(programs[0].ageRange, '13–24'); assert.equal(programs[0].tagline, 'Gen Z guides');
+  assert.ok((await t.query(api.sangha.vibhagas, {})).every(v => v.vibhaga === '[Vibhāga, to confirm]'));
+  const groups = await t.query(api.wisdom.catalogue, { theme: 'work' });
+  assert.ok(groups.flatMap(g => g.vakyams).every(v => v.theme === 'work'));
+  if (!process.env.EMBEDDINGS_API_KEY) assert.deepEqual(await t.action(api.embeddings.search, { text: 'work' }), await t.query(api.wisdom.search, { text: 'work' }));
 });

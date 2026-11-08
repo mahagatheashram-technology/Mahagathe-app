@@ -16,6 +16,9 @@ import { useCallback, useMemo } from 'react';
 import { mandalaRule } from '../../convex/lib/logic';
 
 import * as fx from './fixtures';
+import { mockAccountKey, readMockV14, persistMockV14, eraseMockV14 } from './mockV14Persistence';
+import { groupVakyams, gunaResultFromAnswers } from './v14';
+import { useGuestYakshaAnswers, saveGuestYakshaAnswer } from './yakshaDeviceStore';
 import { clearMockUserData, getMockSessionGeneration, delay, getState, setState, useMockState } from './mockStore';
 import type {
   AgeBand,
@@ -37,7 +40,7 @@ import type {
   VolunteerSignup,
 } from './types';
 import { isMinor, THEME_LABELS } from './types';
-import { foldForSearch, matchesFolded } from './search';
+import { semanticScore } from './search';
 import { canUsePersonalFeatures } from './session';
 import { phoneWithCountryCode } from './phone';
 import { istDay, useClock } from './clock';
@@ -67,11 +70,15 @@ export function useSession(): Session {
     setState(() => ({ pendingPhone: phoneWithCountryCode(phone) }));
   }, []);
   const verifyOtp = useCallback(async (code: string) => {
+    const generation = getMockSessionGeneration();
     await delay();
     if (!/^\d{6}$/.test(code)) return false;
     const phone = getState().pendingPhone ?? '+910000000210';
     const last3 = phone.slice(-3);
+    const savedV14 = await readMockV14(phone);
+    if (generation !== getMockSessionGeneration()) return false;
     setState((s) => ({
+      ...savedV14, accountStorageKey: mockAccountKey(phone),
       session: 'signedIn',
       profile: s.profile ?? {
         id: 'me',
@@ -114,10 +121,11 @@ export function useUpdateProfile() {
         if (s.profile.ageBand && isMinor(s.profile.ageBand) && patch.ageBand && patch.ageBand !== s.profile.ageBand) throw new Error('Contact support to correct your age band.');
         if (patch.ageBand) next.guardianConsent = isMinor(patch.ageBand) ? s.profile.guardianConsent : 'notRequired';
         if (!next.ageBand || (isMinor(next.ageBand) && next.guardianConsent !== 'granted')) {
-          return { profile: { ...next, displayName: '', roles: [], reminderTime: null, guardianConsent: 'pending' } };
+          return { gunaResult: null, gunaPrompt: 'unseen', practiceUnlocks: { dhyanbhaari: false }, seriesAccess: [], yakshaAnswers: {}, profile: { ...next, displayName: '', roles: [], reminderTime: null, guardianConsent: 'pending' } };
         }
         return { profile: next };
       });
+      if (!canUsePersonalFeatures(getState().session, getState().profile)) await eraseMockV14();
     },
     [],
   );
@@ -134,6 +142,7 @@ export function useRequestGuardianConsent() {
     phoneWithCountryCode(input.guardianPhone);
     if (!isMinor(input.ageBand)) throw new Error('Choose a minor age band.');
     const previous = getState().profile;
+    await eraseMockV14();
     if (previous?.ageBand && isMinor(previous.ageBand) && previous.ageBand !== input.ageBand) throw new Error('Contact support to correct your age band.');
     clearMockUserData();
     setState(() => {
@@ -166,6 +175,7 @@ export function useAccountActions() {
     },
     deleteAccount: async () => {
       await delay();
+      await eraseMockV14();
       clearMockUserData();
     },
   };
@@ -233,14 +243,11 @@ export function useWisdomSearch(query: string): WisdomSearchResult | undefined {
     if (!q) return { vakyams: [], episodes: [] };
     return {
       vakyams: fx.vakyams.filter((v) =>
-        matchesFolded(foldForSearch(`${v.text} ${v.meaning} ${THEME_LABELS[v.theme]} vakyam guru`), q),
-      ),
+        semanticScore(`${v.text} ${v.meaning} ${THEME_LABELS[v.theme]} vakyam mahamuni`, q) > 0,
+      ).sort((a, b) => semanticScore(`${b.text} ${b.meaning}`, q) - semanticScore(`${a.text} ${a.meaning}`, q)),
       episodes: fx.episodes
         .filter((e) =>
-          matchesFolded(
-            foldForSearch(`${e.title} ${e.seasonTitle} ${e.boriRange} ${e.paragraphs.join(' ')} episode mahabharata`),
-            q,
-          ),
+          semanticScore(`${e.title} ${e.seasonTitle} ${e.boriRange} ${e.paragraphs.join(' ')} episode mahabharata`, q) > 0,
         )
         .map(({ id, seasonId, number, title, readMinutes, seasonTitle, boriRange }) => ({
           id,
@@ -262,12 +269,12 @@ export function useSmallStep() {
 // ───────────────────────────── Sādhanā ─────────────────────────────
 
 export function usePractices(): (Practice & { locked: boolean })[] | undefined {
-  const enrolled = useMockState((s) => s.profile?.enrolled ?? false);
+  const enrolled = useMockState((s) => s.practiceUnlocks.dhyanbhaari);
   return useMemo(
     () =>
       fx.practices.map((p) => {
         const locked = p.access === 'enrolled' && !enrolled;
-        return { ...p, locked, audioUrl: locked ? undefined : p.audioUrl };
+        return { ...p, locked, description: locked ? '' : p.description, preparation: locked ? [] : p.preparation, audioUrl: locked ? undefined : p.audioUrl };
       }),
     [enrolled],
   );
@@ -343,6 +350,7 @@ export function useStartMandala() {
   return useCallback(async (practiceId: string) => {
     await personalDelay();
     const p = fx.practices.find((x) => x.id === practiceId) ?? fx.practices[0];
+    if (p.access === 'enrolled' && !getState().practiceUnlocks.dhyanbhaari) throw new Error('Attend the Dhyanbhaari class first.');
     const days = Array.from({ length: 40 }, (_, i) => (i === 0 ? 'today' : 'future')) as Mandala['days'];
     const previous = getState();
     if (previous.mandala && !mandalaRule(previous.mandala.startDate, istDay(Date.now()), mockCompletionDays(previous.mandala, previous.mandalaCompletionDays)).complete) {
@@ -520,7 +528,7 @@ export function useCreateDonation() {
 export const externalLinks = fx.links;
 
 export function usePracticeAudio() {
-  return useCallback(async (id: string) => { requirePersonalAccess(); return fx.practices.find(p => p.id === id)?.audioUrl ?? null; }, []);
+  return useCallback(async (id: string) => { requirePersonalAccess(); const p = fx.practices.find(p => p.id === id); if (p?.access === 'enrolled' && !getState().practiceUnlocks.dhyanbhaari) throw new Error('Attend the Dhyanbhaari class first.'); return p?.audioUrl ?? null; }, []);
 }
 export function useExternalLinks() { return fx.links; }
 export function useOpenWhatsApp() { return useCallback(async () => { await Linking.openURL(fx.links.whatsapp); }, []); }
@@ -528,3 +536,65 @@ export function useOpenWhatsApp() { return useCallback(async () => { await Linki
 export function useCurrentTime() { return useClock(); }
 
 export function useDonationResult(id: string | undefined) { return useMockState(s => s.donations.find(d => d.id === id) ?? null); }
+
+// ───────────────────────────── v14 foundation ─────────────────────────────
+export function useTodayYaksha(): import('./types').TodayYaksha | null | undefined {
+  const dayKey = istDay(useClock());
+  const session = useMockState(s => s.session);
+  const answers = useMockState(s => s.yakshaAnswers);
+  const guestAnswers = useGuestYakshaAnswers();
+  return useMemo(() => {
+    const candidates = fx.yakshaQuestions.filter(q => q.approved);
+    // The single, explicitly unapproved demo is visible with review copy.
+    const item = candidates[Number(dayKey.replaceAll('-', '')) % candidates.length] ?? fx.yakshaQuestions[0];
+    if (!item) return null;
+    const state = (session === 'signedIn' ? answers : guestAnswers)[dayKey];
+    return { question: { ...item, dayKey }, state: state?.questionId === item.id ? state : { questionId: item.id, choice: null, revealed: false, correct: null } };
+  }, [dayKey, session, answers, guestAnswers]);
+}
+export function useAnswerYaksha() {
+  return useCallback(async (choice: string | null) => {
+    const day = istDay(Date.now());
+    const approved = fx.yakshaQuestions.filter(q => q.approved);
+    const q = approved[Number(day.replaceAll('-', '')) % approved.length] ?? fx.yakshaQuestions[0];
+    if (!q) throw new Error('No question today.');
+    if (choice !== null && ![q.answer, ...q.distractors].includes(choice)) throw new Error('Choose one of today’s answers.');
+    const value = { questionId: q.id, choice, revealed: true, correct: choice === null ? null : choice === q.answer };
+    const s = getState();
+    if (s.session === 'signedIn') { requirePersonalAccess(); setState(s => ({ yakshaAnswers: { ...s.yakshaAnswers, [day]: s.yakshaAnswers[day] ?? value } })); await persistMockV14(); }
+    else { await saveGuestYakshaAnswer(day, value); }
+  }, []);
+}
+export function useGunaResult(): import('./types').GunaResult | null | undefined {
+  const result = useMockState(s => s.gunaResult); const session = useSession();
+  return session.canUsePersonalFeatures ? result : null;
+}
+export function useSaveGunaResult() {
+  return useCallback(async (input: import('./types').GunaResult) => {
+    requirePersonalAccess();
+    const result = gunaResultFromAnswers(input.answers, Date.now());
+    setState(() => ({ gunaResult: result, gunaPrompt: 'done' }));
+    await persistMockV14();
+  }, []);
+}
+export function useGunaPrompt(): import('./types').GunaPrompt | undefined {
+  const stored = useMockState(s => s.gunaPrompt);
+  const { canUsePersonalFeatures: allowed } = useSession();
+  const state = allowed ? stored : 'unseen';
+  const setPrompt = useCallback(async (state: import('./types').GunaPromptState) => { requirePersonalAccess(); setState(() => ({ gunaPrompt: state })); await persistMockV14(); }, []);
+  return useMemo(() => ({ state, setState: setPrompt, markLater: () => setPrompt('later'), markDone: () => setPrompt('done') }), [state, setPrompt]);
+}
+export function useSeries(): import('./types').Series[] | undefined { return fx.series; }
+export function useSeriesById(id: string | undefined): import('./types').Series | null | undefined { return useMemo(() => fx.series.find(s => s.id === id) ?? null, [id]); }
+export function useSeriesAccess(seriesId: string): boolean | undefined {
+  const ids = useMockState(s => s.seriesAccess); const session = useSession();
+  return session.canUsePersonalFeatures && ids.includes(seriesId);
+}
+export function usePracticeUnlocks(): import('./types').PracticeUnlocks | undefined { return useMockState(s => s.practiceUnlocks); }
+/** Dev-only mock switch; live implementation always rejects. Never grants production access. */
+export function useSetMockPracticeUnlock() {
+  return useCallback(async (unlocked: boolean) => { requirePersonalAccess(); setState(() => ({ practiceUnlocks: { dhyanbhaari: unlocked } })); await persistMockV14(); }, []);
+}
+export function useVakyamCatalogue(theme?: VakyamTheme): import('./types').VakyamMonth[] | undefined {
+  return useMemo(() => groupVakyams(fx.vakyams.filter(v => !theme || v.theme === theme)), [theme]);
+}

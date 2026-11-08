@@ -508,6 +508,7 @@ export const publish = mutation({
       unpublishAt,
       status: start <= now ? "published" : "approved",
     });
+    if (table === 'vakyams' && start <= now && process.env.EMBEDDINGS_API_KEY) await ctx.scheduler.runAfter(0, internal.embeddings.atPublish, { slug });
     const draft = await revision(ctx, table, slug);
     if (draft && start <= now) await installRevision(ctx, draft);
     // Event start is a boundary too: refresh only this event's subscribers.
@@ -565,6 +566,7 @@ export const applySchedule = internalMutation({
       await checkPublishable(ctx, row, await snapshot(ctx, table, slug));
       if (draft) await installRevision(ctx, draft);
       else await ctx.db.patch(row._id, { status: "published" });
+      if (table === "vakyams" && process.env.EMBEDDINGS_API_KEY) await ctx.scheduler.runAfter(0, internal.embeddings.atPublish, { slug });
     } else {
       if (live?.unpublishAt === boundary) await ctx.db.patch(live._id, { status: "archived", publishAt: undefined, unpublishAt: undefined });
       if (draft?.unpublishAt === boundary) await ctx.db.delete(draft._id);

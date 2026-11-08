@@ -1,14 +1,20 @@
 /**
  * In-memory store for MOCK MODE (no Convex/Clerk keys). Makes every mock interaction
  * work in Expo Go: sign-in, profile setup, register, mandala completion, donations.
- * State resets on reload. Backend thread replaces reads/writes with Convex when keys exist.
+ * General demo state resets on reload; v14 account state is restored separately by hooks.mock.
  */
 import { useSyncExternalStore } from 'react';
 
 import * as fx from './fixtures';
-import type { DonationResult, Mandala, NotificationPrefs, Profile, SessionStatus } from './types';
+import type { GunaResult, GunaPromptState, PracticeUnlocks, YakshaState, DonationResult, Mandala, NotificationPrefs, Profile, SessionStatus } from './types';
 
 export type MockState = {
+  accountStorageKey: string | null;
+  gunaResult: GunaResult | null;
+  gunaPrompt: GunaPromptState;
+  practiceUnlocks: PracticeUnlocks;
+  seriesAccess: string[];
+  yakshaAnswers: Record<string, YakshaState>;
   session: SessionStatus;
   pendingPhone: string | null;
   profile: Profile | null;
@@ -29,7 +35,7 @@ export type MockState = {
 const initialMandala: Mandala = {
   id: 'mandala-1',
   practiceId: 'intro-samatha',
-  practiceTitle: 'Introductory Samatha',
+  practiceTitle: 'Samatha meditation',
   startDate: '2026-10-26',
   currentDay: 12,
   days: fx.mandalaDays,
@@ -41,10 +47,11 @@ const initialMandala: Mandala = {
 };
 
 let state: MockState = {
+  accountStorageKey: null, gunaResult: null, gunaPrompt: 'unseen', practiceUnlocks: { dhyanbhaari: false }, seriesAccess: [], yakshaAnswers: {},
   session: 'signedOut',
   pendingPhone: null,
   profile: null,
-  prefs: { practiceReminder: true, dailyVakyam: false, registeredEvents: false },
+  prefs: { practiceReminder: true, dailyVakyam: false, registeredEvents: true },
   registeredEventIds: fx.events.filter((e) => e.registered).map((e) => e.id),
   mandala: initialMandala,
   mandalaCompletionDays: [],
@@ -86,8 +93,8 @@ export const delay = (ms = 350) => new Promise((r) => setTimeout(r, ms));
 /** Clear account-scoped state; anonymous group totals are deliberately retained. */
 export function clearMockUserData() {
   sessionGeneration++;
-  setState(() => ({ session: 'signedOut', pendingPhone: null, profile: null,
-    prefs: { practiceReminder: false, dailyVakyam: false, registeredEvents: false },
+  setState(() => ({ accountStorageKey: null, gunaResult: null, gunaPrompt: 'unseen', practiceUnlocks: { dhyanbhaari: false }, seriesAccess: [], yakshaAnswers: {}, session: 'signedOut', pendingPhone: null, profile: null,
+    prefs: { practiceReminder: false, dailyVakyam: false, registeredEvents: true },
     registeredEventIds: [], mandala: null, mandalaCompletionDays: [], lastCountedSittingDay: null, savedVakyamIds: [], readingPositions: {},
     lastEpisodeId: null, donations: [],
   }));

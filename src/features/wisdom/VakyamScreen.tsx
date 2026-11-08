@@ -108,7 +108,7 @@ export function VakyamScreen() {
             “{vakyam.text}”
           </AppText>
           <AppText style={{ fontSize: 14, lineHeight: 21, color: colors.textSecondary }}>
-            {vakyam.verbatim ? 'Gurudev’s own words' : 'Paraphrase'}
+            {vakyam.verbatim ? 'Mahamuni’s own words' : 'Paraphrase'}
           </AppText>
           <View style={{ paddingTop: 22, borderTopWidth: 1, borderTopColor: colors.divider, gap: 8 }}>
             <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 15, lineHeight: 23 }}>

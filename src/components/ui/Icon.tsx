@@ -7,6 +7,7 @@ import { colors, fonts } from '@/theme/tokens';
  * Stroke icons on a 24×24 grid. Use `strokeWidth` to match the mock (2 default, 2.2 on active tab/chevrons).
  */
 export type IconName =
+  | 'lampi' | 'open-book' | 'leafi' | 'people' | 'save' | 'pin' | 'close' | 'waves' | 'down'
   | 'lamp'
   | 'offering-hands'
   | 'globe'
@@ -65,7 +66,7 @@ export function Icon({ name, size = 24, color = colors.ink, strokeWidth = 2 }: P
     strokeLinejoin: 'round' as const,
   };
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" accessibilityElementsHidden importantForAccessibility="no">
+    <Svg width={size} height={size} viewBox={name === 'waves' ? '0 0 30 16' : '0 0 24 24'} accessibilityElementsHidden importantForAccessibility="no">
       {render(name, p, color)}
     </Svg>
   );
@@ -73,16 +74,27 @@ export function Icon({ name, size = 24, color = colors.ink, strokeWidth = 2 }: P
 
 function render(name: IconName, p: Record<string, unknown>, color: string) {
   switch (name) {
+    case 'lampi':
     case 'lamp':
-      return <><Path {...p} d="M12 3c1.6 1.9 2.6 3.3 2.6 4.8a2.6 2.6 0 0 1-5.2 0C9.4 6.3 10.4 4.9 12 3z" /><Path {...p} d="M4 13h16c0 3.3-3.6 6-8 6s-8-2.7-8-6z" /><Path {...p} d="M9 21h6" /></>;
+      return <><Path {...p} d="M12 3.5c1.4 1.8 2.3 3 2.3 4.4a2.3 2.3 0 0 1-4.6 0c0-1.4.9-2.6 2.3-4.4z" /><Path {...p} d="M4.5 13h15c0 3.2-3.4 5.5-7.5 5.5S4.5 16.2 4.5 13z" /></>;
+    case 'open-book':
+    case 'leafi':
+      return <><Path {...p} d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5z" /><Path {...p} d="M12 6.5v13" /></>;
+    case 'people':
+      return <><Circle {...p} cx={9} cy={8.5} r={3} /><Path {...p} d="M3.5 19a5.5 5.5 0 0 1 11 0M15.5 6a3 3 0 0 1 0 6M17 14.5a5.5 5.5 0 0 1 3.5 4.5" /></>;
+    case 'save': return <Path {...p} d="M7 4h10v16l-5-4-5 4z" />;
+    case 'pin': return <><Path {...p} d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z" /><Circle {...p} cx={12} cy={10} r={2.3} /></>;
+    case 'close': return <Path {...p} d="M7 7l10 10M17 7L7 17" />;
+    case 'down': return <Path {...p} d="M6 9l6 6 6-6" />;
+    case 'waves': return <><Path {...p} d="M1 5c3.5-3 7-3 10.5 0s7 3 10.5 0 5-2.5 7-1" /><Path {...p} d="M1 12c3.5-3 7-3 10.5 0s7 3 10.5 0 5-2.5 7-1" /></>;
     case 'offering-hands':
       return <><Path {...p} d="M12 21c-4.5 0-8-2.8-8-6.2V12l3.2 2.4" /><Path {...p} d="M12 21c4.5 0 8-2.8 8-6.2V12l-3.2 2.4" /><Path {...p} d="M12 8.5c-1.6-2.1-4.5-1.4-4.5 1 0 2 4.5 4.5 4.5 4.5s4.5-2.5 4.5-4.5c0-2.4-2.9-3.1-4.5-1z" /></>;
     case 'globe':
-      return <><Circle {...p} cx="12" cy="12" r="9" /><Path {...p} d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18" /></>;
+      return <><Circle {...p} cx="12" cy="12" r="8.5" /><Path {...p} d="M3.5 12h17M12 3.5c2.4 2.6 2.4 14.4 0 17M12 3.5c-2.4 2.6-2.4 14.4 0 17" /></>;
     case 'grid':
       return <><Rect {...p} x="4" y="4" width="7" height="7" rx="1.5" /><Rect {...p} x="13" y="4" width="7" height="7" rx="1.5" /><Rect {...p} x="4" y="13" width="7" height="7" rx="1.5" /><Rect {...p} x="13" y="13" width="7" height="7" rx="1.5" /></>;
     case 'home':
-      return <Path {...p} d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" />;
+      return <><Path {...p} d="M4 11l8-6.5 8 6.5V20H4z" /></>;
     case 'wisdom':
       return (
         <>
@@ -125,31 +137,21 @@ function render(name: IconName, p: Record<string, unknown>, color: string) {
         </>
       );
     case 'bell':
-      return (
-        <>
-          <Path {...p} d="M6 9a6 6 0 0 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9z" />
-          <Path {...p} d="M10 20a2 2 0 0 0 4 0" />
-        </>
-      );
+      return <><Path {...p} d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z" /><Path {...p} d="M10 20.5a2 2 0 0 0 4 0" /></>;
     case 'play':
-      return <Path d="M8 5v14l11-7z" fill={color} />;
+      return <><Path {...p} d="M8 5.5v13l10.5-6.5z" fill={color} stroke="none" /></>;
     case 'pause':
       return <Path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill={color} />;
     case 'chevronRight':
-      return <Path {...p} d="m9 6 6 6-6 6" />;
+      return <Path {...p} d="M9 5l7 7-7 7" />;
     case 'chevronDown':
       return <Path {...p} d="m6 9 6 6 6-6" />;
     case 'back':
-      return <Path {...p} d="M19 12H5M11 18l-6-6 6-6" />;
+      return <><Path {...p} d="M15 5l-7 7 7 7" /></>;
     case 'check':
-      return <Path {...p} d="m5 12.5 4.5 4.5L19 7.5" />;
+      return <><Path {...p} d="M5 12.5l4.5 4.5L19 7.5" /></>;
     case 'lock':
-      return (
-        <>
-          <Rect {...p} x="5" y="11" width="14" height="10" rx="2" />
-          <Path {...p} d="M8 11V7a4 4 0 0 1 8 0v4" />
-        </>
-      );
+      return <><Rect {...p} x="5" y="11" width="14" height="9" rx="2" /><Path {...p} d="M8 11V8a4 4 0 0 1 8 0v3" /></>;
     case 'shield':
       return <Path {...p} d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6z" />;
     case 'shieldCheck':
@@ -197,13 +199,7 @@ function render(name: IconName, p: Record<string, unknown>, color: string) {
           <Path {...p} d="M12 7v5l3 2" />
         </>
       );
-    case 'search':
-      return (
-        <>
-          <Circle {...p} cx="11" cy="11" r="7" />
-          <Path {...p} d="m20 20-4-4" />
-        </>
-      );
+    case 'search': return <><Circle {...p} cx={11} cy={11} r={6.5} /><Path {...p} d="M16 16l4 4" /></>;
     case 'mic':
       return (
         <>
@@ -251,12 +247,7 @@ function render(name: IconName, p: Record<string, unknown>, color: string) {
     case 'flag':
       return <Path {...p} d="M5 21V4M5 4h11l-2 4 2 4H5" />;
     case 'share':
-      return (
-        <>
-          <Path {...p} d="M12 3v13M7 8l5-5 5 5" />
-          <Path {...p} d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />
-        </>
-      );
+      return <><Path {...p} d="M12 4v11M7.5 8.5L12 4l4.5 4.5M5 14v5h14v-5" /></>;
     case 'scales':
       return <Path {...p} d="M12 3v18M5 7h14M7 7l-3 7a3 3 0 0 0 6 0zM17 7l-3 7a3 3 0 0 0 6 0z" />;
     case 'replay15':

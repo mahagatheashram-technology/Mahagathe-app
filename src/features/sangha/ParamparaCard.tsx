@@ -19,7 +19,7 @@ export function ParamparaCard() {
       onPress={() => router.push('/parampara')}>
       <RedFeature style={{ borderRadius: 24, padding: 20, gap: 16 }}>
         <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}>
-          <PortraitPlaceholder width={76} height={92} radius={16} label="Approved photo of Gurudev" fontSize={10} lineHeight={13} padding={6} />
+          <PortraitPlaceholder width={76} height={92} radius={16} label="Approved photo of Mahamuni" fontSize={10} lineHeight={13} padding={6} />
           <View style={{ flex: 1, gap: 4 }}>
             <AppText variant="eyebrow" color={colors.onFeatureMuted}>
               Paramparā

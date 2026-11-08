@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { AppText } from '@/components/ui';
 import { colors } from '@/theme/tokens';
 
-/** Rounded-rect stand-in for the approved Gurudev photo, on the red feature block. */
+/** Rounded-rect stand-in for the approved Mahamuni photo, on the red feature block. */
 export function PortraitPlaceholder({
   width,
   height,
