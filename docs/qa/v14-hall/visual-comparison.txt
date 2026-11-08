@@ -1,0 +1,7 @@
+Practice: mock 780x2526; app 780x2524.
+Primary button: mock y=972–1079px; app y=972–1079px.
+Class card: mock y=1728–2001px; app y=1728–2001px.
+Mandala: mock 780x1814; app 780x1812.
+Primary button: mock y=1624–1731px; app y=1624–1731px.
+Player: mock 780x1688; app 780x1688.
+Mean absolute RGB difference (0–255): 0.1648, 0.1582, 0.1519

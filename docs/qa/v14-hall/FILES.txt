@@ -1,0 +1,13 @@
+docs/qa/v14-hall/HANDOFF.md
+docs/qa/v14-hall/Mandala-viewport.png
+docs/qa/v14-hall/Mandala.png
+docs/qa/v14-hall/Player.png
+docs/qa/v14-hall/Practice-viewport.png
+docs/qa/v14-hall/Practice.png
+docs/qa/v14-hall/export.txt
+docs/qa/v14-hall/interactions.txt
+docs/qa/v14-hall/lint.txt
+docs/qa/v14-hall/tests.txt
+docs/qa/v14-hall/typecheck.txt
+docs/qa/v14-hall/visual-comparison.txt
+docs/qa/v14-hall/FILES.txt

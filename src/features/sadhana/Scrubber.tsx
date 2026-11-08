@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react';
 import { PanResponder, Platform, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/ui';
-import { colors, fonts } from '@/theme/tokens';
+import { v14Colors as colors, fonts } from '@/theme/tokens';
 import { formatClock } from './format';
 
 const fractionAt = (x: number, w: number) =>
   w > 0 ? Math.min(1, Math.max(0, x / w)) : 0;
 
 /**
- * Player scrubber from PlayerV3: 4pt track on rgba white, 16pt white thumb, elapsed/total below.
+ * Hall player scrubber: 4pt track, 16pt white thumb, elapsed/total below.
  * Drag (or tap) anywhere on the 44pt-tall touch area to seek; the seek is committed on release.
  * Exposed to screen readers as an adjustable slider (swipe up/down = ±15 s).
  */
@@ -125,7 +125,7 @@ export function Scrubber({
           <View
             style={[
               styles.thumb,
-              { left: fraction * Math.max(0, width - 14) - 2 },
+              { left: fraction * Math.max(0, width) - 7 },
             ]}
           />
         </View>
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   track: {
     height: 4,
     borderRadius: 4,
-    backgroundColor: colors.playerTrack,
+    backgroundColor: colors.hallTrack,
     justifyContent: 'center',
   },
   fill: {
@@ -153,21 +153,21 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     borderRadius: 4,
-    backgroundColor: colors.playerMuted,
+    backgroundColor: colors.lamp,
   },
   thumb: {
     position: 'absolute',
-    top: -7,
-    width: 18,
-    height: 18,
+    top: -6,
+    width: 16,
+    height: 16,
     borderRadius: 999,
     backgroundColor: colors.white,
   },
   times: { flexDirection: 'row', justifyContent: 'space-between' },
   time: {
     fontSize: 14,
-    lineHeight: 21,
-    fontFamily: fonts.sansMedium,
-    color: colors.playerMuted,
+    lineHeight: 21.7,
+    fontFamily: fonts.ui,
+    color: colors.onDark2,
   },
 });
