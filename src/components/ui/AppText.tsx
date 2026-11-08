@@ -1,4 +1,4 @@
-import { StyleSheet, Text, type StyleProp, type TextProps, type TextStyle } from 'react-native';
+import { Platform, StyleSheet, Text, useWindowDimensions, type StyleProp, type TextProps, type TextStyle } from 'react-native';
 
 import { colors, fonts } from '@/theme/tokens';
 
@@ -55,12 +55,49 @@ export type TextVariant = keyof typeof textVariants;
 
 type Props = TextProps & { variant?: TextVariant; color?: string; style?: StyleProp<TextStyle> };
 
+/**
+ * Font vertical metrics (hhea, per em). Eczar's tall ascent and deep descent (1.143 / 0.634) are
+ * there for Devanagari. iOS places the baseline at `lineHeight - descent`, so with any line height
+ * tighter than the font's natural 1.78em the tops of Eczar glyphs were cut off on device, while web
+ * centres the spare space and looked right. On iOS we move the text down to the web position with
+ * top padding and cancel it with negative margins, so layout and line spacing stay as designed and
+ * the full ascent has room.
+ *
+ * RN 0.88 only centres iOS lines when lineHeight >= the natural height. If a future RN turns on
+ * `enableIOSCompressedTextFrameAdjustment` by default, RN will shift the text itself: re-check this.
+ */
+const METRICS: { prefix: string; ascent: number; descent: number }[] = [
+  { prefix: 'Eczar', ascent: 1.143, descent: 0.634 },
+  { prefix: 'Mukta', ascent: 1.13, descent: 0.532 },
+];
+
+function iosBaselineFix(style: TextStyle, scale: number): TextStyle | null {
+  const { fontFamily, fontSize, lineHeight } = style;
+  if (!fontFamily || !fontSize || !lineHeight) return null;
+  const m = METRICS.find(x => fontFamily.startsWith(x.prefix));
+  if (!m) return null;
+  const natural = (m.ascent + m.descent) * fontSize;
+  const raw = natural - lineHeight;
+  if (raw <= 0.5) return null;
+  // iOS scales fontSize and lineHeight with Dynamic Type; scale the correction with them.
+  const deficit = raw * scale;
+  const num = (v: unknown) => (typeof v === 'number' ? v : 0);
+  const pt = num(style.paddingTop ?? style.paddingVertical ?? style.padding);
+  const mt = num(style.marginTop ?? style.marginVertical ?? style.margin);
+  const mb = num(style.marginBottom ?? style.marginVertical ?? style.margin);
+  return { paddingTop: pt + deficit, marginTop: mt - deficit / 2, marginBottom: mb - deficit / 2 };
+}
+
 export function AppText({ variant = 'body', color, style, ...rest }: Props) {
+  const { fontScale } = useWindowDimensions();
+  const composed = [textVariants[variant], color ? { color } : null, style];
+  const scale = rest.allowFontScaling === false ? 1 : Math.min(fontScale, rest.maxFontSizeMultiplier ?? 1.6);
+  const fix = Platform.OS === 'ios' ? iosBaselineFix(StyleSheet.flatten(composed) ?? {}, scale) : null;
   return (
     <Text
       maxFontSizeMultiplier={1.6}
       {...rest}
-      style={[textVariants[variant], color ? { color } : null, style]}
+      style={fix ? [...composed, fix] : composed}
     />
   );
 }
