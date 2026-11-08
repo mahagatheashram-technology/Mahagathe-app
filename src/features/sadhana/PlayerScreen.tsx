@@ -130,9 +130,9 @@ function Session({ title, durationSec, practiceId, mandala, noMandala, mockDurat
   return <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
     <View style={styles.hero}>
       <SittingLamp />
-      <AppText style={styles.sitting}>Sitting {sitting} of 40</AppText>
+      {mandala && <AppText style={styles.sitting}>Sitting {sitting} of 40</AppText>}
       <AppText accessibilityRole="header" style={styles.title}>{title}</AppText>
-      <AppText style={styles.instruction}>{mockDuration ? '[Approved guide and audio to come. Mock sitting timer.]' : 'Sit upright, let the eyes close, and follow Mahamuni’s voice.'}</AppText>
+      <AppText style={styles.instruction}>{player.engine === 'audio' ? 'Sit upright, let the eyes close, and follow Mahamuni’s voice.' : !isLiveBackend ? `Sit upright and let the eyes close.${mockDuration ? ' [Approved guide and audio to come.]' : ''} Silent sitting timer; the recording is not added yet.` : 'Sit upright and let the eyes close.'}</AppText>
     </View>
     {player.finished && <View style={styles.completion} accessibilityLiveRegion="polite">
       <AppText style={styles.completionTitle}>Sitting complete</AppText>
