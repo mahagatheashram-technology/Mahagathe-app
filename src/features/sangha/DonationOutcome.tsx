@@ -1,12 +1,12 @@
 import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 
-import { AppText, Button, Card, Icon, type IconName } from '@/components/ui';
+import { AppText, Icon, OutlineButton, PrimaryButton, type IconName } from '@/components/ui';
 import { useOpenWhatsApp, type DonationResult } from '@/data';
 import { formatRupees } from './format';
 import { colors, fonts } from '@/theme/tokens';
 
-/** Result of "Pay with UPI": success with receipt reference, pending, or failure with a safe retry (G-07). */
+/** Result of "Give with UPI": success with receipt reference, pending, or failure with a safe retry (G-07). */
 export function DonationOutcome({
   result,
   onRetry,
@@ -36,6 +36,7 @@ export function DonationOutcome({
   }[result.status];
 
   const contactOnWhatsApp = useOpenWhatsApp();
+  const stretch = { alignSelf: 'stretch', minHeight: 54 } as const;
   return (
     <View style={{ flex: 1, gap: 22 }} accessibilityLiveRegion="polite">
       <View style={{ alignItems: 'center', gap: 14, paddingTop: 24 }}>
@@ -44,30 +45,32 @@ export function DonationOutcome({
             width: 72,
             height: 72,
             borderRadius: 36,
-            backgroundColor: colors.tile,
+            backgroundColor: colors.lateriteSoft,
             borderWidth: result.status === 'success' ? 2 : 1,
-            borderColor: result.status === 'success' ? colors.actionRed : colors.border,
+            borderColor: result.status === 'success' ? colors.laterite : colors.line,
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <Icon name={copy.icon} size={32} color={colors.actionRed} strokeWidth={2.2} />
+          <Icon name={copy.icon} size={32} color={colors.laterite} strokeWidth={2.2} />
         </View>
-        <AppText accessibilityRole="header" style={{ fontFamily: fonts.serifSemibold, fontSize: 28, lineHeight: 36, textAlign: 'center' }}>
+        <AppText
+          accessibilityRole="header"
+          style={{ fontFamily: fonts.displaySemibold, fontSize: 33, lineHeight: 40, textAlign: 'center', color: colors.v14Ink }}>
           {copy.title}
         </AppText>
-        <AppText style={{ fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 22.4, color: colors.muted, textAlign: 'center' }}>{copy.body}</AppText>
+        <AppText style={{ fontFamily: fonts.ui, fontSize: 16, lineHeight: 24.8, color: colors.text2, textAlign: 'center' }}>{copy.body}</AppText>
       </View>
 
       {result.status === 'success' && result.receiptRef ? (
-        <Card radius={18} style={{ paddingHorizontal: 16, paddingVertical: 14 }}>
-          <AppText variant="caption">Receipt reference</AppText>
-          <AppText selectable style={{ fontFamily: fonts.sansSemibold, fontSize: 16, lineHeight: 24 }}>
+        <View style={{ borderRadius: 16, backgroundColor: colors.lateriteSoft, paddingHorizontal: 18, paddingVertical: 16 }}>
+          <AppText style={{ fontFamily: fonts.ui, fontSize: 14, lineHeight: 21, color: colors.text2 }}>Receipt reference</AppText>
+          <AppText selectable style={{ fontFamily: fonts.displaySemibold, fontSize: 21, lineHeight: 30, color: colors.v14Ink }}>
             {result.receiptRef}
           </AppText>
-          <AppText variant="caption" style={{ marginTop: 6 }}>
+          <AppText style={{ fontFamily: fonts.ui, fontSize: 14, lineHeight: 21, marginTop: 6, color: colors.text2 }}>
             Keep this reference. Quote it if you write to us about this gift.
           </AppText>
-        </Card>
+        </View>
       ) : null}
 
       <View style={{ flex: 1 }} />
@@ -75,17 +78,18 @@ export function DonationOutcome({
       <View style={{ gap: 10 }}>
         {result.status === 'failed' ? (
           <>
-            <Button label="Try again" onPress={onRetry} />
-            <Button
+            <PrimaryButton label="Try again" onPress={onRetry} />
+            <OutlineButton
               label="Contact us on WhatsApp"
-              variant="outline"
+              color={colors.laterite}
+              style={stretch}
               onPress={() => contactOnWhatsApp().catch(() => undefined)}
             />
           </>
         ) : (
           <>
-            <Button label="Done" onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} />
-            {result.status === 'success' ? <Button label="Give again" variant="outline" onPress={onAgain} /> : null}
+            <PrimaryButton label="Done" onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} />
+            {result.status === 'success' ? <OutlineButton label="Give again" color={colors.laterite} style={stretch} onPress={onAgain} /> : null}
           </>
         )}
       </View>
