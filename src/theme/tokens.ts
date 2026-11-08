@@ -1,8 +1,22 @@
 /**
- * Mahagathe design tokens — taken 1:1 from docs/design/mocks/BrandV3.dc.html.
+ * Mahagathe design tokens — v14 palette plus preserved historical exports.
  * Never hard-code a hex in a screen; add it here first.
  */
 export const colors = {
+  // v14: four places, natural dyes and content review. Legacy values below stay compatible.
+  limewash: '#FBFAF7', indigo: '#1F2347', indigo2: '#2B3160', lamp: '#F2B544',
+  onDark2: '#B9BCD9', leaf: '#E7D3A8', leafEdge: '#C9AE78', darkLeaf: '#5B4628',
+  v14Ink: '#2A1E14', laterite: '#9C3D22', lateriteSoft: '#F3E2D9', text2: '#6A5B50', line: '#E6E0D6',
+  seriesMahabharata: '#9C3D22', seriesRamayana: '#4C6639', seriesPashupata: '#5E5A57', seriesIks: '#9A6B12',
+  sattva: '#FFFDF6', sattvaEdge: '#C9AE78', rajas: '#B5341F', tamas: '#2A1E14',
+  reviewText: '#7A5200', reviewBackground: '#FFF4D6', reviewDarkBackground: 'rgba(242,181,68,.10)',
+  v14TabInactive: '#75685E', wisdomTab: '#8A6A2E',
+  leafRule: 'rgba(120,90,40,.07)', segmentOff: 'rgba(42,30,20,.18)',
+  pillLight: 'rgba(42,30,20,.06)', pillDark: 'rgba(255,255,255,.1)',
+  darkLine: 'rgba(255,255,255,.1)', photoStripe: 'rgba(255,255,255,.06)', photoText: '#F6DCCF',
+  cord: 'rgba(255,236,200,.55)', knot: '#EBD9B4', motif: 'rgba(255,255,255,.85)', motifDot: '#E0463A',
+  portraitScrimTop: 'rgba(0,0,0,.28)', portraitScrimBottom: 'rgba(20,10,4,.78)',
+
   /** Brand colour (mahagathe.com). Logo moments and the Mandala ring only; too bright for text. */
   brandRed: '#F60000',
   /** Buttons, links, active tab, icons, progress. White text on it is 6.3:1. */
@@ -102,22 +116,18 @@ export const gradients = {
 
 /**
  * Custom fonts must be selected by family (fontWeight does not pick a face on Android).
- * Lora = titles & teachings, Poppins = interface, Noto Serif Devanagari = scripture.
+ * Eczar = display, teachings and Devanagari; Mukta = interface.
  */
 export const fonts = {
-  serif: 'Lora_400Regular',
-  serifItalic: 'Lora_400Regular_Italic',
-  serifMedium: 'Lora_500Medium',
-  serifSemibold: 'Lora_600SemiBold',
-  sans: 'Poppins_400Regular',
-  sansMedium: 'Poppins_500Medium',
-  sansSemibold: 'Poppins_600SemiBold',
-  devaRegular: 'NotoSerifDevanagari_400Regular',
-  deva: 'NotoSerifDevanagari_500Medium',
-  devaSemibold: 'NotoSerifDevanagari_600SemiBold',
+  serif: 'Eczar_400Regular', serifItalic: 'Eczar_400Regular', serifMedium: 'Eczar_500Medium', serifSemibold: 'Eczar_600SemiBold',
+  sans: 'Mukta_400Regular', sansMedium: 'Mukta_500Medium', sansSemibold: 'Mukta_600SemiBold',
+  devaRegular: 'Eczar_400Regular', deva: 'Eczar_500Medium', devaSemibold: 'Eczar_600SemiBold',
+  display: 'Eczar_400Regular', displayMedium: 'Eczar_500Medium', displaySemibold: 'Eczar_600SemiBold', displayBold: 'Eczar_700Bold',
+  ui: 'Mukta_400Regular', uiMedium: 'Mukta_500Medium', uiSemibold: 'Mukta_600SemiBold', uiBold: 'Mukta_700Bold',
 } as const;
 
 export const radii = {
+  leaf: 16, photo: 12, button: 14, v14Card: 20,
   sm: 8,
   md: 12,
   lg: 14,
@@ -161,3 +171,15 @@ export const cardStyle = {
   borderColor: colors.cardBorder,
   ...shadows.card,
 } as const;
+
+/** v14 scale; line heights are absolute React Native points. */
+export const typeScale = { small: 13, label: 15, medium: 17, section: 21, heading: 26, title: 33, display: 41 } as const;
+export const typography = {
+  body: { fontFamily: fonts.ui, fontSize: 16, lineHeight: 24.8 },
+  reading: { fontFamily: fonts.display, fontSize: 18.5, lineHeight: 31.82 },
+} as const;
+export const placeColors = { today: colors.limewash, hall: colors.indigo, library: colors.leaf, village: colors.laterite } as const;
+
+/** Canonical v14 names; historical `colors.ink`/`tabInactive` remain untouched above. */
+export const v14Colors = { ...colors, ink: colors.v14Ink, tabInactive: colors.v14TabInactive } as const;
+export const v14Radii = { leaf: 16, photo: 12, button: 14, card: 20 } as const;

@@ -39,7 +39,7 @@ export default function WelcomeScreen() {
           </AppText>
           <AppText style={styles.motto}>सत्यं वद · धर्मं चर</AppText>
         </View>
-        <AppText style={styles.tagline}>Daily practice and wisdom from a living lineage.</AppText>
+        <AppText style={styles.tagline}>Sit each day, read the words of the Most Venerable Mahamuni and follow the Mahabharata, with the sangha of Mahagathe Ashram.</AppText>
       </View>
       <View style={{ paddingHorizontal: 24, gap: 6 }}>
         <Button

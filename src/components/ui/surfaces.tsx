@@ -82,7 +82,7 @@ const chipStyles = StyleSheet.create({
   },
 });
 
-/** Placeholder for a photo that needs approval (e.g. Gurudev portrait). */
+/** Placeholder for a photo that needs approval (e.g. Mahamuni portrait). */
 export function ApprovedPhotoPlaceholder({
   size = 48,
   onRed,

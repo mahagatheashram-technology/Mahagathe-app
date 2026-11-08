@@ -138,6 +138,7 @@ export const vibhagas = query({
       name: v.string(),
       tagline: v.string(),
       photo: V.photo,
+      vibhaga: v.string(),
       about: v.string(),
     }),
   ),
@@ -154,13 +155,14 @@ export const vibhagas = query({
         name: row.name,
         tagline: row.tagline,
         photo: row.photo,
+        vibhaga: row.vibhaga ?? "[Vibhāga, to confirm]",
         about: row.about,
       }));
   },
 });
 export const pathways = query({
   args: {},
-  returns: v.array(v.object({ id: v.string(), ...V.pathwayFields })),
+  returns: v.array(V.programResult),
   handler: async (ctx) => {
     await observeClock(ctx);
     const rows = await ctx.db
@@ -169,7 +171,8 @@ export const pathways = query({
       .collect();
     return rows
       .filter((row) => isPublished(row))
-      .map((row) => ({ id: row.slug, name: row.name, about: row.about }));
+      .sort((a, b) => Number(b.featured ?? false) - Number(a.featured ?? false))
+      .map((row) => ({ id: row.slug, name: row.name, about: row.about, titleDev: row.titleDev ?? "[Title, as approved]", tagline: row.tagline ?? "[Tagline, as approved]", featured: row.featured ?? false, ageRange: row.ageRange }));
   },
 });
 export const parampara = query({
@@ -294,17 +297,17 @@ export const eventRegistrations = query({
 
 export const vibhaga = query({
   args: { id: v.string() },
-  returns: v.union(v.object({ id: v.string(), name: v.string(), tagline: v.string(), photo: V.photo, about: v.string() }), v.null()),
+  returns: v.union(v.object({ id: v.string(), name: v.string(), tagline: v.string(), photo: V.photo, about: v.string(), vibhaga: v.string() }), v.null()),
   handler: async (ctx, { id }) => {
     const row = await publishedBySlug(ctx, "vibhagas", id);
-    return row ? { id: row.slug, name: row.name, tagline: row.tagline, photo: row.photo, about: row.about } : null;
+    return row ? { id: row.slug, name: row.name, tagline: row.tagline, photo: row.photo, about: row.about, vibhaga: row.vibhaga ?? "[Vibhāga, to confirm]" } : null;
   },
 });
 export const pathway = query({
-  args: { id: v.string() }, returns: v.union(v.object({ id: v.string(), ...V.pathwayFields }), v.null()),
+  args: { id: v.string() }, returns: v.union(V.programResult, v.null()),
   handler: async (ctx, { id }) => {
     const row = await publishedBySlug(ctx, "pathways", id);
-    return row ? { id: row.slug, name: row.name, about: row.about } : null;
+    return row ? { id: row.slug, name: row.name, about: row.about, titleDev: row.titleDev ?? "[Title, as approved]", tagline: row.tagline ?? "[Tagline, as approved]", featured: row.featured ?? false, ageRange: row.ageRange } : null;
   },
 });
 export const contactInfo = query({

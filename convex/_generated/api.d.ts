@@ -24,6 +24,9 @@ import type * as profiles from "../profiles.js";
 import type * as sadhana from "../sadhana.js";
 import type * as sangha from "../sangha.js";
 import type * as seed from "../seed.js";
+import type * as v14 from "../v14.js";
+import type * as embeddings from "../embeddings.js";
+import type * as lib_v14Validators from "../lib/v14Validators.js";
 import type * as wisdom from "../wisdom.js";
 
 import type {
@@ -49,6 +52,9 @@ declare const fullApi: ApiFromModules<{
   sadhana: typeof sadhana;
   sangha: typeof sangha;
   seed: typeof seed;
+  v14: typeof v14;
+  embeddings: typeof embeddings;
+  "lib/v14Validators": typeof lib_v14Validators;
   wisdom: typeof wisdom;
 }>;
 

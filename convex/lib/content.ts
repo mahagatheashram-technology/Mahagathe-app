@@ -91,6 +91,7 @@ export async function toVakyam(
 }
 
 type UserTable =
+  | "yakshaAnswers" | "seriesAccess" | "practiceUnlocks"
   | "profiles"
   | "guardianConsentRequests"
   | "guardianConsents"

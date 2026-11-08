@@ -1,0 +1,3 @@
+$ npx expo lint
+
+Exit code: 0

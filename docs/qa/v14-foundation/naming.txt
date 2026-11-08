@@ -1,0 +1,3 @@
+$ grep -rn Gurudev\|Mahagate[^h] src convex
+
+Exit code: 1

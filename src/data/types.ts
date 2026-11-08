@@ -144,7 +144,7 @@ export type EventItem = {
   id: Id;
   title: string;
   startsAt: string; // ISO
-  place: string; // "Mahagate Ashram" | "Online"
+  place: string; // "Mahagathe Ashram" | "Online"
   timeLabel: string; // "All day" | "6:30 AM IST"
   eligibility: string; // "Open to all" | "Enrolled sādhakas" | "Ages 13–24"
   placesLeft: number | null;
@@ -155,7 +155,7 @@ export type EventItem = {
 
 export type PhotoKey = 'abhyudaya' | 'adhyaya' | 'ayuri' | 'bhandara' | 'samriddhi';
 
-export type Vibhaga = { id: Id; name: string; tagline: string; photo: PhotoKey; about: string };
+export type Vibhaga = { id: Id; name: string; tagline: string; photo: PhotoKey; about: string; vibhaga: string };
 export type Pathway = { id: Id; name: string; about: string };
 
 export type Parampara = {
@@ -180,3 +180,17 @@ export type VolunteerSignup = { vibhagaId: Id; name: string; phone: string; cons
 
 /** Official contact shown in the About sheet. Placeholder until approved (D-21). */
 export type ContactInfo = { legalName: string; address: string; phone: string; email: string };
+
+/** v14 daily riddle, keyed to the IST calendar day. */
+export type YakshaQuestion = { id: Id; dayKey: string; question: string; answer: string; distractors: [string, string]; reference: string; meaning: string; approved: boolean };
+export type YakshaState = { questionId: Id; choice: string | null; revealed: boolean; correct: boolean | null };
+export type TodayYaksha = { question: YakshaQuestion; state: YakshaState };
+export type Guna = 'sattva' | 'rajas' | 'tamas';
+export type GunaResult = { scores: Record<Guna, number>; percents: Record<Guna, number>; dominant: Guna; secondary: Guna; profileType: 'dominant' | 'dual' | 'balanced'; answers: Record<string, number>; takenAt: number };
+export type GunaPromptState = 'unseen' | 'later' | 'done';
+export type GunaPrompt = { state: GunaPromptState; setState: (state: GunaPromptState) => Promise<void>; markLater: () => Promise<void>; markDone: () => Promise<void> };
+export type PracticeUnlocks = { dhyanbhaari: boolean };
+export type SeriesPart = { number: number; title: string; when?: string; locked?: boolean; free?: boolean; seasonId?: Id; episodeIds?: Id[] };
+export type Series = { id: Id; titleDev: string; title: string; color: string; motif: 'wheel' | 'bow' | 'ash' | 'yantra'; description: string; status: 'reading' | 'upcoming' | 'free-first'; parts: SeriesPart[] };
+export type Program = Pathway & { titleDev: string; tagline: string; featured: boolean; ageRange?: string };
+export type VakyamMonth = { month: string; label: string; vakyams: Vakyam[] };

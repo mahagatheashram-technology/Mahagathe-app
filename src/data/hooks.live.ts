@@ -1,9 +1,10 @@
 /** Live implementation of the screen data contract. Never imports mock fixtures. */
 import { useConvex, useMutation, useQuery } from 'convex/react';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { Linking, Platform, Share } from 'react-native';
 
 import type { Id } from '../../convex/_generated/dataModel';
+import { useGuestYakshaAnswers, saveGuestYakshaAnswer } from './yakshaDeviceStore';
 import { api } from '../../convex/_generated/api';
 import { useLiveSession } from '../providers/LiveSessionProvider';
 import { useClock } from './clock';
@@ -47,7 +48,7 @@ export function useAccountActions() {
   };
 }
 export function useTodayVakyam() { return useQuery(api.wisdom.today, {}); }
-export function useVakyam(id: string | undefined) { return useQuery(api.wisdom.byId, id ? { id } : 'skip'); }
+export function useVakyam(id: string | undefined) { const result = useQuery(api.wisdom.byId, id ? { id } : 'skip'); return id ? result : null; }
 export function useVakyamThemes() { return useQuery(api.wisdom.themes, {}); }
 export function useVakyamsByTheme(theme: VakyamTheme) { return useQuery(api.wisdom.byTheme, { theme }); }
 export function useSavedVakyam(id: string) {
@@ -61,11 +62,22 @@ export function useReportContent() {
   const report = useMutation(api.wisdom.report);
   return useCallback(async (input: { contentId: string; reason: string }) => { await report(input); }, [report]);
 }
-export function useWisdomSearch(query: string) { return useQuery(api.wisdom.search, { text: query }); }
+export function useWisdomSearch(query: string): import('./types').WisdomSearchResult | undefined {
+  const client = useConvex();
+  const exact = useQuery(api.wisdom.search, { text: query });
+  const [semantic, setSemantic] = useState<{ query: string; result: import('./types').WisdomSearchResult } | null>(null);
+  useEffect(() => {
+    let active = true;
+    if (!query.trim()) return;
+    const timer = setTimeout(() => { void client.action(api.embeddings.search, { text: query }).then(result => { if (active) setSemantic({ query, result }); }).catch(() => { /* Reactive text result stays available. */ }); }, 250);
+    return () => { active = false; clearTimeout(timer); };
+  }, [client, query, exact]);
+  return semantic?.query === query ? semantic.result : exact;
+}
 export function useSmallStep() { return useQuery(api.wisdom.smallStep, {}); }
 export function usePractices() { return useQuery(api.sadhana.practices, {}); }
 export function useTodayPractice() { return useQuery(api.sadhana.todayPractice, {}); }
-export function usePractice(id: string | undefined) { return useQuery(api.sadhana.practice, id ? { id } : 'skip'); }
+export function usePractice(id: string | undefined) { const result = useQuery(api.sadhana.practice, id ? { id } : 'skip'); return id ? result : null; }
 /** Fetch on an explicit play action: storage URLs never enter catalogue subscriptions. */
 export function usePracticeAudio() {
   const request = useMutation(api.sadhana.getPracticeAudioUrl);
@@ -143,3 +155,41 @@ export function useDonationResult(id: string | undefined) {
   const { canUsePersonalFeatures: allowed } = useSession();
   return useQuery(api.dana.donation, allowed && id ? { id: id as Id<'donations'> } : 'skip');
 }
+
+// v14 contract. Guests keep the daily answer on this device; account state is server-owned.
+export function useTodayYaksha(): import('./types').TodayYaksha | null | undefined {
+  const result = useQuery(api.v14.todayYaksha, {});
+  const { isSignedIn } = useSession();
+  const guest = useGuestYakshaAnswers();
+  return useMemo(() => !result ? result : ({ question: { ...result.question, distractors: result.question.distractors as [string, string] }, state: !isSignedIn && guest[result.question.dayKey]?.questionId === result.question.id ? guest[result.question.dayKey] : result.state }), [result, isSignedIn, guest]);
+}
+export function useAnswerYaksha() {
+  const save = useMutation(api.v14.answerYaksha); const today = useTodayYaksha(); const { isSignedIn } = useSession();
+  return useCallback(async (choice: string | null) => {
+    if (isSignedIn) { await save({ choice }); return; }
+    if (!today) throw new Error('No question today.');
+    const q = today.question;
+    if (choice !== null && ![q.answer, ...q.distractors].includes(choice)) throw new Error('Choose one of today’s answers.');
+    await saveGuestYakshaAnswer(q.dayKey, { questionId: q.id, choice, revealed: true, correct: choice === null ? null : choice === q.answer });
+  }, [save, today, isSignedIn]);
+}
+export function useGunaResult() {
+  const { canUsePersonalFeatures: allowed } = useSession(); const result = useQuery(api.v14.gunaResult, allowed ? {} : 'skip'); return allowed ? result : null;
+}
+export function useSaveGunaResult() {
+  const save = useMutation(api.v14.saveGunaResult); return useCallback(async (result: import('./types').GunaResult) => { await save({ result }); }, [save]);
+}
+export function useGunaPrompt(): import('./types').GunaPrompt | undefined {
+  const { canUsePersonalFeatures: allowed } = useSession();
+  const state = useQuery(api.v14.gunaPrompt, allowed ? {} : 'skip'); const save = useMutation(api.v14.setGunaPrompt);
+  const setState = useCallback(async (state: import('./types').GunaPromptState) => { await save({ state }); }, [save]);
+  return useMemo(() => allowed && state === undefined ? undefined : { state: state ?? 'unseen', setState, markLater: () => setState('later'), markDone: () => setState('done') }, [allowed, state, setState]);
+}
+export function useSeries() { return useQuery(api.v14.series, {}); }
+export function useSeriesById(id: string | undefined) { const result = useQuery(api.v14.seriesById, id ? { id } : 'skip'); return id ? result : null; }
+export function useSeriesAccess(seriesId: string) {
+  const { canUsePersonalFeatures: allowed } = useSession(); const result = useQuery(api.v14.seriesAccess, allowed ? { seriesId } : 'skip'); return allowed ? result : false;
+}
+export function usePracticeUnlocks() { return useQuery(api.v14.practiceUnlocks, {}); }
+export function useSetMockPracticeUnlock() { return useCallback(async (_unlocked: boolean) => { throw new Error('Practice unlock toggles are available only in mock mode.'); }, []); }
+export function useVakyamCatalogue(theme?: VakyamTheme) { return useQuery(api.wisdom.catalogue, { theme }); }

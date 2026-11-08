@@ -3,7 +3,7 @@ import { v, ConvexError } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import type { QueryCtx } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
-import { getUser, isEnrolled, requireConsentedUser } from "./lib/auth";
+import { getUser, hasPracticeUnlock, requireConsentedUser } from "./lib/auth";
 import { canAccessPractice } from "./lib/logic";
 import {
   isPublished,
@@ -26,10 +26,8 @@ async function present(
   item: Doc<"practices">,
   user: Doc<"users"> | null,
 ) {
-  const allowed = canAccessPractice(
-    item.access,
-    await isEnrolled(ctx, user, item.programId),
-  );
+  const unlocked = await hasPracticeUnlock(ctx, user, item);
+  const allowed = canAccessPractice(item.access, unlocked);
   // Restricted instructions are confidential too. Lists expose only catalogue
   // metadata to non-enrolled users, never storage IDs or signed URLs.
   return {
@@ -56,6 +54,7 @@ export const practices = query({
       .collect();
     const values = await Promise.all(
       rows
+        .filter(row => row.slug === "intro-samatha" || row.slug === "dhyanbhaari")
         .sort((a, b) => a.order - b.order)
         .map(async (row) =>
           (await visible(ctx, row)) ? present(ctx, row, user) : null,
@@ -103,10 +102,12 @@ export const getPracticeAudioUrl = mutation({
     const item = await needPublished(ctx, "practices", id);
     if (!(await visible(ctx, item)))
       throw new ConvexError("This practice is unavailable.");
+    const user = await getUser(ctx);
+    const unlocked = await hasPracticeUnlock(ctx, user, item);
     if (
       !canAccessPractice(
         item.access,
-        await isEnrolled(ctx, await getUser(ctx), item.programId),
+        unlocked,
       )
     ) {
       throw new ConvexError(

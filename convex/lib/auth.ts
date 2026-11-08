@@ -78,3 +78,10 @@ export async function isEnrolled(
       (programId === undefined || row.programId === programId),
   );
 }
+
+/** v14 attendance flag is independent of general course enrollment. */
+export async function hasPracticeUnlock(ctx: Pick<QueryCtx, 'db'>, user: Doc<'users'> | null, practice: Pick<Doc<'practices'>, 'slug' | 'programId'>): Promise<boolean> {
+  if (practice.slug !== 'dhyanbhaari') return isEnrolled(ctx, user, practice.programId);
+  if (!user) return false;
+  return (await ctx.db.query('practiceUnlocks').withIndex('by_user', q => q.eq('userId', user._id)).unique())?.dhyanbhaari ?? false;
+}
