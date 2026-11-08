@@ -4,6 +4,7 @@
  */
 export const colors = {
   // v14: four places, natural dyes and content review. Legacy values below stay compatible.
+  v14SwitchOff: '#C9BFB5',
   limewash: '#FBFAF7', indigo: '#1F2347', indigo2: '#2B3160', lamp: '#F2B544',
   onDark2: '#B9BCD9', leaf: '#E7D3A8', leafEdge: '#C9AE78', darkLeaf: '#5B4628',
   v14Ink: '#2A1E14', laterite: '#9C3D22', lateriteSoft: '#F3E2D9', text2: '#6A5B50', line: '#E6E0D6',

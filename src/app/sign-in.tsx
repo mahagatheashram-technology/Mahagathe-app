@@ -1,14 +1,15 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 
-import { useProfile, useSession } from '@/data';
+import { useGunaPrompt, useProfile, useSession } from '@/data';
 import { OtpStep } from '@/features/onboarding/OtpStep';
 import { PhoneStep } from '@/features/onboarding/PhoneStep';
 
 export default function SignInScreen() {
   const router = useRouter();
-  const { status, sendOtp, verifyOtp } = useSession();
+  const { status, canUsePersonalFeatures, sendOtp, verifyOtp } = useSession();
   const profile = useProfile();
+  const gunaPrompt = useGunaPrompt();
 
   const [phone, setPhone] = useState('');
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
@@ -20,8 +21,9 @@ export default function SignInScreen() {
   // Once verified, go to Setup if the profile is incomplete (P-03), otherwise straight in.
   useEffect(() => {
     if (status !== 'signedIn' || !profile) return;
-    router.replace(profile.displayName && profile.ageBand ? '/(tabs)' : '/setup');
-  }, [status, profile, router]);
+    if (!canUsePersonalFeatures || !profile.displayName.trim()) { router.replace('/setup'); return; }
+    if (gunaPrompt) router.replace(gunaPrompt.state === 'unseen' ? '/gunometer/intro' : '/(tabs)');
+  }, [status, canUsePersonalFeatures, gunaPrompt, profile, router]);
 
   const back = () => (router.canGoBack() ? router.back() : router.replace('/welcome'));
 

@@ -1,0 +1,10 @@
+PASS guest quiz redirects to sign-in
+PASS first setup routes to the Gunometer invite
+PASS Later keeps no result, Profile offers quiz, gatherings default on
+PASS 24 answers auto-advance; back restores selection; saved result and done prompt persist
+PASS result recommendation accordion expands/collapses
+PASS share preview renders a 9:16 story card
+PASS Profile displays latest result; notification toggles and name editing save
+PASS full retake replaces latest result
+PASS a returning account is not prompted again
+PASS no browser runtime errors

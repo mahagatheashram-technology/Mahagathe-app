@@ -143,7 +143,11 @@ export function useCreateDonation() {
     return result;
   }, [create]);
 }
-export function useExternalLinks() { return useQuery(api.wisdom.externalLinks, {}); }
+export function useExternalLinks(): import('./types').ExternalLinks | null | undefined {
+  const links = useQuery(api.wisdom.externalLinks, {});
+  // The sibling app declares this scheme; published links may add a chapter deep link later.
+  return useMemo(() => links ? { ...links, saptagita: 'saptagita://' } : links, [links]);
+}
 export function useOpenWhatsApp() {
   const links = useExternalLinks();
   return useMemo(() => async () => { if (links?.whatsapp) await Linking.openURL(links.whatsapp); }, [links]);
