@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
 
-import { AppText, Button, Icon } from '@/components/ui';
+import { AppText, Icon, PrimaryButton } from '@/components/ui';
 import { useProfile, useVolunteerSignup } from '@/data';
 import { BottomSheet } from './BottomSheet';
 import { colors, fonts } from '@/theme/tokens';
@@ -55,18 +55,18 @@ export function VolunteerSheet({
       {done ? (
         <>
           <View style={{ alignItems: 'center', gap: 12, paddingVertical: 8 }}>
-            <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: colors.tile, borderWidth: 2, borderColor: colors.actionRed, alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="check" size={28} color={colors.actionRed} strokeWidth={2.2} />
+            <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: colors.lateriteSoft, borderWidth: 2, borderColor: colors.laterite, alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="check" size={28} color={colors.laterite} strokeWidth={2.2} />
             </View>
-            <AppText accessibilityLiveRegion="polite" style={{ textAlign: 'center', fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 22.4 }}>
+            <AppText accessibilityLiveRegion="polite" style={{ textAlign: 'center', fontFamily: fonts.uiMedium, fontSize: 14, lineHeight: 22.4 }}>
               We have shared your name and number with the {vibhagaName} team. The team may contact you about seva opportunities.
             </AppText>
           </View>
-          <Button label="Done" onPress={onClose} />
+          <PrimaryButton label="Done" onPress={onClose} />
         </>
       ) : (
         <>
-          <AppText style={{ fontFamily: fonts.sansMedium, fontSize: 14, lineHeight: 22.4, color: colors.muted }}>
+          <AppText style={{ fontFamily: fonts.uiMedium, fontSize: 14, lineHeight: 22.4, color: colors.text2 }}>
             Tell the {vibhagaName} team how to reach you. We only use these details to contact you about volunteering.
           </AppText>
           <Field label="Your name" value={name} onChangeText={setName} autoComplete="name" textContentType="name" />
@@ -84,14 +84,14 @@ export function VolunteerSheet({
                 marginTop: 1,
                 borderRadius: 6,
                 borderWidth: 2,
-                borderColor: consent ? colors.actionRed : colors.muted,
-                backgroundColor: consent ? colors.actionRed : colors.white,
+                borderColor: consent ? colors.laterite : colors.text2,
+                backgroundColor: consent ? colors.laterite : colors.white,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
               {consent ? <Icon name="check" size={14} color={colors.white} strokeWidth={3} /> : null}
             </View>
-            <AppText style={{ flex: 1, fontFamily: fonts.sansMedium, fontSize: 13, lineHeight: 20.8 }}>
+            <AppText style={{ flex: 1, fontFamily: fonts.uiMedium, fontSize: 13, lineHeight: 20.8 }}>
               I agree that Mahagathe may share my name and number with the {vibhagaName} team so they can contact me about volunteering. I can withdraw this at any time.
             </AppText>
           </Pressable>
@@ -100,7 +100,7 @@ export function VolunteerSheet({
               We could not send this just now. Please try again.
             </AppText>
           ) : null}
-          <Button label="Send my details" onPress={submit} disabled={!canSubmit} loading={busy} />
+          <PrimaryButton label="Send my details" onPress={submit} disabled={!canSubmit} loading={busy} />
         </>
       )}
     </BottomSheet>
@@ -113,7 +113,7 @@ function Field({
 }: { label: string } & React.ComponentProps<typeof TextInput>) {
   return (
     <View style={{ gap: 6 }}>
-      <AppText style={{ fontFamily: fonts.sansSemibold, fontSize: 13, lineHeight: 19.5 }}>{label}</AppText>
+      <AppText style={{ fontFamily: fonts.uiSemibold, fontSize: 13, lineHeight: 19.5 }}>{label}</AppText>
       <TextInput
         accessibilityLabel={label}
         placeholderTextColor={colors.muted}
@@ -124,8 +124,8 @@ function Field({
           borderRadius: 14,
           backgroundColor: colors.white,
           borderWidth: 1,
-          borderColor: colors.border,
-          fontFamily: fonts.sans,
+          borderColor: colors.line,
+          fontFamily: fonts.ui,
           fontSize: 15,
           color: colors.ink,
           outlineStyle: 'none',
